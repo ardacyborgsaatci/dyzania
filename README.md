@@ -2,7 +2,7 @@
 
 Fictional invoicing and bills app for small businesses. Its team runs on five automations built with n8n, Groq models and Vercel. See [PLAN.md](PLAN.md) for the merge plan and [brand/BRAND.md](brand/BRAND.md) for the brand.
 
-Status: step 2 of 8. Code has been moved in unchanged from the five original projects; rebranding and handoffs come next.
+Status: step 3 of 8 (repo-level rebrand done; n8n copies wait for the cutover). Knowledge copies are generated: run `node scripts/sync-knowledge.mjs` after editing `knowledge/`.
 
 ```
 brand/                 palette, tokens, logo

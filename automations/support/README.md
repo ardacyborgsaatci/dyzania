@@ -4,7 +4,7 @@ An AI triage desk for a support inbox, built on n8n, open-weight models on Groq,
 
 Mail sent to a Gmail `+support` alias is classified, prioritised and labelled. Anything a person must handle is flagged. A reply is written as a **Gmail draft that is never sent automatically**. The same triage logic also powers a public playground and live dashboard, so you can try it without an inbox.
 
-The fictional company is **Fernbill**, a small-business invoicing app. All help-center content in `knowledge-base/kb.md` is invented for this demo.
+The fictional company is **Wrenbook**, a small-business invoicing app. All help-center content in `knowledge-base/kb.md` is invented for this demo.
 
 > Live demo: _add your Vercel URL_ | Walkthrough video: _add your Loom URL_ | Script: [`LOOM-SCRIPT.md`](LOOM-SCRIPT.md)
 
@@ -17,7 +17,7 @@ The fictional company is **Fernbill**, a small-business invoicing app. All help-
 | Classify | gpt-oss-20b (on Groq) returns category, priority, sentiment, language, one-line summary, `needsHuman`, a reason, and a confidence. Output is forced into a JSON schema. |
 | Decide | Rule-based safety nets can raise `needsHuman` (refund or legal words, urgent priority, angry plus high priority, low confidence, suspected injection). They never lower it. |
 | Draft | gpt-oss-120b (on Groq) writes a short reply in the sender's language using only the knowledge base. Spam, auto-replies and suspected injections get no draft. |
-| Check | Code validates the draft: at most 220 words, only Fernbill links and `@fernbill.example` addresses, no refund or guarantee promises, no prompt or KB leakage. A failed draft is replaced by a short holding reply and flagged. |
+| Check | Code validates the draft: at most 220 words, only Wrenbook links and `@wrenbook.example` addresses, no refund or guarantee promises, no prompt or KB leakage. A failed draft is replaced by a short holding reply and flagged. |
 | Act | A threaded **draft** is saved in Gmail, a `Triage/*` label set is applied, a row is logged, and urgent mail sends an alert to the owner only. |
 | Report | A daily digest email summarises the last 24 hours. An error workflow emails the owner when a production run fails. |
 
@@ -129,7 +129,7 @@ workflows/                 n8n exports (credentials stripped, placeholders to fi
   error-alert.json         error workflow
   cleanup.json             03:30 housekeeping
 prompts/                   source of truth for the node prompts
-knowledge-base/kb.md       12 fictional Fernbill help articles
+knowledge-base/kb.md       12 fictional Wrenbook help articles
 eval/                      emails.json (54 labelled), run-eval.js
 website/                   static site + two Vercel functions + tests (no build step)
 ```

@@ -29,7 +29,7 @@ Tiers: **Hot** ≥ 70, **Warm** ≥ 40, otherwise **Cold**. Only Hot leads trigg
 
 ## The website
 
-The site is a one-page product site for **Brightline**, a fictional company that sells this lead-intake system to small businesses. The page shows the product it sells: a live-style enquiry list with scores, a diagram of the n8n workflow, plans and a FAQ, and the lead form at the end. The form on the page is the real one, so submitting it runs the whole pipeline above.
+The site is a one-page product site for **Wrenbook**, a fictional company that sells this lead-intake system to small businesses. The page shows the product it sells: a live-style enquiry list with scores, a diagram of the n8n workflow, plans and a FAQ, and the lead form at the end. The form on the page is the real one, so submitting it runs the whole pipeline above.
 
 | Section | Purpose |
 |---|---|

@@ -2,7 +2,7 @@
   "name": "support-inbox-triage-website",
   "version": "1.0.0",
   "private": true,
-  "description": "Playground and live dashboard for the Fernbill support triage automation",
+  "description": "Playground and live dashboard for the Wrenbook support triage automation",
   "scripts": {
     "test": "node --test test/"
   },

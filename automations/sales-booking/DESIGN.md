@@ -4,7 +4,7 @@ An assistant that books discovery calls by email. A requester writes to a `+book
 
 The model never chooses a time on its own. It can only pick from slots the code has already checked.
 
-The fictional business is **Larkwell Studio**, a small web design studio with 30 and 45 minute discovery calls. The name is a placeholder; trademark-check it before publishing, as with Fernbill.
+The fictional business is **Wrenbook**, a small web design studio with 30 and 45 minute discovery calls. The name is a placeholder; trademark-check it before publishing, as with Wrenbook.
 
 ## Why this project
 
