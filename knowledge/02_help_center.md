@@ -1,106 +1,106 @@
-# Wrenbook Help Center
+# Hollis & Marr LLP Help Center
 
-Wrenbook is a small-business invoicing app. Everything here is fictional demo content for a portfolio project.
+Hollis & Marr LLP is a small law firm. Everything here is fictional demo content for a portfolio project. This is general information, not legal advice.
 
-Support hours: Monday to Friday, 09:00-17:00 UTC.
-Support email: support@wrenbook.example. Status page: https://status.wrenbook.example
+Office hours: Monday to Friday, 8:30-17:30. General email: hello@hollismarr.example. Phone: 555-0142.
 
 ---
 
-## KB-01 Plans and pricing
-URL: https://wrenbook.example/help/plans
+## KB-01 What the firm handles
+URL: https://hollismarr.example/help/practice-areas
 
-- Starter: $12 per month, 1 user, up to 20 invoices per month.
-- Pro: $29 per month, 3 users, unlimited invoices, recurring invoices, online payments.
-- Business: $59 per month, 10 users, everything in Pro plus QuickBooks sync, API access and a 4-hour support response.
-- Extra seats on Business cost $6 per user per month.
-- Teams above 10 users, or teams that need single sign-on, use a custom Enterprise plan. Enterprise has no public price; the sales team quotes it.
-- Annual billing: pay for 10 months, get 12.
-- There is no free plan. Every new workspace gets a 14-day free trial of Pro with no card required.
-- To change plan, go to Settings > Billing > Change plan. Upgrades apply immediately and are prorated. Downgrades apply at the next renewal.
+- Family law: divorce, child custody and support, protective orders, adoption and paternity.
+- Personal injury: car and truck accidents, slip and fall, dog bites, medical negligence and wrongful death.
+- Employment law: wrongful termination, discrimination, harassment, retaliation and unpaid wages.
+- Estate planning and probate: wills, trusts, powers of attorney, guardianship for adults, probate and estate administration.
+- The firm does not handle criminal defense, immigration, intellectual property, tax disputes, bankruptcy and debt, or business formation and contracts.
 
-## KB-02 Refunds
-URL: https://wrenbook.example/help/refunds
+## KB-02 Consultation fees
+URL: https://hollismarr.example/help/fees
 
-- New subscriptions have a 14-day money-back guarantee on the first payment. Renewals are not refundable.
-- Every refund request is reviewed by the billing team within 2 business days.
-- Support replies cannot approve, promise or confirm a refund. A billing teammate decides.
+- Personal injury and employment: the first 30-minute consultation is free. These cases are handled on a contingency basis, which means no attorney fee unless there is a recovery. The percentage and any case costs are written in the engagement letter, not quoted by the assistant.
+- Family law and estate planning: the first consultation is 45 minutes and costs $150. The $150 is credited to the retainer if the person hires the firm.
+- The assistant cannot quote fees for ongoing work. An attorney explains them at the consultation.
 
-## KB-03 Failed payments
-URL: https://wrenbook.example/help/failed-payments
+## KB-03 Booking a first consultation
+URL: https://hollismarr.example/help/booking
 
-- Wrenbook retries a failed card payment automatically 3 times over 7 days.
-- To fix it sooner, update the card at Settings > Billing > Payment method.
-- If the invoice is still unpaid after 7 days, the workspace becomes read-only. You can still view and export data but cannot create new invoices.
-- Data is kept for 90 days after a workspace becomes read-only.
+- Book on the website at any hour, through the automated voice line, or by emailing intake@hollismarr.example.
+- Bookings need at least 4 hours of notice and can be made up to 30 days ahead.
+- Each person can have one active booking at a time.
+- A booking is confirmed by email with the date, time and attorney. If a conflict of interest is found, the firm tells the person it cannot take the matter and may suggest where else to look.
+- To reschedule or cancel, reply to the confirmation email or call the office. Please give at least 24 hours of notice.
+- Consultations are at the office or by video.
 
-## KB-04 Signing in and resetting a password
-URL: https://wrenbook.example/help/sign-in
+## KB-04 What to bring to a consultation
+URL: https://hollismarr.example/help/what-to-bring
 
-- Choose "Forgot password" on the sign-in page. The reset link is valid for 30 minutes. Check the spam folder if it does not arrive.
-- Five failed sign-in attempts lock sign-in for 15 minutes.
-- To change the email address on an account, go to Settings > Profile while signed in.
+- Everyone: a photo ID and any papers received from a court, an insurer, an employer or the other side.
+- Family law: marriage certificate, any prenuptial agreement, recent pay stubs and tax returns, a list of shared property and debts.
+- Personal injury: the police or incident report, photos, medical records and bills, and insurance letters.
+- Employment: the offer letter or contract, termination or disciplinary letters, pay stubs and a dated timeline.
+- Estate planning and probate: any existing will or trust, a list of assets and debts, beneficiary details and, for probate, the death certificate.
 
-## KB-05 Two-factor authentication
-URL: https://wrenbook.example/help/two-factor
+## KB-05 Urgent matters and deadlines
+URL: https://hollismarr.example/help/urgent
 
-- Turn it on at Settings > Security. Backup codes are shown once during setup, so store them safely.
-- If you lost your device and have no backup codes, a teammate must verify your identity before 2FA can be reset. Allow 1 business day.
-- Support replies cannot reset 2FA.
+- If anyone is in immediate danger, call 911 or the local emergency number.
+- Court dates and filing deadlines are strict. If someone has a hearing, a response deadline or served papers, they should contact an attorney as soon as possible. The assistant cannot tell anyone what their deadline is.
+- Messages that mention a court date, served papers, a deadline within 7 days, a protective order or an arrest are flagged for an attorney straight away. A person reviews them. The assistant cannot promise that an attorney will respond by a certain time.
+- Existing clients with an urgent court matter: email urgent@hollismarr.example and call the office during office hours.
 
-## KB-06 Creating, sending and scheduling invoices
-URL: https://wrenbook.example/help/invoices
+## KB-06 Existing clients
+URL: https://hollismarr.example/help/clients
 
-- Go to Invoices > New invoice. Send it by email, copy the share link, or download a PDF.
-- A sent invoice can still be edited. The client sees the updated version at the same link.
-- Set the invoice number prefix at Settings > Invoicing.
-- Recurring invoices are available on Pro and Business. Go to Invoices > Recurring > New schedule. Choose weekly, monthly, quarterly or yearly. Schedules can be paused at any time.
+- Email your case team or call the office. Messages are answered within 1 business day.
+- The assistant cannot discuss the details of any matter, share documents or give updates on a case. A member of the case team does that.
+- Sending documents: use the secure upload link your case team gave you. Please do not email sensitive documents.
 
-## KB-07 Exporting your data
-URL: https://wrenbook.example/help/export
+## KB-07 Court notices and served papers
+URL: https://hollismarr.example/help/court-notices
 
-- Go to Settings > Data > Export.
-- Choose CSV for invoices and clients, or a PDF bundle of invoices.
-- Exports take up to 10 minutes. A download link is emailed to the account owner and stays valid for 24 hours.
+- If you received a hearing notice, summons, subpoena or court order, do not ignore it.
+- Existing clients can photograph or scan it and upload it through the secure link. The firm's tool reads the court, case number, dates and deadlines from the image, and a person always confirms what it read before anything is relied on.
+- The assistant cannot say what a notice means for your case or whether a deadline is correct. An attorney does that.
 
-## KB-08 Online payments and integrations
-URL: https://wrenbook.example/help/integrations
+## KB-08 Confidentiality and what to share before you are a client
+URL: https://hollismarr.example/help/confidentiality
 
-- Clients can pay invoices online through Stripe or PayPal on Pro and Business. Connect them at Settings > Integrations.
-- QuickBooks sync is available on Business.
-- Zapier is available on Pro and Business.
-- Wrenbook takes no commission. Stripe and PayPal charge their own fees.
+- No attorney-client relationship exists until you and the firm sign an engagement letter. Messages sent before that may not be privileged.
+- On the website form, by voice and in first emails, share only a short description. Please do not include medical records, account numbers or case documents.
+- The firm keeps website forms and call records limited to what is needed to arrange a consultation. Privacy requests go to privacy@hollismarr.example.
 
-## KB-09 Cancelling and deleting your account
-URL: https://wrenbook.example/help/cancel
+## KB-09 Fees, payment and billing for clients
+URL: https://hollismarr.example/help/billing
 
-- To cancel, go to Settings > Billing > Cancel plan. The workspace stays active until the end of the paid period.
-- When an account is deleted, its data is removed after 30 days.
-- Formal data requests (such as GDPR access or deletion) are handled by the privacy team. Support replies cannot process them.
+- Fee arrangements are set out in your engagement letter. The assistant cannot explain or change them.
+- Hourly matters are invoiced monthly. Payment can be made by bank transfer, check or card through the office.
+- Billing questions go to billing@hollismarr.example. Disputes about a bill are handled by a partner.
 
-## KB-10 Reporting a bug
-URL: https://wrenbook.example/help/report-bug
+## KB-10 Location, access and video
+URL: https://hollismarr.example/help/visit
 
-- Include your browser and version, the steps that led to the problem, and a screenshot if you can.
-- Check https://status.wrenbook.example first for known issues and outages.
-- Support does not give fix dates.
+- The office is at 220 Canal Street, Suite 4, Harlow Point. The building has step-free access and an elevator. Street parking is available on Canal Street.
+- Video consultations use a link in the confirmation email. Join a few minutes early.
+- Tell the office ahead of time if you need an interpreter or another accommodation.
 
-## KB-11 Security
-URL: https://wrenbook.example/help/security
+## KB-11 Matters the firm does not handle
+URL: https://hollismarr.example/help/referrals
 
-- Data is encrypted in transit and at rest.
-- Report suspected vulnerabilities or account compromise to security@wrenbook.example. Only the security team handles these. They are not discussed in support tickets.
+- For criminal defense, immigration, intellectual property, tax disputes, bankruptcy and debt, or business formation and contracts, the firm cannot help.
+- The firm does not recommend a specific outside lawyer. It suggests contacting the local bar association's lawyer referral service, or a public defender in a criminal case.
+- If a time limit may be running, contact another lawyer quickly.
 
-## KB-12 Support hours, response times and sales
-URL: https://wrenbook.example/help/support
+## KB-12 Records and closing a file
+URL: https://hollismarr.example/help/records
 
-- First response targets: Starter 2 business days, Pro 1 business day, Business 4 business hours.
-- Sales questions go to sales@wrenbook.example. A 30-minute demo can be booked at https://wrenbook.example/demo.
+- A client can ask for a copy of their file by emailing their case team. Requests are answered within 5 business days.
+- Files are kept for 7 years after a matter closes, then securely destroyed.
+- Formal privacy requests go to privacy@hollismarr.example.
 
-## KB-13 Capturing supplier bills
-URL: https://wrenbook.example/help/bills
+## KB-13 Using the automated assistants
+URL: https://hollismarr.example/help/assistants
 
-- Forward a supplier invoice to your workspace's bills address, or upload a PNG or JPG at Bills > Upload. PDFs must be exported to an image first.
-- Wrenbook reads the vendor, invoice number, date, currency, subtotal, tax and total.
-- A bill is approved automatically only when the amounts add up and every key field was read with high confidence. Anything else is marked "Needs review" and waits for a person.
-- Support replies cannot edit or approve a bill. The workspace owner reviews them under Bills > Needs review.
+- The website forms, the voice line and the email sorter are automated. They are not lawyers and do not give legal advice.
+- Replies to emails are written as drafts and are sent by a person at the firm. The only automatic emails are booking confirmations, which use a fixed template.
+- If an assistant cannot help, it says so and points to hello@hollismarr.example or the office.

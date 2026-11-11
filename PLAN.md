@@ -1,4 +1,52 @@
-# Wrenbook: combine the five automations
+# Hollis & Marr LLP: turn the automations into a law-firm company
+
+**Decision (2026-11-11):** the five Wrenbook automations are converted **in place** into the automations of a fictional law firm, **Hollis & Marr LLP** (Harlow Point, 11 people, founded 2014). Wrenbook is retired as a brand; its history is kept below. The dark design system stays; the accent changes from wren orange to brass. The repo and folder are still named `wrenbook`; renaming the GitHub repo is an owner task.
+
+Defaults taken (owner can change any): fictional firm; US with no named state, so deadlines are illustrative settings and never real law; practice areas family, personal injury, employment, estate planning and probate; first consultation free for injury and employment, $150 for 45 minutes for family and estate (credited to the retainer); booking confirmations are the only automatic email, from a fixed template; voice booking takes an email by spelling and read-back, then falls back to the website after two failed tries; business timezone default America/Chicago, to be confirmed.
+
+## The five automations, redefined
+
+| Team | Automation | Was | Now |
+|---|---|---|---|
+| Client care | Triage | Support triage | Flags time-sensitive and court matters (hearing or deadline within 7 days, served papers, protective order, arrest, eviction), drafts acknowledgements only |
+| Intake | Lead intake and scoring | Lead scoring | Matches web form entries to the four practice areas, scores, checks the other side's name against an invented conflict list |
+| Intake | Booking agent | Demo booking | Books first consultations 24/7 through the website form, the voice line or email. Needs conflict clear |
+| Front desk | Voice line | Voice line | Answers firm questions, can book a consultation |
+| Records | Court-notice extraction | Invoice extraction | Reads hearing notices and summonses. Never auto-approved: every result is "Needs attorney confirmation" |
+
+## Handoffs
+
+1. Triage to Intake: a new case inquiry becomes a lead.
+2. Intake to Booking: a Hot or Warm lead with no conflict is offered slots.
+3. Voice to Booking: a caller books after a short screen.
+4. Records to Ops: a notice with a date within 7 days raises an urgent attorney alert and appears in the daily digest.
+
+## Law-firm rules that apply everywhere
+
+No legal advice, never state a legal deadline as fact (only repeat a date as written), no case-merit opinions, no outcome promises, no testimonials. Disclaimers on every page and in every draft. Demos use invented data only. Logs hold metadata only. Wording lives in `firm/firm.json`.
+
+## Phases
+
+0. **Firm data, knowledge base, brand kit.** `firm/` (facts, practice areas, availability, urgency rules, invented conflict list) with tests; rewritten `knowledge/`; brass accent, new logo, `brand/BRAND.md`.
+1. Lead intake and scoring, with conflict check and tests.
+2. Triage: new classifier and draft prompts, a set of about 50 invented emails, evaluation scorer.
+3. Booking: rules code that matches `firm/availability.json` exactly (15-minute buffer), form, voice and email paths, evaluation set.
+4. Court-notice extraction: workflow, 12 invented notices, scorer, evaluation.
+5. Voice: new knowledge, booking tool, email read-back, question set.
+6. Site: home, practice areas, intake form with booking, voice page, ops page, privacy and disclaimers.
+7. Handoffs, evaluations, one cutover (each publish and archive with owner OK), README and Loom.
+
+The Wrenbook ops layer (event log, error alert, digest, cleanup, the budget check) is kept and renamed. The Wrenbook n8n copies built so far are unpublished and are renamed at the cutover. Pending Wrenbook approvals (publishing the digest and cleanup, a test digest email) are on hold; they apply to the renamed workflows.
+
+## Progress log
+
+- 2026-11-11: phase 0 done. `firm/` data and 9 consistency tests, knowledge base rewritten for the firm (13 entries, synced to the voice copy and the triage draft prompt), brass accent and a courthouse-columns logo, `brand/BRAND.md` rewritten. The rest of the repo still says Wrenbook until its phase.
+
+---
+
+# Earlier plan: Wrenbook (kept for history)
+
+## Wrenbook: combine the five automations
 
 Approved brand: **Wrenbook**, a fictional invoicing and bills app for small businesses (12 people). Its own team runs on the five automations. Name still needs a trademark and domain check (owner task).
 

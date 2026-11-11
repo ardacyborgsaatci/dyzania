@@ -1,0 +1,6 @@
+{
+  "name": "hollis-marr-firm",
+  "private": true,
+  "description": "Shared facts about the fictional firm. Every automation reads from here.",
+  "scripts": { "test": "node --test test/" }
+}

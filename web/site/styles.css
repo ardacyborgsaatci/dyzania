@@ -1,5 +1,5 @@
-/* Wrenbook site styles. Source: wrenbookDESIGN.md.md (dark, compact, pill geometry, heavy shadows).
-   Single accent: wren orange, for actions and active states only. Tokens live in /brand/tokens.css. */
+/* Hollis & Marr site styles. Source: wrenbookDESIGN.md.md (dark, compact, pill geometry, heavy shadows).
+   Single accent: brass, for actions and active states only. Tokens live in /brand/tokens.css. */
 :root {
   color-scheme: dark;
   --bg: #121212;
@@ -10,10 +10,10 @@
   --muted: #b3b3b3;
   --line: #2e2e2e;
   --edge: #7c7c7c;
-  --accent: #e08a2b;
+  --accent: #d4a94f;
   --accent-ink: #121212;
   --accent-soft: #2a2a2a;
-  --wren: #e08a2b;
+  --brass: #d4a94f;
   --warn: #ffa42b;
   --warn-soft: #2e2412;
   --danger: #f3727f;
@@ -164,7 +164,7 @@ th { color: var(--muted); font-weight: 700; font-size: 0.75rem; text-transform: 
 .btn-row { margin-top: 16px; }
 .price { font-size: 2rem; font-weight: 700; line-height: 1; margin: 6px 0 2px; }
 .price small { font-size: 0.875rem; font-weight: 400; color: var(--muted); }
-.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--wren); margin-right: 6px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--brass); margin-right: 6px; }
 .band { background: var(--surface-2); color: var(--ink); }
 .band h2, .band h3 { color: var(--ink); }
 .band .lede, .band .note, .band p { color: var(--muted); }
@@ -180,7 +180,7 @@ th { color: var(--muted); font-weight: 700; font-size: 0.75rem; text-transform: 
 .autos dd { margin: 0; }
 .handoffs { counter-reset: h; list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .handoffs li { counter-increment: h; display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; }
-.handoffs li::before { content: counter(h); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--wren); color: var(--accent-ink); font-weight: 700; }
+.handoffs li::before { content: counter(h); display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--brass); color: var(--accent-ink); font-weight: 700; }
 .rules { margin: 0; padding-left: 1.2em; }
 .rules li { margin-bottom: 0.5em; }
 @media (max-width: 560px) { .autos dl { grid-template-columns: 1fr; gap: 0; } .autos dd { margin-bottom: 8px; } }

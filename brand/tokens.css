@@ -1,37 +1,37 @@
-/* Wrenbook tokens: dark, compact, pill-shaped. Built from wrenbookDESIGN.md.md.
-   One accent (wren orange), used only for actions and active states. Everything else is grey. */
+/* Hollis & Marr tokens: dark, compact, pill-shaped. Built from wrenbookDESIGN.md.md (the dark design system).
+   One accent (brass), used only for actions and active states. Everything else is grey. */
 :root {
   color-scheme: dark;
 
-  --wb-bg: #121212;
-  --wb-surface: #181818;
-  --wb-surface-2: #1f1f1f;
-  --wb-card: #252525;
-  --wb-line: #2e2e2e;
-  --wb-edge: #7c7c7c;
+  --hm-bg: #121212;
+  --hm-surface: #181818;
+  --hm-surface-2: #1f1f1f;
+  --hm-card: #252525;
+  --hm-line: #2e2e2e;
+  --hm-edge: #7c7c7c;
 
-  --wb-ink: #ffffff;
-  --wb-muted: #b3b3b3;
+  --hm-ink: #ffffff;
+  --hm-muted: #b3b3b3;
 
-  --wb-wren: #e08a2b;
-  --wb-on-wren: #121212;
+  --hm-brass: #d4a94f;
+  --hm-on-brass: #121212;
 
-  --wb-error: #f3727f;
-  --wb-warn: #ffa42b;
-  --wb-info: #539df5;
+  --hm-error: #f3727f;
+  --hm-warn: #ffa42b;
+  --hm-info: #539df5;
 
-  --wb-font-title: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
-  --wb-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
+  --hm-font-title: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
+  --hm-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
 
-  --wb-radius-card: 8px;
-  --wb-radius-input: 4px;
-  --wb-radius-pill: 9999px;
-  --wb-shadow: rgba(0, 0, 0, 0.3) 0 8px 8px;
-  --wb-shadow-lg: rgba(0, 0, 0, 0.5) 0 8px 24px;
+  --hm-radius-card: 8px;
+  --hm-radius-input: 4px;
+  --hm-radius-pill: 9999px;
+  --hm-shadow: rgba(0, 0, 0, 0.3) 0 8px 8px;
+  --hm-shadow-lg: rgba(0, 0, 0, 0.5) 0 8px 24px;
 }
 
 body {
-  background: var(--wb-bg);
-  color: var(--wb-ink);
-  font-family: var(--wb-font-body);
+  background: var(--hm-bg);
+  color: var(--hm-ink);
+  font-family: var(--hm-font-body);
 }

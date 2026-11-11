@@ -1,4 +1,6 @@
-# Wrenbook
+# Wrenbook (becoming Hollis & Marr LLP)
+
+> **In transition.** The five automations are being converted, phase by phase, into a fictional law firm, Hollis & Marr LLP. Phase 0 is done: shared firm facts in `firm/`, the new knowledge base and brand kit. Everything below still describes the Wrenbook version until its phase is converted. See [PLAN.md](PLAN.md).
 
 Wrenbook is a **fictional** invoicing and bills app for small businesses (12 people, founded 2019). It is the made-up company behind five automations I built, merged here into one team and one site. Nothing on it is a real product, and every customer, bill and email in the demos is invented.
 

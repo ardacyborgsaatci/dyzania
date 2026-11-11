@@ -124,7 +124,7 @@ test('ops status list is well formed and does not overclaim', () => {
 test('stylesheet uses the Wrenbook brand tokens and no gradients', () => {
   const css = read('styles.css');
   const brand = fs.readFileSync(path.join(root, '..', '..', 'brand', 'tokens.css'), 'utf8').toLowerCase();
-  for (const hex of ['#121212', '#181818', '#b3b3b3', '#e08a2b']) {
+  for (const hex of ['#121212', '#181818', '#b3b3b3', '#d4a94f']) {
     assert.ok(css.toLowerCase().includes(hex), `styles.css lacks brand colour ${hex}`);
     assert.ok(brand.includes(hex), `brand tokens lack ${hex}`);
   }
@@ -139,7 +139,7 @@ test('text pairs on the dark theme meet WCAG AA contrast', () => {
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
   const pairs = [
     ['white on bg', '#ffffff', '#121212'], ['muted on bg', '#b3b3b3', '#121212'], ['muted on surface', '#b3b3b3', '#181818'], ['muted on card', '#b3b3b3', '#252525'],
-    ['white on surface-2', '#ffffff', '#1f1f1f'], ['dark on wren button', '#121212', '#e08a2b'], ['wren text on bg', '#e08a2b', '#121212'], ['wren text on card', '#e08a2b', '#252525'],
+    ['white on surface-2', '#ffffff', '#1f1f1f'], ['dark on brass button', '#121212', '#d4a94f'], ['brass text on bg', '#d4a94f', '#121212'], ['brass text on card', '#d4a94f', '#252525'],
     ['warn on warn-soft', '#ffa42b', '#2e2412'], ['danger on danger-soft', '#f3727f', '#33191d'], ['info on info-soft', '#539df5', '#14233a'],
     ['danger on bg', '#f3727f', '#121212'], ['info on bg', '#539df5', '#121212'], ['bg on white chip', '#121212', '#ffffff'],
   ];

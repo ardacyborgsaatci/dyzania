@@ -1,0 +1,34 @@
+{
+  "note": "Invented conflict-check list. Every name here is made up. A real firm keeps this in its practice-management system; this file stands in for it. A match never decides anything: it holds the lead for an attorney to clear.",
+  "matching": {
+    "normalize": "Lowercase, strip punctuation, drop company suffixes (inc, llc, ltd, co, corp, company, llp), collapse spaces.",
+    "exact": "Normalized names are equal: hold for attorney, reason 'match'.",
+    "near": "Same last name and same first initial, or one normalized name contains the other: hold, reason 'near match'.",
+    "common": "Entries flagged commonName produce 'ambiguous' on any last-name match, because many unrelated people share the name: hold, reason 'ambiguous'.",
+    "empty": "No other-side name given: do not hold, but tell the attorney it was not provided."
+  },
+  "entries": [
+    { "id": "c001", "name": "Harlan Whitcombe", "type": "person", "role": "client", "area": "family" },
+    { "id": "c002", "name": "Priscilla Anand", "type": "person", "role": "client", "area": "estate" },
+    { "id": "c003", "name": "Oren Kessler", "type": "person", "role": "client", "area": "injury" },
+    { "id": "c004", "name": "Beatriz Lowell", "type": "person", "role": "client", "area": "employment" },
+    { "id": "c005", "name": "Greywater Dental Group LLC", "type": "org", "role": "client", "area": "employment" },
+    { "id": "c006", "name": "Tobias Fenn", "type": "person", "role": "client", "area": "estate" },
+    { "id": "c007", "name": "Calla Ibarra", "type": "person", "role": "client", "area": "family" },
+    { "id": "f001", "name": "Desmond Achterberg", "type": "person", "role": "former_client", "area": "injury" },
+    { "id": "f002", "name": "Nadia Sorensen", "type": "person", "role": "former_client", "area": "family" },
+    { "id": "f003", "name": "Pinecrest Logistics Inc", "type": "org", "role": "former_client", "area": "employment" },
+    { "id": "a001", "name": "Evergreen Mutual Insurance Co", "type": "org", "role": "adverse", "area": "injury" },
+    { "id": "a002", "name": "Larkspur Home Furnishings Inc", "type": "org", "role": "adverse", "area": "employment" },
+    { "id": "a003", "name": "Rowan Thackeray", "type": "person", "role": "adverse", "area": "family" },
+    { "id": "a004", "name": "Summit Ridge Trucking LLC", "type": "org", "role": "adverse", "area": "injury" },
+    { "id": "a005", "name": "Mira Castellano", "type": "person", "role": "adverse", "area": "family" },
+    { "id": "a006", "name": "Northfield Regional Hospital", "type": "org", "role": "adverse", "area": "injury" },
+    { "id": "a007", "name": "Quillon Staffing Partners", "type": "org", "role": "adverse", "area": "employment" },
+    { "id": "a008", "name": "Wendell Ostrowski", "type": "person", "role": "adverse", "area": "estate" },
+    { "id": "a009", "name": "Maria Santos", "type": "person", "role": "adverse", "area": "family", "commonName": true },
+    { "id": "a010", "name": "James Miller", "type": "person", "role": "adverse", "area": "injury", "commonName": true },
+    { "id": "a011", "name": "Redline Courier Services", "type": "org", "role": "adverse", "area": "injury" },
+    { "id": "a012", "name": "Bellweather Property Management", "type": "org", "role": "adverse", "area": "employment" }
+  ]
+}
