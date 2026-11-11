@@ -1,5 +1,5 @@
 {
-  "note": "Development set for Hollis & Marr triage: 54 invented emails. Every person, firm, case number and address is made up. Labels were written BEFORE the triage code existed. 'expect' is what a careful person at the firm would want: category, final priority, whether the rule screen should see a time-sensitive date (urgency), whether a person must act (needsHuman), what kind of reply may be drafted (draftMode: none, acknowledgement = fixed text, standard = model draft), the queue, and the handoff. The set was written by the same person who wrote the code, so it is a regression set, not an independent test.",
+  "note": "Development set for Dyzania triage: 54 invented emails. Every person, firm, case number and address is made up. Labels were written BEFORE the triage code existed. 'expect' is what a careful person at the firm would want: category, final priority, whether the rule screen should see a time-sensitive date (urgency), whether a person must act (needsHuman), what kind of reply may be drafted (draftMode: none, acknowledgement = fixed text, standard = model draft), the queue, and the handoff. The set was written by the same person who wrote the code, so it is a regression set, not an independent test.",
   "today": "2026-11-11",
   "defaults": { "injection": false, "language": "en", "sentiment": "neutral", "handoff": null },
   "emails": [
@@ -115,7 +115,7 @@
       "expect": { "category": "billing", "priority": "normal", "urgency": "none", "needsHuman": false, "draftMode": "standard", "queue": "billing" } },
 
     { "id": "X01", "tags": ["spam", "model-only"], "from": "Growth Team <hello@rankboosters.example>", "subject": "Get your law firm to page 1 of Google",
-      "body": "Hi, we can put hollismarr.example on page 1 of Google in 30 days. Reply YES for a free audit. Limited offer for law firms this week only.",
+      "body": "Hi, we can put dyzania.example on page 1 of Google in 30 days. Reply YES for a free audit. Limited offer for law firms this week only.",
       "expect": { "category": "spam", "priority": "low", "urgency": "none", "needsHuman": false, "draftMode": "none", "queue": "none" } },
     { "id": "X02", "tags": ["spam", "lead-gen", "model-only"], "from": "Sales <sales@caseleadspro.example>", "subject": "50 exclusive injury leads every month",
       "body": "We deliver 50 exclusive personal injury leads every month to firms like yours. No contracts. Book a call today to see pricing.",

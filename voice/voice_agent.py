@@ -1,5 +1,5 @@
 """
-Hands-free voice call with the Hollis & Marr LLP voice line (a fictional firm), in the terminal.
+Hands-free voice call with the Dyzania LLP voice line (a fictional firm), in the terminal.
 
 Just talk. The agent detects when you stop, answers out loud, and you can
 interrupt it by talking over it. Use headphones so it doesn't hear itself

@@ -1,4 +1,4 @@
-# Cutover and go-live runbook: Hollis & Marr LLP
+# Cutover and go-live runbook: Dyzania LLP
 
 **Status (2026-11-11): nothing in this file has been done.** No firm workflow is imported, published or deployed, nothing is archived, and no live model has been run. Every step needs the owner's OK when it happens. The old Wrenbook workflows stay live until the firm's copies pass.
 
@@ -13,10 +13,10 @@ The firm is fictional. "Live" means running on the real services (n8n, Gmail, Gr
 | `ops_events` | JN6zuKod5UpooQUV | 10 columns, match `automations/ops/ops_events.schema.json`. Empty. Use as is. |
 | `triage_log` (old) | dMPf0tMgzkWZtiyX | **Wrong table for the firm.** It has the Wrenbook columns (subject, snippet, summary) and the live old triage workflow writes to it. Leave it alone. |
 | `bookings` | | **Does not exist.** Create it from `automations/booking/columns.json` (18 columns). |
-| firm triage log | | **Does not exist.** Create it from `automations/triage/columns.json` (21 columns, no subject, snippet or summary). Name it `hm_triage_log`, because the old table holds the name `triage_log`. Only its id matters to the workflows. |
+| firm triage log | | **Does not exist.** Create it from `automations/triage/columns.json` (21 columns, no subject, snippet or summary). Name it `dy_triage_log`, because the old table holds the name `triage_log`. Only its id matters to the workflows. |
 | `ops_config`, `demo_rate_limit`, `booking_thread_state`, `booking_fixture_calendar` | gMKsbxMcmyJtTkfr, JU0HrZecjMDawJpM, IunKujLEao0LJryK, 3dAc3XrQV1YJg4qP | Old Wrenbook tables. Nothing in the firm's workflows reads them. Retire at the end. |
 
-Workflows in n8n today: 20. Twelve old Wrenbook workflows are **active** (lead intake, six support triage workflows, booking core and its three tools, invoice extraction). Eight are inactive: two booking test harnesses and the six unpublished "Wrenbook Ops" workflows. No Hollis & Marr workflow exists in n8n yet.
+Workflows in n8n today: 20. Twelve old Wrenbook workflows are **active** (lead intake, six support triage workflows, booking core and its three tools, invoice extraction). Eight are inactive: two booking test harnesses and the six unpublished "Wrenbook Ops" workflows. No Dyzania workflow exists in n8n yet.
 
 Credentials that exist: Gmail `ADrOxnpC5M3hAS7a`, Groq `WIERJG1YhXtS5yas`, OpenRouter of type custom auth (the type the notices vision call uses) `lqwxdUxCERVyNQwy`, OpenRouter (API type) `kl9PRkCDRutRxIvI`, Google Calendar `zm0aokBQMyTEcVbe` (not used by any firm workflow), Header Auth `I4dGIOqOKuNJNeGp` and `ascChV8Y0jnM8xqB` (old). **To create:** one header-auth credential for the intake webhook, one for the two booking webhooks, one basic-auth credential for the notices upload form.
 
@@ -26,17 +26,18 @@ Credentials that exist: Gmail `ADrOxnpC5M3hAS7a`, Groq `WIERJG1YhXtS5yas`, OpenR
 - The old Demo API owns the `triage-demo` and `triage-feed` paths. The firm's webhooks are `intake`, `booking/slots` and `booking/book`, which do not clash.
 - The site has no test mode: until the intake and booking webhooks exist, its forms answer "unavailable" (by design).
 
-## Before you start (owner only)
+## Owner decisions (made 2026-11-11)
 
-| Item | Why it is yours |
+| Item | Decision |
 |---|---|
-| Confirm the business time zone (default `America/Chicago`) | It decides every office hour, the booking grid and the digest hour. |
-| Give an owner address and an attorney-on-duty address | Ops mail goes to the first, urgent alerts to the second. Use inboxes you control. They go only into `cutover.local.json`, which git ignores. |
-| Say which Gmail account n8n is connected to | The triage trigger polls its `+triage` alias. |
-| Name and trademark check for "Hollis & Marr", and the domain | `hollismarr.example` is a placeholder that cannot receive mail. |
-| Rotate the Groq, Fish Audio and OpenRouter keys pasted in chat earlier | They were exposed in a chat. |
-| Decide whether the voice page stays behind Vercel Authentication | A public voice page spends your Fish and Groq quota. |
-| Rename the GitHub repo from `wrenbook` (optional) | GitHub redirects the old name. |
+| Business time zone | `America/Chicago`, confirmed. |
+| Owner address and attorney-on-duty address | The owner's own Gmail inbox for both, held only in the git-ignored `cutover.local.json`. `prepare-import` already accepts that file: 5 of 8 workflows are ready to write, 3 wait for the two missing tables and the triage core's workflow id. |
+| Gmail account n8n uses | The same account. The **old** triage polls the `+support` alias; the firm's polls `+triage` (Gmail delivers any `+word` to the same inbox, so no setup). Keep them different until the old one is archived. |
+| Voice page access | Keep it behind Vercel Authentication (the default). A public voice page spends Fish and Groq quota; show it in the Loom instead. Revisit with a rate limit if it is ever opened. |
+| Name | **Dyzania LLP**, chosen by the owner. No trademark or domain search has been done; `dyzania.example` is a placeholder that cannot receive mail. |
+| GitHub repo | Renamed to `dyzania` (see the progress log for whether it is done). |
+| Exposed keys (Groq, Fish Audio, OpenRouter, pasted in chat earlier) | The owner decided not to rotate them. The risk stays: anyone who saw that chat can use them until they are rotated. |
+| Git identity | Set for this repo only: the name `Arda Saatci` and the GitHub no-reply address, so no personal inbox appears in the history. The first commits keep their placeholder author. |
 
 ## The cutover, in order
 
@@ -44,7 +45,7 @@ Do these in order. After each step the check says how to know it worked. Steps m
 
 ### 1. Create the two missing tables **(OK)**
 
-Create `bookings` from `automations/booking/columns.json` and `hm_triage_log` from `automations/triage/columns.json` in the n8n personal project (n8n UI, or ask Claude to create them with the n8n tools). Note the two ids.
+Create `bookings` from `automations/booking/columns.json` and `dy_triage_log` from `automations/triage/columns.json` in the n8n personal project (n8n UI, or ask Claude to create them with the n8n tools). Note the two ids.
 Check: each table shows its columns and no rows.
 
 ### 2. Write the local config, then prepare the files
@@ -60,7 +61,7 @@ Check: no "waiting" lines, no problems. Run it twice: once with the table ids yo
 
 ### 3. Import in this order **(OK)**
 
-Import into an n8n folder named "Hollis & Marr", all **unpublished**:
+Import into an n8n folder named "Dyzania", all **unpublished**:
 
 1. `triage-core.json`. Copy its workflow id into `triageCoreWorkflowId`, run `prepare-import` again.
 2. `triage-gmail.json`
@@ -83,7 +84,7 @@ Check: eight workflows in the folder, all inactive.
 | booking | New header-auth credential, header `X-Booking-Secret`, a long random value, on both webhooks (keep the value for Vercel and the voice server) |
 | notices | New basic-auth credential on the upload form; OpenRouter (custom auth) `lqwxdUxCERVyNQwy` on the vision call |
 
-Then open each of the other seven workflows, Settings, Error workflow, and choose **H&M Ops - Error alert** (`ops-error-alert.json`). Run triage's "Create triage labels (run once)" button once.
+Then open each of the other seven workflows, Settings, Error workflow, and choose **Dyzania Ops - Error alert** (`ops-error-alert.json`). Run triage's "Create triage labels (run once)" button once.
 Check: no node shows a missing-credential warning; every workflow names the error workflow.
 
 ### 5. Test each workflow with pinned data before publishing **(OK)**
@@ -153,9 +154,9 @@ After a day of normal use, check the digest email (owner only) and the cleanup's
 
 | Workflow | Id | Replaced by |
 |---|---|---|
-| Lead Intake & Scoring | f2E0hVjfKYl4yXiw | H&M intake |
-| Support Triage: Gmail, Core, Demo API, Daily Digest, Cleanup, Error Alert | 4W2dNUotp2nDOUmc, qumfu47ryclMxZut, v0mctb6yyey9qzBP, gkikxWy789RARpCB, GFlXK7mohl14pCVZ, KmU1Jt8JRT664SYv | H&M triage and the ops jobs. The Demo API has no replacement: the site has no public playground any more |
-| Booking Core, three Booking Tools | IaRLrh8sBQ6w8h06, 26hnjgZFXuwIUKEC, uioKI8gG8b00uNUg, AZ1reSrylFEHbsbO | H&M booking |
+| Lead Intake & Scoring | f2E0hVjfKYl4yXiw | Dyzania intake |
+| Support Triage: Gmail, Core, Demo API, Daily Digest, Cleanup, Error Alert | 4W2dNUotp2nDOUmc, qumfu47ryclMxZut, v0mctb6yyey9qzBP, gkikxWy789RARpCB, GFlXK7mohl14pCVZ, KmU1Jt8JRT664SYv | Dyzania triage and the ops jobs. The Demo API has no replacement: the site has no public playground any more |
+| Booking Core, three Booking Tools | IaRLrh8sBQ6w8h06, 26hnjgZFXuwIUKEC, uioKI8gG8b00uNUg, AZ1reSrylFEHbsbO | Dyzania booking |
 | Two Booking Core test harnesses (already inactive) | PIVfNP7jofIVOXRk, EYNtFmhO3LS0iG9M | Archive |
 | Six unpublished "Wrenbook Ops" workflows (Log Event, Get Config, Check Budget, Error Alert, Daily Digest, Cleanup) | j0jzROX4PPhrB47i, Nk2ERzQVizJhER5g, J2pLLUdAFRSaC0Sw, 7TLG4ZzUAxgc0IYZ, mAZ91VQuhBpao7zN, 6YkApfQkQEW0ckXn | The firm's three ops workflows |
 
@@ -173,7 +174,7 @@ Archive, never hard-delete, where n8n and Vercel allow it: archived workflows an
 
 ## Owner-only items that no code can do
 
-Timezone confirmation, the name and trademark check, rotating the exposed keys, the Vercel Authentication decision for the voice page, the real-microphone call, recording the Loom, renaming the repo, and deleting the 12 test rows in the old "Extraction" sheet tab. A CAPTCHA (Cloudflare Turnstile) is an optional extra for the forms.
+A name and trademark search for "Dyzania", the real-microphone call, recording the Loom, creating the three n8n credentials, and deleting the 12 test rows in the old "Extraction" sheet tab. A CAPTCHA (Cloudflare Turnstile) is an optional extra for the forms.
 
 ## Not covered by this cutover
 

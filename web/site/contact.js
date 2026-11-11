@@ -6,7 +6,7 @@
   var form = document.getElementById('intake-form');
   if (!form) return;
 
-  var kit = window.HM;
+  var kit = window.DY;
   var summary = document.getElementById('error-summary');
   var status = document.getElementById('form-status');
   var button = document.getElementById('submit');

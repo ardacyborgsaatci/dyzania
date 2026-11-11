@@ -52,7 +52,7 @@ class AgainstTheRealRules(unittest.TestCase):
         chosen = offer.state["slots"][1]
         self.assertEqual(row["startUtc"], chosen["start"])
         self.assertIn(spoken.say_when(chosen["date"], chosen["time"]), final.text)
-        self.assertIn("HM-", final.text)
+        self.assertIn("DY-", final.text)
         self.assertIn("confirmation email is on its way to jane.doe@example.com", final.text)
         self.assertIn("not a lawyer", final.text)
         self.assertIn("jane.doe@example.com", final.spell)
@@ -184,9 +184,9 @@ class Failures(unittest.TestCase):
         last = replies[-1]
         self.assertTrue(last.ended)
         self.assertIsNone(last.state)
-        self.assertIn("hollismarr.example/book", last.text)
+        self.assertIn("dyzania.example/book", last.text)
         self.assertIn("Nothing has been saved", last.text)
-        self.assertEqual(last.link["url"], "https://hollismarr.example/book")
+        self.assertEqual(last.link["url"], "https://dyzania.example/book")
         self.assertFalse(any(c[0] == "book" for c in api.calls))
 
     def test_a_read_back_the_caller_rejects_twice_also_ends_on_the_website(self):
@@ -194,7 +194,7 @@ class Failures(unittest.TestCase):
         replies = say(r, "the first one", "my name is Jane Doe", "555 010 0199", "jane dot doe at example dot com", "no", "jane dot doe at example dot org", "no", api=api)
         self.assertIn("Sorry about that", replies[5].text)
         self.assertTrue(replies[-1].ended)
-        self.assertIn("hollismarr.example/book", replies[-1].text)
+        self.assertIn("dyzania.example/book", replies[-1].text)
         self.assertFalse(any(c[0] == "book" for c in api.calls))
 
     def test_one_wrong_read_back_is_fixed_on_the_second_try(self):
@@ -219,7 +219,7 @@ class Failures(unittest.TestCase):
         api = ScriptedApi(down=True)
         r = booking_flow.start(FAMILY, api)
         self.assertTrue(r.ended)
-        self.assertIn("hollismarr.example/book", r.text)
+        self.assertIn("dyzania.example/book", r.text)
         for word in ["Thursday", "November", "first,", "second,", "Happy to help"]:   # no time was read out, no welcome before a refusal
             self.assertNotIn(word, r.text)
 
@@ -240,28 +240,28 @@ class Failures(unittest.TestCase):
         again = replies[-1]
         self.assertEqual(again.state["step"], "email")
         self.assertIn("wasn't accepted: your email", again.text)
-        api._book = [{"ok": True, "code": "booked", "ref": "HM-TEST01", "attorney": "Dana Hollis", "address": "220 Canal Street, Suite 4, Harlow Point", "confirmationSent": True}]
+        api._book = [{"ok": True, "code": "booked", "ref": "DY-TEST01", "attorney": "Dana Hollis", "address": "220 Canal Street, Suite 4, Harlow Point", "confirmationSent": True}]
         after = say(again, "jane dot doe at example dot net", "yes", "yes", api=api)
         self.assertEqual(after[2].state["step"], "confirm")
         self.assertIn("jane.doe@example.net", after[2].text)
         self.assertTrue(after[-1].ended)
-        self.assertIn("HM-TEST01", after[-1].text)
+        self.assertIn("DY-TEST01", after[-1].text)
 
     def test_a_confirmation_email_that_could_not_be_sent_says_so(self):
         api, r = self.offered()
-        api._book = [{"ok": True, "code": "booked", "ref": "HM-TEST02", "attorney": "Dana Hollis", "address": "220 Canal Street", "confirmationSent": False}]
+        api._book = [{"ok": True, "code": "booked", "ref": "DY-TEST02", "attorney": "Dana Hollis", "address": "220 Canal Street", "confirmationSent": False}]
         final = say(r, *GOOD_CALL, "yes", api=api)[-1]
         self.assertIn("couldn't send the confirmation email", final.text)
-        self.assertIn("HM-TEST02", final.text)
+        self.assertIn("DY-TEST02", final.text)
         self.assertNotIn("on its way", final.text)
-        self.assertEqual(final.spell, ["HM-TEST02"])
+        self.assertEqual(final.spell, ["DY-TEST02"])
 
     def test_the_service_saying_unavailable_ends_on_the_website(self):
         api, r = self.offered()
         api._book = [{"ok": False, "code": "unavailable", "message": "We could not complete this request."}]
         final = say(r, *GOOD_CALL, "yes", api=api)[-1]
         self.assertTrue(final.ended)
-        self.assertIn("hollismarr.example/book", final.text)
+        self.assertIn("dyzania.example/book", final.text)
 
 
 class Interrupts(unittest.TestCase):
@@ -293,7 +293,7 @@ class Interrupts(unittest.TestCase):
 
     def test_the_state_is_plain_json_at_every_step_and_holds_no_secret(self):
         api = self.api
-        api._book = [{"ok": True, "code": "booked", "ref": "HM-TEST03", "attorney": "Dana Hollis", "address": "x", "confirmationSent": True}]
+        api._book = [{"ok": True, "code": "booked", "ref": "DY-TEST03", "attorney": "Dana Hollis", "address": "x", "confirmationSent": True}]
         replies = say(self.r, *GOOD_CALL, "yes", api=api)
         for rep in replies[:-1]:
             blob = json.dumps(rep.state)

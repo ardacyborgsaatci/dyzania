@@ -4,7 +4,7 @@
 //   node scripts/build-booking-workflow.mjs           write the file
 //   node scripts/build-booking-workflow.mjs --check   fail if the file on disk is out of date
 //
-//   automations/booking/workflow.json   H&M Booking: POST booking/slots (free times) and POST booking/book (book one)
+//   automations/booking/workflow.json   Dyzania Booking: POST booking/slots (free times) and POST booking/book (book one)
 //
 // The Code nodes hold the SAME functions the tests run (firm/lib/conflicts.js and automations/booking/lib/booking.js)
 // joined together, with the firm data inlined as DATA. Only the few glue lines at the end of each node are written for
@@ -49,7 +49,7 @@ return [{ json: bookListSlots(req, bookRows($input.all()), NOW.getTime(), DATA) 
   decide: NOW_GLUE + `
 const req = ($('Booking request').first().json.body) || {};
 const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-let ref = 'HM-';
+let ref = 'DY-';
 for (let i = 0; i < 6; i++) ref += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
 if (typeof TEST_REF !== 'undefined' && TEST_REF) ref = TEST_REF;
 return [{ json: bookDecide(req, bookRows($input.all()), NOW.getTime(), DATA, { ref, now: NOW.toISOString() }) }];
@@ -180,7 +180,7 @@ export function buildWorkflow() {
     {
       id: ID(23), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -200],
       parameters: {
-        content: 'Booking for Hollis & Marr LLP (fictional). POST booking/slots returns free times for an area. POST booking/book books one. Both need the header-auth credential; the website (or the voice line) calls them, never a browser directly.\nThe Code nodes are generated from the tested library. A booking is inserted, the table is read again and the row that came first (lowest row id) keeps the slot, so two people choosing the same time almost never both get it; see the README for the narrow case this does not cover. A person on a conflict hold gets a held row with no time and the same words as anyone else the system cannot book; they are never told why.\nThe only email is the fixed confirmation to the booked address. Execution data is not saved (names and emails). After the reply, one metadata-only ops event is logged (no name, address or phone). Not yet wired: the Google Calendar mirror.',
+        content: 'Booking for Dyzania LLP (fictional). POST booking/slots returns free times for an area. POST booking/book books one. Both need the header-auth credential; the website (or the voice line) calls them, never a browser directly.\nThe Code nodes are generated from the tested library. A booking is inserted, the table is read again and the row that came first (lowest row id) keeps the slot, so two people choosing the same time almost never both get it; see the README for the narrow case this does not cover. A person on a conflict hold gets a held row with no time and the same words as anyone else the system cannot book; they are never told why.\nThe only email is the fixed confirmation to the booked address. Execution data is not saved (names and emails). After the reply, one metadata-only ops event is logged (no name, address or phone). Not yet wired: the Google Calendar mirror.',
         width: 900, height: 230
       }
     }
@@ -210,7 +210,7 @@ export function buildWorkflow() {
     'Insert held row': { main: [[link('Reply held')]] }
   };
   return {
-    name: 'H&M Booking - Slots and booking',
+    name: 'Dyzania Booking - Slots and booking',
     nodes,
     connections,
     settings: {

@@ -30,8 +30,8 @@ test('the generated booking Code nodes give the same answer as the library for e
   E.SET.cases.filter((c) => c.kind === 'book').forEach((c) => {
     const { req, rows, nowMs } = E.runBook(c);
     const nowIso = new Date(nowMs).toISOString();
-    const want = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
-    const got = runNode('Decide booking', rows, { 'Booking request': { body: req } }, nowIso, 'HM-TEST01');
+    const want = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'DY-TEST01', now: nowIso }));
+    const got = runNode('Decide booking', rows, { 'Booking request': { body: req } }, nowIso, 'DY-TEST01');
     assert.strictEqual(got.length, 1, c.id);
     assert.deepStrictEqual(plain(got[0].json), want, c.id);
     n++;
@@ -74,12 +74,12 @@ test('the generated verify node settles the race the same way as the library', (
 });
 
 test('the confirmation outcome node records sent or failed, and tells the visitor the truth', () => {
-  const dec = B.bookDecide(E.runBook(E.SET.cases.find((c) => c.id === 'B01')).req, [], E.brute('2026-11-11 14:00'), E.DATA, { ref: 'HM-TEST01', now: '2026-11-11T20:00:00.000Z' });
+  const dec = B.bookDecide(E.runBook(E.SET.cases.find((c) => c.id === 'B01')).req, [], E.brute('2026-11-11 14:00'), E.DATA, { ref: 'DY-TEST01', now: '2026-11-11T20:00:00.000Z' });
   const refs = { 'Verify winner': { decision: dec } };
   const sent = runNode('Confirmation outcome', [{ id: '18f3', threadId: 't', labelIds: ['SENT'] }], refs, '2026-11-11T20:00:00Z')[0].json;
   assert.strictEqual(sent.confirmation, 'sent');
   assert.strictEqual(sent.public.confirmationSent, true);
-  assert.strictEqual(sent.ref, 'HM-TEST01');
+  assert.strictEqual(sent.ref, 'DY-TEST01');
   const failed = runNode('Confirmation outcome', [{ error: 'quota' }], refs, '2026-11-11T20:00:00Z')[0].json;
   assert.strictEqual(failed.confirmation, 'failed');
   assert.strictEqual(failed.public.confirmationSent, false);
@@ -93,12 +93,12 @@ test('the booking reference is random in production, fixed only by the test hook
   const refs = { 'Booking request': { body: req } };
   const a = runNode('Decide booking', [], refs, '2026-11-11T20:00:00Z')[0].json.row.bookingRef;
   const b = runNode('Decide booking', [], refs, '2026-11-11T20:00:00Z')[0].json.row.bookingRef;
-  assert.match(a, /^HM-[A-HJKMNP-Z2-9]{6}$/);
+  assert.match(a, /^DY-[A-HJKMNP-Z2-9]{6}$/);
   assert.notStrictEqual(a, b);
 });
 
 test('the workflow shape: two authenticated endpoints, every path answers, one email, no outside calls', () => {
-  assert.strictEqual(wf.name, 'H&M Booking - Slots and booking');
+  assert.strictEqual(wf.name, 'Dyzania Booking - Slots and booking');
   const hooks = wf.nodes.filter((n) => n.type === 'n8n-nodes-base.webhook');
   assert.deepStrictEqual(hooks.map((h) => h.parameters.path).sort(), ['booking/book', 'booking/slots']);
   hooks.forEach((h) => { assert.strictEqual(h.parameters.httpMethod, 'POST'); assert.strictEqual(h.parameters.authentication, 'headerAuth'); assert.strictEqual(h.parameters.responseMode, 'responseNode'); });
@@ -163,7 +163,7 @@ test('the ops event node gives the row the library gives, for every labelled boo
   E.SET.cases.filter((c) => c.kind === 'book').forEach((c) => {
     const { req, rows, nowMs } = E.runBook(c);
     const nowIso = new Date(nowMs).toISOString();
-    const dec = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
+    const dec = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'DY-TEST01', now: nowIso }));
     const refs = { 'Decide booking': dec };
     const got = runNode('Build ops event', [{}], refs, nowIso);
     const want = opsAdapters.bookingEvent(dec, { now: new Date(nowIso), ref: (dec.row && dec.row.bookingRef) || '', leadRef: (dec.row && dec.row.leadRef) || '' });
@@ -184,12 +184,12 @@ test('the ops event node follows the race: a booking that lost the slot is logge
   const c = E.SET.cases.find((x) => x.kind === 'book' && x.expect.code === 'booked');
   const { req, rows, nowMs } = E.runBook(c);
   const nowIso = new Date(nowMs).toISOString();
-  const dec = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
-  const won = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: true, ref: 'HM-TEST01', decision: dec } }, nowIso)[0].json.row;
+  const dec = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'DY-TEST01', now: nowIso }));
+  const won = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: true, ref: 'DY-TEST01', decision: dec } }, nowIso)[0].json.row;
   assert.strictEqual(won.status, 'ok');
   assert.match(won.summary, /: booked,/);
   const lost = plain(B.bookRaceLost(dec.row, 'slot_taken', rows, nowMs, E.DATA));
-  const got = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: false, ref: 'HM-TEST01', decision: dec, lost } }, nowIso)[0].json.row;
+  const got = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: false, ref: 'DY-TEST01', decision: dec, lost } }, nowIso)[0].json.row;
   assert.strictEqual(got.status, 'blocked');
   assert.match(got.summary, /slot_taken/);
   assert.doesNotMatch(got.summary, /: booked,/);
@@ -199,11 +199,11 @@ test('a booking that came from an intake lead is the receiving end of the handof
   const c = E.SET.cases.find((x) => x.kind === 'book' && x.expect.code === 'booked');
   const { req, rows, nowMs } = E.runBook(c);
   const nowIso = new Date(nowMs).toISOString();
-  const dec = plain(B.bookDecide(Object.assign({}, req, { leadRef: 'HM-261111-AB12' }), rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
-  const row = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: true, ref: 'HM-TEST01', decision: dec } }, nowIso)[0].json.row;
+  const dec = plain(B.bookDecide(Object.assign({}, req, { leadRef: 'DY-261111-AB12' }), rows, nowMs, E.DATA, { ref: 'DY-TEST01', now: nowIso }));
+  const row = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: true, ref: 'DY-TEST01', decision: dec } }, nowIso)[0].json.row;
   assert.strictEqual(row.source, 'handoff');
-  assert.strictEqual(row.runId, 'HM-261111-AB12');
-  assert.match(row.summary, /HM-TEST01/, 'the booking reference is in the summary');
+  assert.strictEqual(row.runId, 'DY-261111-AB12');
+  assert.match(row.summary, /DY-TEST01/, 'the booking reference is in the summary');
 });
 
 test('the log node writes the table the schema describes, continues on failure and uses a placeholder id', () => {

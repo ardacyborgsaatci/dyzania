@@ -36,7 +36,7 @@ test('the Code node returns exactly what the tested library returns, for every e
     const out = runNode(body);
     assert.strictEqual(out.length, 1, c.id);
     const got = out[0].json;
-    assert.match(got.lead.ref, /^HM-261111-[A-Z0-9]{1,4}$/, c.id + ' ref format');
+    assert.match(got.lead.ref, /^DY-261111-[A-Z0-9]{1,4}$/, c.id + ' ref format');
     const want = processIntake(body, data, { today: setup.today, ref: got.lead.ref, now: new Date(NOW).toISOString() });
     assert.deepStrictEqual(got, want, c.id);
   }
@@ -60,10 +60,10 @@ test('"today" comes from the clock in the firm timezone, and a visitor cannot ch
   const body = Object.assign({}, setup.defaults, setup.cases[0].input);
   // 2026-11-12 03:00 UTC is still 2026-11-11 evening in Chicago
   const r = late({ all: () => [{ json: { body } }] }, '2026-11-12T03:00:00Z')[0].json;
-  assert.match(r.lead.ref, /^HM-261111-/);
+  assert.match(r.lead.ref, /^DY-261111-/);
   // fields a visitor might add never reach the code's clock
   const sneaky = runNode(Object.assign({}, body, { TEST_NOW: '2020-01-01', today: '2020-01-01', now: '2020-01-01' }))[0].json;
-  assert.match(sneaky.lead.ref, /^HM-261111-/);
+  assert.match(sneaky.lead.ref, /^DY-261111-/);
 });
 
 test('every connection points at a real node and every path to a visitor ends in a reply', () => {
@@ -103,7 +103,7 @@ test('the ops event node gives the row the library gives, for every eval case th
   let checked = 0;
   for (const c of setup.cases) {
     const body = Object.assign({}, setup.defaults, c.input);
-    const scored = processIntake(body, data, { today: setup.today, ref: 'HM-EVAL-' + c.id, now: NOW });
+    const scored = processIntake(body, data, { today: setup.today, ref: 'DY-EVAL-' + c.id, now: NOW });
     if (!scored.ok || scored.spam) continue;
     const out = runOpsNode(scored);
     assert.strictEqual(out.length, 1, c.id);
@@ -119,7 +119,7 @@ test('the ops event node gives the row the library gives, for every eval case th
 });
 
 test('if the event cannot be built the node still returns one valid error row, and never throws', () => {
-  for (const scored of [{ ok: true, lead: { ref: 'HM-X', nextStep: 'nonsense', tier: 'Hot', areaFinal: 'family', urgencyLevel: 'none' } }, {}, { ok: false }, null]) {
+  for (const scored of [{ ok: true, lead: { ref: 'DY-X', nextStep: 'nonsense', tier: 'Hot', areaFinal: 'family', urgencyLevel: 'none' } }, {}, { ok: false }, null]) {
     const out = runOpsNode(scored);
     assert.strictEqual(out.length, 1);
     const row = out[0].json.row;
@@ -127,7 +127,7 @@ test('if the event cannot be built the node still returns one valid error row, a
     assert.ok(['ok', 'needs_human', 'error'].includes(row.status));
   }
   assert.strictEqual(runOpsNode({})[0].json.row.status, 'error');
-  assert.strictEqual(runOpsNode({ ok: true, lead: { ref: 'HM-X', nextStep: 'book', tier: 'Hot', areaFinal: 'family', urgencyLevel: 'none' } })[0].json.row.handoffTo, 'booking');
+  assert.strictEqual(runOpsNode({ ok: true, lead: { ref: 'DY-X', nextStep: 'book', tier: 'Hot', areaFinal: 'family', urgencyLevel: 'none' } })[0].json.row.handoffTo, 'booking');
 });
 
 test('the log node writes the table the schema describes, continues on failure and uses a placeholder id', () => {

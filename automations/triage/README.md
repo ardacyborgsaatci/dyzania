@@ -1,6 +1,6 @@
-# Triage: the firm's email inbox (Hollis & Marr LLP)
+# Triage: the firm's email inbox (Dyzania LLP)
 
-Hollis & Marr LLP is a fictional firm made for a portfolio project. Every person, court, firm and case number in this folder is invented.
+Dyzania LLP is a fictional firm made for a portfolio project. Every person, court, firm and case number in this folder is invented.
 
 Email arrives at the firm's inbox. This automation reads each message, flags the ones that are time-sensitive (a hearing, served papers, a protective order, an arrest, an eviction), sorts the rest into a queue, and prepares a **draft** reply only when a draft is safe. A person reads and sends every reply. **Nothing is ever sent to a sender automatically.**
 
@@ -129,11 +129,11 @@ Read the numbers with care:
 
 ## The n8n workflows
 
-**H&M Triage - Core**: `Triage request` -> `Screen email` (Code) -> `Classify email` (Groq) -> `Decide` (Code) -> `Standard draft?` -> `Draft reply` (Groq) -> `Finish` (Code). **H&M Triage - Gmail**: polls the `+triage` alias, runs the core, creates a threaded Gmail **draft** when one is allowed, inserts the log row, applies the labels, and emails the alert for urgent mail. A manual branch creates the labels once.
+**Dyzania Triage - Core**: `Triage request` -> `Screen email` (Code) -> `Classify email` (Groq) -> `Decide` (Code) -> `Standard draft?` -> `Draft reply` (Groq) -> `Finish` (Code). **Dyzania Triage - Gmail**: polls the `+triage` alias, runs the core, creates a threaded Gmail **draft** when one is allowed, inserts the log row, applies the labels, and emails the alert for urgent mail. A manual branch creates the labels once.
 
 The Code nodes are **generated** from the tested library with the firm data inlined. Change the rules in `lib/`, `rules.json` or `firm/`, run `npm test`, run `npm run build`. A test fails if either file is out of date, and another runs every Code node's text over all 54 emails with three kinds of model answer and compares the result with the library.
 
-To use them, follow [CUTOVER.md](../../CUTOVER.md): create the firm's triage log table from `columns.json` (as `hm_triage_log`, because the old table holds the name `triage_log`), run `node scripts/prepare-import.mjs` to fill the table id, the triage core's workflow id, the attorney-on-duty address and the mailbox into copies of both files, import them, attach a Groq credential to the two model nodes and a Gmail credential to the Gmail nodes, run the label branch once. Publishing waits for the cutover and the owner's OK. The old Wrenbook triage (`automations/support`) polls a different alias (`+support`), so the two do not double-process mail until it is retired; they do share the Gmail account and the `Triage/...` label names.
+To use them, follow [CUTOVER.md](../../CUTOVER.md): create the firm's triage log table from `columns.json` (as `dy_triage_log`, because the old table holds the name `triage_log`), run `node scripts/prepare-import.mjs` to fill the table id, the triage core's workflow id, the attorney-on-duty address and the mailbox into copies of both files, import them, attach a Groq credential to the two model nodes and a Gmail credential to the Gmail nodes, run the label branch once. Publishing waits for the cutover and the owner's OK. The old Wrenbook triage (`automations/support`) polls a different alias (`+support`), so the two do not double-process mail until it is retired; they do share the Gmail account and the `Triage/...` label names.
 
 ## Not done
 

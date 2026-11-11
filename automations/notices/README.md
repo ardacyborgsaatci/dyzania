@@ -1,6 +1,6 @@
-# Court notices: read, rank, never approve (Hollis & Marr LLP)
+# Court notices: read, rank, never approve (Dyzania LLP)
 
-Hollis & Marr LLP is a fictional firm made for a portfolio project. Every court, person, case number and date in this folder is invented.
+Dyzania LLP is a fictional firm made for a portfolio project. Every court, person, case number and date in this folder is invented.
 
 This automation reads scans or photos of court papers (hearing notices, summonses, subpoenas, orders) and puts what they say into a table so an attorney can find the urgent ones first. A vision model copies what is printed on the page. A small set of tested rules, not the model, decides how urgent each notice is. Every result is saved as **"Needs attorney confirmation"**. Nothing in this automation can approve, confirm or close a notice. Only a person changes that cell.
 
@@ -128,7 +128,7 @@ Run `node eval/run.js` or `npm test` in this folder. **No model has read these i
 |---|---|
 | `lib/notices.js` | All the rules: parse, clean, normalise, date cross-check, priority, row, alert, request body |
 | `lib/data.js` | Loads the firm data and the prompt for the library and the generator |
-| `prompts/extract.md` | The vision prompt, versioned (`hm-notice-extract-v1`) |
+| `prompts/extract.md` | The vision prompt, versioned (`dy-notice-extract-v1`) |
 | `columns.json` | The `court_notices` table |
 | `workflow.json` | Generated n8n workflow. Do not edit; run `npm run build` |
 | `eval/notices.json` | The 12 labelled notices, with how each page is drawn |

@@ -63,7 +63,7 @@ test('digest: 08:00 every day, reads ops_events, mails one summary to the owner 
 test('digest: the Code node gives what the library gives, from real events, and logs its own run', () => {
   const real = [];
   real.push(A.noticeEvent({ event: { ref: 'N-20261111-AB12-01', documentType: 'summons', priority: 'urgent', reasons: ['served_papers'], readStatus: 'ok' } }, { now: NOW }));
-  real.push(A.bookingEvent({ event: { at: NOW_ISO, code: 'booked', reason: '', area: 'family', channel: 'voice', attorney: 'elena-voss' }, row: { bookingRef: 'HM-B00001' } }, { now: NOW, ref: 'HM-B00001' }));
+  real.push(A.bookingEvent({ event: { at: NOW_ISO, code: 'booked', reason: '', area: 'family', channel: 'voice', attorney: 'elena-voss' }, row: { bookingRef: 'DY-B00001' } }, { now: NOW, ref: 'DY-B00001' }));
   const rows = real.map((b, i) => E.toRow(Object.assign({}, b.event, { ts: new Date(NOW.getTime() - (i + 1) * 3600000) })));
   const out = run(digestWf, 'Build digest', rows.concat([{}]));
   assert.equal(out.length, 1);
@@ -94,7 +94,7 @@ test('error alert: an error trigger, a log row, one mail to the owner address', 
 });
 
 test('error alert: the Code node gives what the library gives, strips any address and always yields a valid event row', () => {
-  const failure = { workflow: { name: 'H&M Notices - Court notice reading' }, execution: { id: '77', url: 'https://n8n.example/execution/77', mode: 'trigger', lastNodeExecuted: 'Read and check', error: { message: 'Cannot read property of jane.doe@mail.example ' + 'y'.repeat(500) } } };
+  const failure = { workflow: { name: 'Dyzania Notices - Court notice reading' }, execution: { id: '77', url: 'https://n8n.example/execution/77', mode: 'trigger', lastNodeExecuted: 'Read and check', error: { message: 'Cannot read property of jane.doe@mail.example ' + 'y'.repeat(500) } } };
   const out = run(alertWf, 'Build alert', [failure]);
   const want = D.errorAlert(failure, { now: NOW, firm: firm.name });
   assert.equal(out[0].json.subject, want.subject);
@@ -165,7 +165,7 @@ test('every workflow is safe to commit: placeholders only, no credentials, no se
   assert.doesNotMatch(text, /wrenbook/i);
   assert.doesNotMatch(text.replace(/[A-Za-z0-9._-]+@[A-Za-z0-9.-]*example[A-Za-z.]*/g, ''), /@(gmail|outlook|yahoo|hotmail)\.com/i);
   for (const wf of ALL) {
-    assert.ok(wf.name.startsWith('H&M Ops - '), wf.name);
+    assert.ok(wf.name.startsWith('Dyzania Ops - '), wf.name);
     assert.equal(wf.settings.saveDataSuccessExecution, 'none');
     assert.equal(wf.settings.saveDataErrorExecution, 'none');
     assert.ok(!('active' in wf) || wf.active === false);

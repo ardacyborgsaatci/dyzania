@@ -1,6 +1,6 @@
 # Handoffs
 
-Four links between Hollis & Marr's automations. None of them sends a message to a client: a handoff is a reference, a label on an email, or a log row. The firm is fictional and every row is invented demo data.
+Four links between Dyzania's automations. None of them sends a message to a client: a handoff is a reference, a label on an email, or a log row. The firm is fictional and every row is invented demo data.
 
 | # | Link | Carried by | What happens | Not done |
 |---|---|---|---|---|

@@ -1,7 +1,7 @@
 {
-  "name": "hollis-marr-notices",
+  "name": "dyzania-notices",
   "private": true,
-  "description": "Court-notice reading for Hollis & Marr LLP (fictional): vision-model extraction, rules that set the priority, a fixed 'Needs attorney confirmation' status, one urgent alert, offline evaluation.",
+  "description": "Court-notice reading for Dyzania LLP (fictional): vision-model extraction, rules that set the priority, a fixed 'Needs attorney confirmation' status, one urgent alert, offline evaluation.",
   "scripts": {
     "test": "node --test test/",
     "eval": "node eval/run.js",

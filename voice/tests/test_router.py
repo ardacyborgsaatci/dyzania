@@ -127,7 +127,7 @@ class TheAnswerCheck(unittest.TestCase):
         self.assertNotIn("strong case", t.text)
 
     def test_markdown_is_removed_and_long_answers_are_cut(self):
-        t = route("tell me about the firm", model=Canned("**Hollis & Marr** is a small firm. " + "It does things. " * 10))
+        t = route("tell me about the firm", model=Canned("**Dyzania** is a small firm. " + "It does things. " * 10))
         self.assertNotIn("*", t.text)
         self.assertLessEqual(t.text.count("."), guards.MAX_SENTENCES)
 

@@ -1,5 +1,5 @@
 'use strict';
-// The links between Hollis & Marr's automations, as data and as a contract check. Pure functions: no network, and nothing
+// The links between Dyzania's automations, as data and as a contract check. Pure functions: no network, and nothing
 // here sends mail. A handoff is never a message to a client: it is a reference, a label on an email, or a log row.
 //
 // How the rows chain (see ops/SPEC.md): the sender's event carries handoffTo and handoffRef. When a person's queue is the

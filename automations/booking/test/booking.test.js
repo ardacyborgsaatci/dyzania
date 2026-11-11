@@ -12,10 +12,10 @@ const utc = (y, m, d, hh, mm) => Date.UTC(y, m - 1, d, hh, mm);
 const NOW = utc(2026, 11, 11, 20, 0); // Wed 2026-11-11 14:00 CST
 const request = (o) => Object.assign({ name: 'Priya Nandakumar', email: 'priya.n@mail.example', phone: '', area: 'family', otherSide: 'Birchwood Appliance Repair', consent: true, channel: 'form' }, o);
 const row = (id, att, startMs, mins, o) => Object.assign({
-  id, bookingRef: 'HM-T' + id, status: 'booked', area: 'family', attorney: att, startUtc: B.bookIso(startMs), endUtc: B.bookIso(startMs + mins * 60000),
+  id, bookingRef: 'DY-T' + id, status: 'booked', area: 'family', attorney: att, startUtc: B.bookIso(startMs), endUtc: B.bookIso(startMs + mins * 60000),
   name: 'Fixture Person', email: 'fixture' + id + '@mail.example', phone: ''
 }, o);
-const decide = (req, rows, now, data) => B.bookDecide(req, rows || [], now == null ? NOW : now, data || DATA, { ref: 'HM-TEST01', now: B.bookIso(now == null ? NOW : now) });
+const decide = (req, rows, now, data) => B.bookDecide(req, rows || [], now == null ? NOW : now, data || DATA, { ref: 'DY-TEST01', now: B.bookIso(now == null ? NOW : now) });
 
 test('local time to UTC follows daylight saving, in both directions', () => {
   assert.strictEqual(B.bookLocalToUtc(2026, 10, 30, 10, 0, TZ), utc(2026, 10, 30, 15, 0), 'CDT is UTC-5');
@@ -208,13 +208,13 @@ test('the confirmation email is a fixed template with the booked facts', () => {
   const r = decide(request({ start: '2026-11-12T16:00:00Z', phone: '555-010-4444' }));
   assert.strictEqual(r.code, 'booked');
   const { subject, text } = r.confirmation;
-  assert.strictEqual(subject, 'Your consultation with Hollis & Marr LLP: Thu, Nov 12, 10:00 AM CST');
+  assert.strictEqual(subject, 'Your consultation with Dyzania LLP: Thu, Nov 12, 10:00 AM CST');
   assert.match(text, /^Hello Priya Nandakumar,/);
   assert.match(text, /When: Thursday, November 12, 2026 at 10:00 AM CST/);
   assert.match(text, /Time zone: Central Standard Time/);
   assert.match(text, /With: Elena Voss, associate attorney/);
   assert.match(text, /Fee: \$150 for this first consultation, credited toward the retainer/);
-  assert.match(text, /Reference: HM-TEST01/);
+  assert.match(text, /Reference: DY-TEST01/);
   assert.match(text, /- Photo ID/);
   assert.match(text, /at least 24 hours/);
   assert.ok(text.indexOf(DATA.firm.language.notLegalAdvice) !== -1 && text.indexOf(DATA.firm.language.noConfidential) !== -1);
@@ -228,15 +228,15 @@ test('the confirmation email is a fixed template with the booked facts', () => {
 test('the table row holds only the declared columns, and the event holds no personal data', () => {
   const { loadColumns } = require('../lib/data');
   const cols = loadColumns().map((c) => c.name);
-  const r = decide(request({ start: '2026-11-12T16:00:00Z', phone: '555-010-4444', leadRef: 'HM-L-0042', attorney: 'dana-hollis', status: 'confirmed', id: 5 }));
+  const r = decide(request({ start: '2026-11-12T16:00:00Z', phone: '555-010-4444', leadRef: 'DY-L-0042', attorney: 'dana-hollis', status: 'confirmed', id: 5 }));
   assert.deepStrictEqual(Object.keys(r.row).sort(), cols.slice().sort());
-  assert.strictEqual(r.row.leadRef, 'HM-L-0042');
+  assert.strictEqual(r.row.leadRef, 'DY-L-0042');
   assert.strictEqual(r.row.status, 'booked');
   assert.strictEqual(r.row.minutes, 45);
   assert.strictEqual(r.row.localDate + ' ' + r.row.localTime, '2026-11-12 10:00');
   assert.strictEqual(r.row.rulesVersion, B.BOOK_RULES_VERSION);
   const ev = JSON.stringify(r.event);
-  assert.doesNotMatch(ev, /Priya|priya|555|Birchwood|HM-L-0042/);
+  assert.doesNotMatch(ev, /Priya|priya|555|Birchwood|DY-L-0042/);
   assert.deepStrictEqual(Object.keys(r.event).sort(), ['area', 'at', 'attorney', 'channel', 'code', 'reason', 'rulesVersion', 'source']);
   const held = decide(request({ otherSide: 'Harlan Whitcombe', start: '2026-11-12T16:00:00Z' }));
   assert.deepStrictEqual(Object.keys(held.row).sort(), cols.slice().sort());
@@ -305,8 +305,8 @@ test('when the confirmation email could not be sent the visitor is told, and kee
   assert.strictEqual(ok.message, booked.public.message);
   assert.strictEqual(bad.confirmationSent, false);
   assert.match(bad.message, /could not send the confirmation email/);
-  assert.match(bad.message, /HM-TEST01/);
+  assert.match(bad.message, /DY-TEST01/);
   assert.match(bad.message, /555-0142/);
   assert.ok(bad.message.indexOf(DATA.firm.language.notLegalAdvice) !== -1);
-  assert.strictEqual(bad.ref, 'HM-TEST01');
+  assert.strictEqual(bad.ref, 'DY-TEST01');
 });

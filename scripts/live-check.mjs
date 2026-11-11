@@ -131,7 +131,7 @@ function httpRequest(base) {
   const origin = new URL(base).origin;
   return async (method, p, body) => {
     const res = await fetch(origin + p, {
-      method, headers: Object.assign({ origin, 'user-agent': 'hm-live-check' }, body ? { 'content-type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined
+      method, headers: Object.assign({ origin, 'user-agent': 'dy-live-check' }, body ? { 'content-type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined
     });
     let data = null;
     try { data = await res.json(); } catch { /* not JSON */ }

@@ -1,8 +1,8 @@
 {
-  "name": "hollis-marr-site",
+  "name": "dyzania-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Hollis & Marr LLP site (fictional firm): home, practice areas, contact and booking forms, voice line page, how it runs, privacy",
+  "description": "Dyzania LLP site (fictional firm): home, practice areas, contact and booking forms, voice line page, how it runs, privacy",
   "scripts": {
     "test": "node --test test/"
   },

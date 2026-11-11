@@ -90,14 +90,15 @@ class Basics(unittest.TestCase):
         self.assertEqual(len(h.model_calls), 1)
 
     def test_the_voice_gets_text_made_for_speaking(self):
-        with Harness("Where are you?", model_answer="Hollis & Marr LLP is at 220 Canal Street. Call 555-0142 or write hello@hollismarr.example.") as h:
+        with Harness("Where are you?", model_answer="Wills & estates: Dyzania LLP is at 220 Canal Street. Call 555-0142 or write hello@dyzania.example.") as h:
             r = post()
         head, _ = parse(r)
         self.assertIn("&", head["reply"])                  # the page shows the original
         said = h.spoken[0]
-        self.assertIn("Hollis and Marr L L P", said)
+        self.assertIn("Wills and estates", said)
+        self.assertIn("Dyzania L L P", said)
         self.assertIn("5 5 5, 0 1 4 2", said)
-        self.assertIn("hello at hollismarr dot example", said)
+        self.assertIn("hello at dyzania dot example", said)
 
     def test_nothing_heard_is_not_an_error(self):
         with Harness("") as h:
@@ -178,8 +179,8 @@ class Booking(unittest.TestCase):
     def test_booking_not_configured_sends_the_caller_to_the_website(self):
         with Harness("I'd like to book a consultation about my divorce") as h:          # no api: the service is down
             head, _ = parse(post())
-        self.assertIn("hollismarr.example/book", head["reply"])
-        self.assertEqual(head["link"]["url"], "https://hollismarr.example/book")
+        self.assertIn("dyzania.example/book", head["reply"])
+        self.assertEqual(head["link"]["url"], "https://dyzania.example/book")
         self.assertEqual(head["state"], "")
 
     def test_only_https_links_are_passed_to_the_page(self):

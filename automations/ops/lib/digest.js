@@ -15,7 +15,7 @@ const when = (e) => (e.ts instanceof Date ? e.ts : new Date(e.ts)).getTime();
 function buildDigest(rows, ctx) {
   const c = ctx || {};
   const now = c.now instanceof Date ? c.now : new Date();
-  const firm = c.firm || 'Hollis & Marr LLP';
+  const firm = c.firm || 'Dyzania LLP';
   const since = now.getTime() - HOURS * 3600 * 1000;
   const inWindow = (Array.isArray(rows) ? rows : []).filter((e) => e && AUTOMATIONS.includes(e.automation) && when(e) >= since && when(e) <= now.getTime() + 60000);
   // Test runs are listed but never counted, so an evaluation does not look like real work.
@@ -66,7 +66,7 @@ function buildDigest(rows, ctx) {
   };
 }
 
-// Which automation a failed workflow belongs to, from its name ("H&M Booking - ...").
+// Which automation a failed workflow belongs to, from its name ("Dyzania Booking - ...").
 function automationFromWorkflowName(name) {
   const n = String(name || '').toLowerCase().replace(/h&m/g, '');
   if (n.includes('intake') || n.includes('lead')) return 'intake';
@@ -90,7 +90,7 @@ function errorAlert(failure, ctx) {
   const automation = automationFromWorkflowName(wf);
   const runId = String(ex.id || 'unknown');
   const built = orFallback(buildEvent({ automation, source: 'schedule', runId, status: 'error', summary: 'Failure in ' + wf + ' at ' + lastNode }, c.now), { automation, source: 'schedule', runId, summary: 'A workflow failed' }, c.now);
-  const firm = c.firm || 'Hollis & Marr LLP';
+  const firm = c.firm || 'Dyzania LLP';
   const text = [
     'A workflow failed.', '',
     'Workflow: ' + wf, 'Node: ' + lastNode, 'Error: ' + message, 'Mode: ' + (ex.mode || ''), 'Execution: ' + (ex.url || ex.id || ''), '',

@@ -123,6 +123,6 @@
     });
   }
 
-  window.HM = { getToken: getToken, post: post, el: el, clear: clear, focusOn: focusOn, setError: setError, showSummary: showSummary, setBusy: setBusy, paragraphs: paragraphs };
+  window.DY = { getToken: getToken, post: post, el: el, clear: clear, focusOn: focusOn, setError: setError, showSummary: showSummary, setBusy: setBusy, paragraphs: paragraphs };
   getToken();
 })();

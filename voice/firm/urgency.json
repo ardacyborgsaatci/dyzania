@@ -116,7 +116,7 @@
   ],
   "routing": {
     "urgent": {
-      "to": "urgent@hollismarr.example",
+      "to": "urgent@dyzania.example",
       "owner": "the attorney on duty",
       "draftReply": "acknowledgement_only"
     },

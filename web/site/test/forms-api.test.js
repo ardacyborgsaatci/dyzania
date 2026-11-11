@@ -54,11 +54,11 @@ test('intake: a good form reaches the workflow and the visitor gets its fixed re
   const res = await call(intakeApi, withToken(goodIntake));
   assert.strictEqual(res.statusCode, 200, JSON.stringify(res.body));
   assert.strictEqual(res.body.ok, true);
-  assert.match(res.body.ref, /^HM-/);
+  assert.match(res.body.ref, /^DY-/);
   assert.strictEqual(res.body.kind, 'book');
   assert.match(res.body.headline, /first consultation/i);
   assert.match(res.body.message, /not legal advice/i);
-  assert.match(res.body.message, /hollismarr\.example\/book/);
+  assert.match(res.body.message, /dyzania\.example\/book/);
 
   const [call1] = n8n.calls;
   assert.strictEqual(call1.path, '/webhook/intake');
@@ -240,7 +240,7 @@ test('book: a time from the list is booked, and the page gets the fixed confirma
   const res = await call(bookApi, withToken(person({ start: slot.start })));
   assert.strictEqual(res.statusCode, 200, JSON.stringify(res.body));
   assert.strictEqual(res.body.code, 'booked');
-  assert.match(res.body.ref, /^HM-/);
+  assert.match(res.body.ref, /^DY-/);
   assert.strictEqual(res.body.label, slot.label);
   assert.strictEqual(res.body.minutes, 45);
   assert.match(res.body.address, /220 Canal Street/);

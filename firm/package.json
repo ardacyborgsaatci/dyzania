@@ -1,5 +1,5 @@
 {
-  "name": "hollis-marr-firm",
+  "name": "dyzania-firm",
   "private": true,
   "description": "Shared facts about the fictional firm. Every automation reads from here.",
   "scripts": { "test": "node --test test/" }

@@ -256,7 +256,7 @@
       "referral": "a housing or tenant attorney, or a legal aid office, through your local bar association's referral service"
     }
   ],
-  "referralNote": "Hollis & Marr does not recommend a specific outside lawyer. It points people to their local bar association's referral service.",
+  "referralNote": "Dyzania does not recommend a specific outside lawyer. It points people to their local bar association's referral service.",
   "matchingNotes": "Phrases are matched as whole words or phrases in lowercase text. Before matching, 'real estate', 'in custody' and 'police custody' are removed, because they would otherwise hit estate or custody (family). Single common words such as 'will' and 'trust' are deliberately not keywords.",
   "serviceArea": {
     "regionLabel": "Harlow Point and the surrounding area",

@@ -1,6 +1,6 @@
-# Hollis & Marr LLP ops layer (spec)
+# Dyzania LLP ops layer (spec)
 
-Shared plumbing for the five automations (intake, triage, booking, court notices, voice). Hollis & Marr LLP is a fictional firm; every row here is invented demo data.
+Shared plumbing for the five automations (intake, triage, booking, court notices, voice). Dyzania LLP is a fictional firm; every row here is invented demo data.
 
 Principle: **ops logging must never break an automation.** The event is built by a pure function that never throws, written by a data-table insert that continues on failure, and holds metadata only. Nothing in this layer sends mail to a client. The only mail it sends goes to the owner address, set at import and never committed.
 
@@ -54,9 +54,9 @@ A handoff is two events that chain by reference. The sender writes `handoffTo` a
 
 | Job | When | What |
 |---|---|---|
-| `H&M Ops - Error alert` | when a production workflow fails (error workflow) | Mails the owner: workflow, node, a cut error message with no address. Writes an `ops_events` row with `status=error`. |
-| `H&M Ops - Daily digest` | 08:00 in the workflow's timezone | Counts the last 24 hours per automation and status. Notices waiting, urgent notices, bookings by channel, handoffs, a list of what needs a person (15 at most). Seed and eval events are listed but not counted. Owner-only. |
-| `H&M Ops - Cleanup` | 03:30 | Deletes `ops_events` and `triage_log` rows older than 90 days. |
+| `Dyzania Ops - Error alert` | when a production workflow fails (error workflow) | Mails the owner: workflow, node, a cut error message with no address. Writes an `ops_events` row with `status=error`. |
+| `Dyzania Ops - Daily digest` | 08:00 in the workflow's timezone | Counts the last 24 hours per automation and status. Notices waiting, urgent notices, bookings by channel, handoffs, a list of what needs a person (15 at most). Seed and eval events are listed but not counted. Owner-only. |
+| `Dyzania Ops - Cleanup` | 03:30 | Deletes `ops_events` and `triage_log` rows older than 90 days. |
 
 `lib/digest.js` holds all three as pure functions: `buildDigest`, `errorAlert`, `retentionCutoff`. `retentionCutoff` throws for any table without a rule, so a table cannot be added to the cleanup by accident.
 

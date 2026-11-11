@@ -23,7 +23,7 @@ export const WORKFLOWS = [
   { out: 'intake.json', source: 'automations/intake/workflow.json', note: 'webhook: header-auth credential' },
   { out: 'booking.json', source: 'automations/booking/workflow.json', note: 'two webhooks: header-auth credential; confirmation uses Gmail' },
   { out: 'notices.json', source: 'automations/notices/workflow.json', note: 'upload form: basic-auth credential; vision model: OpenRouter credential' },
-  { out: 'ops-error-alert.json', source: 'automations/ops/workflows/error-alert.json', note: 'then set it as the Error Workflow of every other H&M workflow' },
+  { out: 'ops-error-alert.json', source: 'automations/ops/workflows/error-alert.json', note: 'then set it as the Error Workflow of every other Dyzania workflow' },
   { out: 'ops-daily-digest.json', source: 'automations/ops/workflows/daily-digest.json', note: 'Gmail credential' },
   { out: 'ops-cleanup.json', source: 'automations/ops/workflows/cleanup.json', note: 'deletes only ops_events and triage_log rows older than 90 days' }
 ];

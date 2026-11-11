@@ -1,7 +1,7 @@
 {
-  "name": "hollis-marr-triage",
+  "name": "dyzania-triage",
   "private": true,
-  "description": "Email triage for Hollis & Marr LLP (fictional): rule screen, classifier prompt, draft prompt, offline evaluation.",
+  "description": "Email triage for Dyzania LLP (fictional): rule screen, classifier prompt, draft prompt, offline evaluation.",
   "scripts": {
     "test": "node --test test/",
     "eval": "node eval/run.js",

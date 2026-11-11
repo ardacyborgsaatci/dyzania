@@ -1,6 +1,6 @@
 # Voice line
 
-The phone-style voice assistant for **Hollis & Marr LLP**, a fictional law firm made for a portfolio project. You talk to it like a phone call. It answers questions about the firm, and it can book a first consultation by voice through the same booking service the website form uses.
+The phone-style voice assistant for **Dyzania LLP**, a fictional law firm made for a portfolio project. You talk to it like a phone call. It answers questions about the firm, and it can book a first consultation by voice through the same booking service the website form uses.
 
 It is an automated assistant, not a lawyer. It never gives legal advice, never says whether someone has a case, never predicts an outcome, and never states a deadline. Demo use only: do not say real personal or case details to it.
 

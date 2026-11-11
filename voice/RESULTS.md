@@ -1,6 +1,6 @@
 # Voice results
 
-Status on 2026-11-11, after converting the voice line to Hollis & Marr LLP. **No live model run has been done yet**, so no accuracy number for the chat model is claimed here. What is measured, and what is still owed:
+Status on 2026-11-11, after converting the voice line to Dyzania LLP. **No live model run has been done yet**, so no accuracy number for the chat model is claimed here. What is measured, and what is still owed:
 
 ## Measured offline (no keys, no network)
 

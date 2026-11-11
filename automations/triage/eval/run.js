@@ -38,7 +38,7 @@ const MODELS = {
   rules: () => null
 };
 // A safe, ordinary draft, so the draft path is exercised without a model.
-const CANNED = () => ({ reply: 'Hello,\n\nThank you for your message. A member of the team will read it and follow up with you. You can also reach the office on 555-0142 during office hours.\n\nBest regards,\nHollis & Marr LLP', kbArticlesUsed: ['KB-03'], needsHuman: false, confidence: 0.8 });
+const CANNED = () => ({ reply: 'Hello,\n\nThank you for your message. A member of the team will read it and follow up with you. You can also reach the office on 555-0142 during office hours.\n\nBest regards,\nDyzania LLP', kbArticlesUsed: ['KB-03'], needsHuman: false, confidence: 0.8 });
 
 function runOne(e, mode, data) {
   const raw = { source: 'eval', messageId: 'eval-' + e.id, sampleId: e.id, from: e.from, subject: e.subject, body: e.body };

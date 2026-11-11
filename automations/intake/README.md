@@ -1,6 +1,6 @@
-# Intake: lead intake and scoring (Hollis & Marr LLP)
+# Intake: lead intake and scoring (Dyzania LLP)
 
-Hollis & Marr LLP is a fictional firm made for a portfolio project. Every person, matter and name in this folder is invented.
+Dyzania LLP is a fictional firm made for a portfolio project. Every person, matter and name in this folder is invented.
 
 A person fills in the website form. This automation checks the form, matches it to one of the firm's four practice areas, checks the other side's name against the firm's conflict list, flags time-sensitive wording, scores the lead from 0 to 100, decides the next step, saves the lead, and answers the visitor with a fixed message. It uses **no AI model**. Every decision is a rule you can read and test.
 

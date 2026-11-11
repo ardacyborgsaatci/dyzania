@@ -3,7 +3,7 @@
 // whether a time is free.
 (function () {
   'use strict';
-  var kit = window.HM;
+  var kit = window.DY;
   var steps = { area: document.getElementById('step-area'), time: document.getElementById('step-time'), details: document.getElementById('step-details') };
   if (!steps.area) return;
 
@@ -258,7 +258,7 @@
       facts.appendChild(kit.el('dd', 'ref', data.ref));
       box.appendChild(facts);
       kit.paragraphs(box, data.message);
-      box.appendChild(kit.el('p', 'note', 'To change or cancel, call 555-0142 or email hello@hollismarr.example at least 24 hours before your appointment.'));
+      box.appendChild(kit.el('p', 'note', 'To change or cancel, call 555-0142 or email hello@dyzania.example at least 24 hours before your appointment.'));
       var actions = kit.el('div', 'actions');
       var bring = kit.el('a', 'btn', 'What to bring');
       bring.href = '/practice-areas#' + state.area;
@@ -280,7 +280,7 @@
       var call = kit.el('a', 'btn', 'Call 555-0142');
       call.href = 'tel:5550142';
       var mail = kit.el('a', 'btn secondary', 'Email the office');
-      mail.href = 'mailto:hello@hollismarr.example';
+      mail.href = 'mailto:hello@dyzania.example';
       actions.appendChild(call);
       actions.appendChild(mail);
       box.appendChild(actions);

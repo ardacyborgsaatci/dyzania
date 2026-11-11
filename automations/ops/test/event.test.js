@@ -28,14 +28,14 @@ test('an email address or a phone number never stays in a summary', () => {
   assert.doesNotMatch(b.event.summary, /\d{3}[ -]\d/);
   assert.equal((b.event.summary.match(/\[number\]/g) || []).length, 3);
   // references and short numbers are not phone numbers
-  for (const ref of ['HM-B00001', 'HM-261111-AB12', 'HM-L00042', 'N-20261111-AB12-01']) assert.equal(cleanSummary('Ref ' + ref + ' done'), 'Ref ' + ref + ' done');
+  for (const ref of ['DY-B00001', 'DY-261111-AB12', 'DY-L00042', 'N-20261111-AB12-01']) assert.equal(cleanSummary('Ref ' + ref + ' done'), 'Ref ' + ref + ' done');
   assert.equal(cleanSummary('about 45 minutes, $150, 30 days'), 'about 45 minutes, $150, 30 days');
 });
 
 test('looksLikePhone sees a phone number and ignores the references this system issues', () => {
   const { looksLikePhone } = require('../lib/event.js');
-  for (const yes of ['call 555 010 0199', '(555) 010-0123', '+1 555 010 0100', 'ref HM-B00001 phone 5550100199']) assert.equal(looksLikePhone(yes), true, yes);
-  for (const no of ['Court notice N-20261111-AB12-01: summons', 'HM-261111-AB12', 'HM-L00042 booked', 'about 45 minutes, $150, 30 days', '', null, undefined]) assert.equal(looksLikePhone(no), false, String(no));
+  for (const yes of ['call 555 010 0199', '(555) 010-0123', '+1 555 010 0100', 'ref DY-B00001 phone 5550100199']) assert.equal(looksLikePhone(yes), true, yes);
+  for (const no of ['Court notice N-20261111-AB12-01: summons', 'DY-261111-AB12', 'DY-L00042 booked', 'about 45 minutes, $150, 30 days', '', null, undefined]) assert.equal(looksLikePhone(no), false, String(no));
 });
 
 test('the summary is cut at 140 characters and may not be empty', () => {
@@ -60,7 +60,7 @@ test('refuses an unknown automation, source, status, run id or latency', () => {
 
 test('a handoff names a known receiver and a reference, and a reference needs a receiver', () => {
   assert.equal(buildEvent({ ...base, handoffTo: 'intake', handoffRef: QUEUE }, NOW).ok, true);
-  assert.equal(buildEvent({ ...base, automation: 'intake', source: 'web', handoffTo: 'booking', handoffRef: 'HM-L00001' }, NOW).ok, true);
+  assert.equal(buildEvent({ ...base, automation: 'intake', source: 'web', handoffTo: 'booking', handoffRef: 'DY-L00001' }, NOW).ok, true);
   assert.deepEqual(buildEvent({ ...base, handoffTo: 'intake' }, NOW).problems, ['handoffRef']);
   assert.deepEqual(buildEvent({ ...base, handoffRef: 'x' }, NOW).problems, ['handoffTo']);
   assert.deepEqual(buildEvent({ ...base, handoffTo: 'billing', handoffRef: 'x' }, NOW).problems, ['handoffTo']);
@@ -78,13 +78,13 @@ test('never throws, whatever it is given', () => {
 test('orFallback keeps a valid event and otherwise gives a valid error row, whatever it is given', () => {
   const good = buildEvent(base, NOW);
   assert.equal(orFallback(good, { automation: 'intake' }, NOW), good);
-  const fb = { automation: 'booking', source: 'web', runId: 'HM-B00001', summary: 'The ops event for a booking could not be built' };
+  const fb = { automation: 'booking', source: 'web', runId: 'DY-B00001', summary: 'The ops event for a booking could not be built' };
   for (const built of [null, undefined, { ok: false, event: null, problems: ['x'] }, buildEvent({ ...base, source: 'fax' }, NOW)]) {
     const r = orFallback(built, fb, NOW);
     assert.equal(r.ok, true);
     assert.equal(r.event.status, 'error');
     assert.equal(r.event.automation, 'booking');
-    assert.equal(r.event.runId, 'HM-B00001');
+    assert.equal(r.event.runId, 'DY-B00001');
   }
   // a fallback that is itself invalid still ends in a valid row, on the ops automation
   for (const bad of [{}, { automation: 'billing', source: 'fax', runId: '' }, null, { summary: 'x@y.example' }]) {

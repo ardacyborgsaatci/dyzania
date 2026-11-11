@@ -95,7 +95,7 @@ export function buildDigestWorkflow() {
     'Build digest': { main: [[link('Log ops event')]] },
     'Log ops event': { main: [[link('Email digest to owner')]] }
   };
-  return { name: 'H&M Ops - Daily digest', nodes, connections, settings: SETTINGS };
+  return { name: 'Dyzania Ops - Daily digest', nodes, connections, settings: SETTINGS };
 }
 
 export function buildErrorAlertWorkflow() {
@@ -104,14 +104,14 @@ export function buildErrorAlertWorkflow() {
     opsBuildNode({ id: ID(2), name: 'Build alert', position: [224, 0], generator: 'build-ops-workflows.mjs', glue: ALERT_GLUE, files: OPS_JOB_FILES }),
     opsLogNode({ id: ID(3), name: 'Log ops event', position: [448, 0] }),
     ownerMail(4, 'Email alert to owner', [672, 0], 'Build alert'),
-    note(5, [0, -220], 'Error alert for ' + firm.name + ' (fictional). Set this as the Error Workflow of every H&M workflow. When one fails: writes an ops_events row with status error, then mails the owner address the workflow name, the node and a cut error message (any address in it removed). The message n8n gives can quote a few characters of the data that failed, so this mail goes to the owner address only. No client is told anything by this workflow.', 900, 170)
+    note(5, [0, -220], 'Error alert for ' + firm.name + ' (fictional). Set this as the Error Workflow of every Dyzania workflow. When one fails: writes an ops_events row with status error, then mails the owner address the workflow name, the node and a cut error message (any address in it removed). The message n8n gives can quote a few characters of the data that failed, so this mail goes to the owner address only. No client is told anything by this workflow.', 900, 170)
   ];
   const connections = {
     'Workflow failed': { main: [[link('Build alert')]] },
     'Build alert': { main: [[link('Log ops event')]] },
     'Log ops event': { main: [[link('Email alert to owner')]] }
   };
-  return { name: 'H&M Ops - Error alert', nodes, connections, settings: SETTINGS };
+  return { name: 'Dyzania Ops - Error alert', nodes, connections, settings: SETTINGS };
 }
 
 export function buildCleanupWorkflow() {
@@ -133,7 +133,7 @@ export function buildCleanupWorkflow() {
     'Get triage log': { main: [[link('Select expired triage rows')]] },
     'Select expired triage rows': { main: [[link('Delete expired triage rows')]] }
   };
-  return { name: 'H&M Ops - Cleanup', nodes, connections, settings: SETTINGS };
+  return { name: 'Dyzania Ops - Cleanup', nodes, connections, settings: SETTINGS };
 }
 
 export const TARGETS = [

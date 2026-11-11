@@ -1,6 +1,6 @@
-# Booking: first consultations, any hour (Hollis & Marr LLP)
+# Booking: first consultations, any hour (Dyzania LLP)
 
-Hollis & Marr LLP is a fictional firm made for a portfolio project. Every person, address and case in this folder is invented.
+Dyzania LLP is a fictional firm made for a portfolio project. Every person, address and case in this folder is invented.
 
 This automation books a **first consultation** without a receptionist going back and forth. It is two small web endpoints behind one n8n workflow: one returns the free times for a practice area, the other books one. The website form and the voice line both call them. The rules that decide what is free live in one tested file, `lib/booking.js`, and the n8n Code nodes are generated from that file, so the tests and the workflow cannot drift apart.
 
@@ -14,7 +14,7 @@ It never gives legal advice, never says whether someone has a case, never promis
 |---|---|---|
 | Website form | The two endpoints below, with their rules and tests | The form page itself (Phase 6) |
 | Voice line | The voice agent (`voice/booking_flow.py`) calls the same two endpoints from its server, with `channel: "voice"` so the row shows how it was booked. It asks for a pool of 40 free times and reads out three that are at least two hours apart, spells the email back, and reads a summary and the consent sentence before booking. Tested offline against the real rules in `lib/booking.js` (`voice/tests/`) | Pointing it at the live endpoints: set `N8N_BOOKING_BASE` and `N8N_BOOKING_SECRET` in the voice project (Phase 7), then the by-hand call in `voice/MANUAL-CALL.md` |
-| Email | The intake reply and the triage drafts already carry the booking link (`https://hollismarr.example/book`) | The page behind that link (Phase 6) |
+| Email | The intake reply and the triage drafts already carry the booking link (`https://dyzania.example/book`) | The page behind that link (Phase 6) |
 
 **Default taken, owner can change it:** the old Larkwell booking build was an LLM agent that negotiated times by email thread. It is not ported. A person who emails is sent to the same form, because one set of rules is easier to trust than two. The old build stays in `automations/sales-booking` until the cutover.
 

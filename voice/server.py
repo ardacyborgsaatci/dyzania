@@ -1,5 +1,5 @@
 """
-Web version of the voice line for Hollis & Marr LLP (a fictional firm).
+Web version of the voice line for Dyzania LLP (a fictional firm).
 
 The browser records the caller's voice and sends each turn here. This server keeps the API keys private, turns the audio
 into text (Groq), decides what answers it (router.py: fixed words for sensitive turns, the booking dialog, or the model),

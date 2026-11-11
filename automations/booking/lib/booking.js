@@ -1,6 +1,6 @@
 'use strict';
 const { checkConflicts } = require('../../../firm/lib/conflicts');
-// Hollis & Marr first-consultation booking. Pure functions: no model, no network, no clock of its own
+// Dyzania first-consultation booking. Pure functions: no model, no network, no clock of its own
 // (every function takes `nowMs`). The same code backs the website form, the voice line and the email link.
 //
 // What the rules are (all numbers come from firm/availability.json and firm/practice-areas.json):
@@ -17,7 +17,7 @@ const { checkConflicts } = require('../../../firm/lib/conflicts');
 // constraint. bookVerify settles that after the insert: rows are taken in insertion order (the table's row id),
 // and a row that clashes with an earlier accepted row loses and is cancelled.
 
-const BOOK_RULES_VERSION = 'hm-booking-v1';
+const BOOK_RULES_VERSION = 'dy-booking-v1';
 const BOOK_CHANNELS = ['form', 'voice', 'email'];
 const BOOK_LIMITS = { name: { min: 2, max: 100 }, otherSide: { max: 200 }, leadRef: { max: 40 }, listDefault: 40, listMax: 100, alternatives: 3 };
 const BOOK_DOW = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];

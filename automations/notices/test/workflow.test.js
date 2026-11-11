@@ -127,7 +127,7 @@ test('a whole upload through all four Code nodes with a perfect stand-in model: 
 });
 
 test('the workflow shape: one authenticated upload form, one model call, one table, one email', () => {
-  assert.strictEqual(wf.name, 'H&M Records - Court notice reading');
+  assert.strictEqual(wf.name, 'Dyzania Records - Court notice reading');
   const chain = ['Notice Upload Form', 'Prepare images', 'Ask vision model (OpenRouter)', 'Read and check', 'Save to court_notices', 'Collect urgent alert', 'Send urgent alert'];
   chain.forEach((n, i) => {
     const next = ((wf.connections[n] || {}).main || [])[0];

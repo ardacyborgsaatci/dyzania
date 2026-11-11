@@ -2,6 +2,8 @@
 
 **Decision (2026-11-11):** the five Wrenbook automations are converted **in place** into the automations of a fictional law firm, **Hollis & Marr LLP** (Harlow Point, 11 people, founded 2014). Wrenbook is retired as a brand; its history is kept below. The dark design system stays; the accent changes from wren orange to brass. The repo and folder are still named `wrenbook`; renaming the GitHub repo is an owner task.
 
+**Renamed (2026-11-11, owner's choice): the firm is now Dyzania LLP** (short name Dyzania, placeholder domain `dyzania.example`). Everything below this note is the log as it was written and still says Hollis & Marr, `H&M` workflow names and the `HM-` reference prefix. The code, data, site, prompts and docs outside this file were renamed in one commit: references are now `DY-...`, workflows are named `Dyzania ...`, packages are `dyzania-*`, the CSS tokens are `--dy-*`. The two founding partners keep their names (Dana Hollis, Marcus Marr), since they are people and not the brand. No trademark or domain search has been done for "Dyzania".
+
 Defaults taken (owner can change any): fictional firm; US with no named state, so deadlines are illustrative settings and never real law; practice areas family, personal injury, employment, estate planning and probate; first consultation free for injury and employment, $150 for 45 minutes for family and estate (credited to the retainer); booking confirmations are the only automatic email, from a fixed template; voice booking takes an email by spelling and read-back, then falls back to the website after two failed tries; business timezone default America/Chicago, to be confirmed.
 
 ## The five automations, redefined

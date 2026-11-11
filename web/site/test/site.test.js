@@ -39,7 +39,7 @@ for (const page of pages) {
     assert.match(html, /<html lang="en"[\s>]/);
     const title = html.match(/<title>([^<]+)<\/title>/);
     assert.ok(title, 'no title');
-    assert.ok(title[1] === 'Hollis &amp; Marr LLP' || title[1].endsWith(' | Hollis &amp; Marr LLP'), `title is ${title[1]}`);
+    assert.ok(title[1] === 'Dyzania LLP' || title[1].endsWith(' | Dyzania LLP'), `title is ${title[1]}`);
     assert.match(html, /<meta name="description" content="[^"]+">/);
     assert.match(html, /<meta name="robots" content="noindex">/);
     assert.strictEqual((html.match(/<h1[\s>]/g) || []).length, 1);

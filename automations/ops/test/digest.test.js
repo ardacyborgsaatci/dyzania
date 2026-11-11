@@ -22,7 +22,7 @@ const firm = loadFirmData();
 
 // One real event of each kind, from the libraries' own evaluation sets, placed at a given time.
 function real() {
-  const intake = intakeSet.cases.map((c) => A.intakeEvent(processIntake(Object.assign({}, intakeSet.defaults, c.input), firm, { today: intakeSet.today, ref: 'HM-EVAL-' + c.id, now: intakeSet.today + 'T12:00:00Z' }), { now: NOW })).filter(Boolean);
+  const intake = intakeSet.cases.map((c) => A.intakeEvent(processIntake(Object.assign({}, intakeSet.defaults, c.input), firm, { today: intakeSet.today, ref: 'DY-EVAL-' + c.id, now: intakeSet.today + 'T12:00:00Z' }), { now: NOW })).filter(Boolean);
   const triage = TR.SET.emails.map((e) => A.triageEvent(triageLogRow(TR.runOne(e, 'oracle')), { now: NOW }));
   const notices = Object.values(NO.resultsFor(NO.STAND_INS.oracle).raw).map((r) => A.noticeEvent(r, { now: NOW }));
   const booking = BO.SET.cases.filter((c) => c.kind === 'book').map((c) => A.bookingEvent(BO.runBook(c).result, { now: NOW })).filter(Boolean);
@@ -129,7 +129,7 @@ test('an empty day, junk rows and a missing context still give a readable digest
     assert.match(d.text, /Nothing needs a person\./);
     assert.match(d.subject, /Daily ops digest$/);
   }
-  assert.match(D.buildDigest([], undefined).subject, /^\[Hollis & Marr LLP\]/);
+  assert.match(D.buildDigest([], undefined).subject, /^\[Dyzania LLP\]/);
 });
 
 test('the digest of a whole real day holds no private text, no address and no number that looks like a phone', () => {
@@ -152,15 +152,15 @@ test('the digest of a whole real day holds no private text, no address and no nu
 test('the digest and the alert use the firm name they are given, and the default is the firm\'s', () => {
   assert.match(D.buildDigest([], { now: NOW, firm: 'Test Firm' }).subject, /^\[Test Firm\]/);
   assert.match(D.errorAlert({}, { now: NOW, firm: 'Test Firm' }).subject, /^\[Test Firm\]/);
-  assert.match(D.errorAlert({}, { now: NOW }).subject, /^\[Hollis & Marr LLP\]/);
+  assert.match(D.errorAlert({}, { now: NOW }).subject, /^\[Dyzania LLP\]/);
   assert.doesNotMatch(JSON.stringify(D.buildDigest([], { now: NOW })), /wrenbook/i);
 });
 
 test('a failed workflow is matched to its automation by name', () => {
   const cases = {
-    'H&M Intake - Lead intake and scoring': 'intake', 'H&M Triage - Gmail inbox': 'triage', 'H&M Triage - Core': 'triage', 'H&M Booking - Core': 'booking',
-    'H&M Booking - Tool: list slots': 'booking', 'H&M Notices - Court notices': 'notices', 'H&M Voice - Tools': 'voice',
-    'H&M Ops - Daily digest': 'ops', 'H&M Ops - Cleanup': 'ops', 'Something else': 'ops', '': 'ops'
+    'Dyzania Intake - Lead intake and scoring': 'intake', 'Dyzania Triage - Gmail inbox': 'triage', 'Dyzania Triage - Core': 'triage', 'Dyzania Booking - Core': 'booking',
+    'Dyzania Booking - Tool: list slots': 'booking', 'Dyzania Notices - Court notices': 'notices', 'Dyzania Voice - Tools': 'voice',
+    'Dyzania Ops - Daily digest': 'ops', 'Dyzania Ops - Cleanup': 'ops', 'Something else': 'ops', '': 'ops'
   };
   for (const [name, want] of Object.entries(cases)) assert.equal(D.automationFromWorkflowName(name), want, name);
   assert.equal(D.automationFromWorkflowName(null), 'ops');
@@ -168,7 +168,7 @@ test('a failed workflow is matched to its automation by name', () => {
 
 test('the error alert is a valid event, has no address, cuts a long message and never throws', () => {
   const failure = {
-    workflow: { name: 'H&M Booking - Core' },
+    workflow: { name: 'Dyzania Booking - Core' },
     execution: { id: '4821', url: 'https://n8n.example/execution/4821', mode: 'webhook', lastNodeExecuted: 'Insert booking', error: { message: 'Could not write for jane.doe@mail.example: ' + 'x'.repeat(600) } }
   };
   const a = D.errorAlert(failure, { now: NOW });
@@ -182,7 +182,7 @@ test('the error alert is a valid event, has no address, cuts a long message and 
   assert.match(a.text, /\[address\]/);
   assert.ok(a.text.split('\n').find((l) => l.startsWith('Error: ')).length <= 'Error: '.length + 300);
   assert.match(a.text, /No client email was sent because of this failure/);
-  assert.equal(a.subject, '[Hollis & Marr LLP] Failure in H&M Booking - Core');
+  assert.equal(a.subject, '[Dyzania LLP] Failure in Dyzania Booking - Core');
   for (const bad of [null, undefined, {}, { workflow: null }, { execution: { error: null } }, 'x', 5]) {
     const r = D.errorAlert(bad, { now: NOW });
     assert.equal(r.event.ok, true, JSON.stringify(bad));

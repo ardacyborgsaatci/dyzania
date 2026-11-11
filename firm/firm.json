@@ -1,21 +1,21 @@
 {
-  "name": "Hollis & Marr LLP",
-  "short": "Hollis & Marr",
+  "name": "Dyzania LLP",
+  "short": "Dyzania",
   "founded": 2014,
   "fictional": true,
   "tagline": "Family, injury, employment and estate law for people in Harlow Point.",
   "city": "Harlow Point",
   "address": "220 Canal Street, Suite 4, Harlow Point",
-  "domain": "hollismarr.example",
+  "domain": "dyzania.example",
   "phone": "555-0142",
   "timezone": "America/Chicago",
   "timezoneNote": "Default chosen by the builder. The owner confirms or changes it before booking goes live.",
   "emails": {
-    "general": "hello@hollismarr.example",
-    "intake": "intake@hollismarr.example",
-    "billing": "billing@hollismarr.example",
-    "privacy": "privacy@hollismarr.example",
-    "urgent": "urgent@hollismarr.example"
+    "general": "hello@dyzania.example",
+    "intake": "intake@dyzania.example",
+    "billing": "billing@dyzania.example",
+    "privacy": "privacy@dyzania.example",
+    "urgent": "urgent@dyzania.example"
   },
   "officeHours": { "days": ["mon", "tue", "wed", "thu", "fri"], "open": "08:30", "close": "17:30" },
   "headcount": { "partners": 2, "associates": 2, "paralegals": 2, "intakeCoordinator": 1, "officeManager": 1, "billing": 1, "marketingAndIt": 1, "total": 11 },
@@ -37,6 +37,6 @@
     "noConfidential": "Please do not include confidential details such as medical records, account numbers or case documents.",
     "emergency": "If you or someone else is in immediate danger, call 911 or your local emergency number.",
     "aiDisclosure": "You are talking to an automated assistant, not a lawyer.",
-    "fictional": "Hollis & Marr LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented."
+    "fictional": "Dyzania LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented."
   }
 }

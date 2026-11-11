@@ -1,5 +1,5 @@
 {
-  "note": "86 invented booking cases for Hollis & Marr LLP (fictional). Every time is the firm's local time (America/Chicago) unless a case gives a raw UTC string. The expectations were written from firm/availability.json and firm/practice-areas.json BEFORE automations/booking/lib was written. They are a same-author regression set, not an independent test. Nobody here is a real person; every address ends in .example.",
+  "note": "86 invented booking cases for Dyzania LLP (fictional). Every time is the firm's local time (America/Chicago) unless a case gives a raw UTC string. The expectations were written from firm/availability.json and firm/practice-areas.json BEFORE automations/booking/lib was written. They are a same-author regression set, not an independent test. Nobody here is a real person; every address ends in .example.",
   "timezone": "America/Chicago",
   "defaults": {
     "now": "2026-11-11 14:00",

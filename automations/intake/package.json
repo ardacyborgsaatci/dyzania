@@ -1,7 +1,7 @@
 {
-  "name": "hollis-marr-intake",
+  "name": "dyzania-intake",
   "private": true,
-  "description": "Lead intake and scoring for Hollis & Marr LLP (fictional).",
+  "description": "Lead intake and scoring for Dyzania LLP (fictional).",
   "scripts": {
     "test": "node --test test/",
     "eval": "node eval/run.js",

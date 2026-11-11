@@ -1,10 +1,10 @@
-# Hollis & Marr LLP: five automations for a fictional law firm
+# Dyzania LLP: five automations for a fictional law firm
 
-Hollis & Marr is a **made-up** firm in Harlow Point (11 people, founded 2014) that does family, personal injury, employment and estate planning and probate work. It is the invented company behind five automations I built, merged here into one team and one site. No person, client, matter, notice or email in the demos is real, and the domain `hollismarr.example` cannot receive mail.
+Dyzania is a **made-up** firm in Harlow Point (11 people, founded 2014) that does family, personal injury, employment and estate planning and probate work. It is the invented company behind five automations I built, merged here into one team and one site. No person, client, matter, notice or email in the demos is real, and the domain `dyzania.example` cannot receive mail.
 
 The automations run on n8n, open models on Groq and OpenRouter, and Vercel. **Nothing sends a message to a client on its own judgment.** The one automatic email is the fixed booking confirmation, sent only to the address that booked.
 
-> The repo and folder are still named `wrenbook` from an earlier version of this project (a made-up invoicing app). That brand is retired; its history is in [PLAN.md](PLAN.md). Renaming the GitHub repo is an owner task.
+> The project began as "Wrenbook" (a made-up invoicing app), then became "Hollis & Marr LLP", and the firm is now **Dyzania LLP**. The history is in [PLAN.md](PLAN.md). The local folder may still be called `wrenbook`.
 
 ## The state, plainly
 
@@ -84,4 +84,4 @@ Offline evaluations: `node automations/intake/eval/run.js`, `automations/triage/
 - A court notice that arrives by email is not sent to the notices workflow, and a new-matter email does not become a lead by itself.
 - The voice line has no rate limit of its own (a Vercel Firewall rule is part of the cutover), and its page access is an owner decision. The site's rate limit lives in one instance's memory until that rule exists.
 - Notice images and triage text go to third-party model providers, so only invented material belongs in the demo.
-- The time zone (`America/Chicago`), the name, the trademark and the domain are placeholders for the owner to confirm.
+- The time zone (`America/Chicago`) is confirmed by the owner. The name "Dyzania" was chosen by the owner; no trademark or domain search has been done, and `dyzania.example` is a placeholder that cannot receive mail.

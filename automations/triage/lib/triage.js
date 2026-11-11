@@ -2,7 +2,7 @@
 const { lowerText, findPhrase } = require('../../../firm/lib/text');
 const { detectUrgency } = require('../../../firm/lib/urgency');
 const { TRIAGE_CATEGORY_LABEL, triageLabelNames, triageAllLabelNames, triagePrepareGmail, triageCombine, triagePickLabelIds } = require('./labels');
-// Email triage for Hollis & Marr LLP (fictional). Pure functions, no I/O.
+// Email triage for Dyzania LLP (fictional). Pure functions, no I/O.
 // The model reads the email and gives an opinion. These rules decide what happens.
 //   - Rules can only make handling MORE careful than the model asked for, never less.
 //   - Nothing here is ever sent to a sender automatically: the result is a classification, a queue,
@@ -343,7 +343,7 @@ function triageAlert(r) {
   if (r.injectionSuspected) lines.push('Note: the message may be trying to instruct the assistant. Nothing in it was followed.');
   if (r.category === 'spam') lines.push('Note: sorted as spam, but it contains time-sensitive wording. It may be a fake notice, or a real one. Check it before relying on it.');
   lines.push('', 'Open the message in Gmail (reference ' + (r.messageId || 'none') + '). Nothing was sent to the sender. The sender, subject and message text are not in this alert.');
-  return { send: true, subject: '[H&M triage] URGENT ' + r.category.replace(/_/g, ' ') + ' - ' + (r.messageId || 'message'), text: lines.join('\n') };
+  return { send: true, subject: '[Dyzania triage] URGENT ' + r.category.replace(/_/g, ' ') + ' - ' + (r.messageId || 'message'), text: lines.join('\n') };
 }
 
 // Metadata only. No subject, no summary, no names, no address, no message text, no draft text.

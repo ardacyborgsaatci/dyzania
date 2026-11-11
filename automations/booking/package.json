@@ -1,7 +1,7 @@
 {
-  "name": "hollis-marr-booking",
+  "name": "dyzania-booking",
   "private": true,
-  "description": "First-consultation booking for Hollis & Marr LLP (fictional): slot rules, conflict gate, race check, fixed confirmation, offline evaluation.",
+  "description": "First-consultation booking for Dyzania LLP (fictional): slot rules, conflict gate, race check, fixed confirmation, offline evaluation.",
   "scripts": {
     "test": "node --test test/",
     "eval": "node eval/run.js",

@@ -26,8 +26,8 @@ test('every email and the domain use the reserved .example domain', () => {
   const text = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n') + kb;
   const addresses = (text.match(/[A-Za-z0-9._-]+@[A-Za-z0-9.-]+/g) || []).map((a) => a.replace(/\.$/, ''));
   assert.ok(addresses.length > 5);
-  for (const a of addresses) assert.match(a, /@hollismarr\.example$/, a);
-  assert.strictEqual(firm.domain, 'hollismarr.example');
+  for (const a of addresses) assert.match(a, /@dyzania\.example$/, a);
+  assert.strictEqual(firm.domain, 'dyzania.example');
 });
 
 test('every practice area has real attorneys with consultation windows long enough for its consult', () => {

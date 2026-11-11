@@ -111,7 +111,7 @@ test('wrong values are reported and the workflows that need them are not written
 
 test('a reserved address is a warning, not a refusal', async () => {
   const { prepare, WORKFLOWS } = await mod();
-  const r = prepare(Object.assign({}, FULL, { ownerEmail: 'me@hollismarr.example', attorneyOnDutyEmail: 'me@hollismarr.example' }), sourcesOf(WORKFLOWS));
+  const r = prepare(Object.assign({}, FULL, { ownerEmail: 'me@dyzania.example', attorneyOnDutyEmail: 'me@dyzania.example' }), sourcesOf(WORKFLOWS));
   assert.equal(r.warnings.filter((w) => /reserved name/.test(w)).length, 2);
   assert.ok('ops-daily-digest.json' in r.files);
 });
@@ -127,7 +127,7 @@ test('the local config and the output folder are ignored by git, and the example
 
 test('the command line writes only to the folder it is given, never prints an address, and refuses a bad config', async () => {
   const { WORKFLOWS } = await mod();
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hm-cutover-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dy-cutover-'));
   try {
     fs.writeFileSync(path.join(dir, 'config.json'), JSON.stringify(FULL));
     const run = (args) => spawnSync(process.execPath, [path.join(root, 'scripts', 'prepare-import.mjs'), ...args], { encoding: 'utf8' });

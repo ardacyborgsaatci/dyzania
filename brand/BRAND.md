@@ -1,6 +1,6 @@
-# Hollis & Marr LLP brand
+# Dyzania LLP brand
 
-Hollis & Marr LLP is a **fictional** small law firm in Harlow Point (11 people, founded 2014) made for a portfolio project. It practices family law, personal injury, employment law, and estate planning and probate. Everything is invented. Pages stay `noindex`. The placeholder domain is `hollismarr.example`. A name check is an owner task.
+Dyzania LLP is a **fictional** small law firm in Harlow Point (11 people, founded 2014) made for a portfolio project. It practices family law, personal injury, employment law, and estate planning and probate. Everything is invented. Pages stay `noindex`. The placeholder domain is `dyzania.example`. A name check is an owner task.
 
 Shared facts (staff, practice areas, hours, fees, availability, urgency rules, the invented conflict list) live in `firm/`. The brand and every automation read from there.
 
@@ -58,6 +58,6 @@ A rounded dark tile with three white columns between two brass bars: a courthous
 
 ## Naming for the rebuild
 
-- n8n folder: `Hollis & Marr Ops`; workflow names `H&M <Team> - <Thing>`.
+- n8n folder: `Dyzania Ops`; workflow names `Dyzania <Team> - <Thing>`.
 - Gmail aliases: `+intake`, `+urgent`, `+notices`; labels `Triage/*`, `Booking/*`, `Records/*`.
-- Email domain in all demo content: `@hollismarr.example`.
+- Email domain in all demo content: `@dyzania.example`.

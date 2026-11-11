@@ -4,7 +4,7 @@
 //   node scripts/build-notices-workflow.mjs           write the file
 //   node scripts/build-notices-workflow.mjs --check   fail if the file on disk is out of date
 //
-//   automations/notices/workflow.json   H&M Records: upload form -> vision model -> rules -> court_notices table -> one urgent alert
+//   automations/notices/workflow.json   Dyzania Records: upload form -> vision model -> rules -> court_notices table -> one urgent alert
 //
 // The Code nodes hold the SAME functions the tests run (firm/lib/text.js, firm/lib/urgency.js and
 // automations/notices/lib/notices.js) joined together, with the firm data and the prompt inlined as DATA.
@@ -129,7 +129,7 @@ export function buildWorkflow() {
       parameters: {
         authentication: 'basicAuth',
         formTitle: 'Upload court notices',
-        formDescription: 'Hollis & Marr LLP (fictional firm, invented documents only). PNG or JPG scans or photos. You can pick several at once. An automated assistant reads each one and saves what it read. Nothing is confirmed until an attorney confirms it. Do not upload real client papers.',
+        formDescription: 'Dyzania LLP (fictional firm, invented documents only). PNG or JPG scans or photos. You can pick several at once. An automated assistant reads each one and saves what it read. Nothing is confirmed until an attorney confirms it. Do not upload real client papers.',
         formFields: { values: [{ fieldLabel: 'notice', fieldType: 'file', acceptFileTypes: '.png,.jpg,.jpeg', requiredField: true, multipleFiles: true }] },
         options: { appendAttribution: false, formSubmittedText: 'Thank you. Each notice is being read and saved with the status "Needs attorney confirmation". If a notice looks urgent, an attorney is alerted by email. This is not legal advice.' }
       },
@@ -171,7 +171,7 @@ export function buildWorkflow() {
     {
       id: ID(8), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -260],
       parameters: {
-        content: 'Court-notice reading for Hollis & Marr LLP (fictional). Upload scans or photos; a vision model copies what is printed into JSON; the tested rules (the Code nodes, generated from the library) decide the priority. Every row is saved with the status "Needs attorney confirmation": nothing here, and nothing a document says, can approve a notice. Only a person changes that cell.\nThe code never works out a deadline. It repeats a date as printed and counts days only to decide who looks first. A time limit counted from another event is copied as printed.\nUrgent (a summons or subpoena, a date within 7 days or already passed, a poor scan, a date that could not be read, or a failed read) sends ONE email per upload to the attorney on duty. The email has no party names. If the table row cannot be saved the email says so.\nThe upload form needs a basic-auth credential: notices are privileged. Execution data is not saved. Images go to a third-party model (see the README before using real papers). Each notice also writes one ops event (reference, type, priority and reason codes only), which the daily digest counts; a notice whose row could not be saved is logged as an error.',
+        content: 'Court-notice reading for Dyzania LLP (fictional). Upload scans or photos; a vision model copies what is printed into JSON; the tested rules (the Code nodes, generated from the library) decide the priority. Every row is saved with the status "Needs attorney confirmation": nothing here, and nothing a document says, can approve a notice. Only a person changes that cell.\nThe code never works out a deadline. It repeats a date as printed and counts days only to decide who looks first. A time limit counted from another event is copied as printed.\nUrgent (a summons or subpoena, a date within 7 days or already passed, a poor scan, a date that could not be read, or a failed read) sends ONE email per upload to the attorney on duty. The email has no party names. If the table row cannot be saved the email says so.\nThe upload form needs a basic-auth credential: notices are privileged. Execution data is not saved. Images go to a third-party model (see the README before using real papers). Each notice also writes one ops event (reference, type, priority and reason codes only), which the daily digest counts; a notice whose row could not be saved is logged as an error.',
         width: 1100, height: 240
       }
     }
@@ -186,7 +186,7 @@ export function buildWorkflow() {
     'Collect urgent alert': { main: [[link('Send urgent alert')]] }
   };
   return {
-    name: 'H&M Records - Court notice reading',
+    name: 'Dyzania Records - Court notice reading',
     nodes,
     connections,
     settings: {

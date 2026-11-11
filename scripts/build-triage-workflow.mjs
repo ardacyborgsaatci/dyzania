@@ -210,7 +210,7 @@ export function buildCoreWorkflow() {
     {
       id: ID(12), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -120],
       parameters: {
-        content: 'Triage Core for Hollis & Marr LLP (fictional). Screen (rules) -> Classify (model) -> Decide (rules) -> Draft (model, only for ordinary mail) -> Finish (rules).\nThe Code nodes are generated from the tested library. The models give an opinion; the rules decide what happens and can only make handling more careful. Nothing here sends anything to the sender. Execution data is not saved because the mail may be privileged.',
+        content: 'Triage Core for Dyzania LLP (fictional). Screen (rules) -> Classify (model) -> Decide (rules) -> Draft (model, only for ordinary mail) -> Finish (rules).\nThe Code nodes are generated from the tested library. The models give an opinion; the rules decide what happens and can only make handling more careful. Nothing here sends anything to the sender. Execution data is not saved because the mail may be privileged.',
         width: 760, height: 150
       }
     }
@@ -227,7 +227,7 @@ export function buildCoreWorkflow() {
     'Drafting model': { ai_languageModel: [[lmLink('Draft reply')]] },
     'Draft schema': { ai_outputParser: [[parserLink('Draft reply')]] }
   };
-  return { name: 'H&M Triage - Core', nodes, connections, settings: PRIVATE_SETTINGS };
+  return { name: 'Dyzania Triage - Core', nodes, connections, settings: PRIVATE_SETTINGS };
 }
 
 export function buildGmailWorkflow() {
@@ -254,7 +254,7 @@ export function buildGmailWorkflow() {
     {
       id: ID(5), name: 'Run triage core', type: 'n8n-nodes-base.executeWorkflow', typeVersion: 1.4, position: [896, 0],
       parameters: {
-        source: 'database', workflowId: { __rl: true, mode: 'id', value: 'REPLACE_WITH_TRIAGE_CORE_WORKFLOW_ID', cachedResultName: 'H&M Triage - Core' },
+        source: 'database', workflowId: { __rl: true, mode: 'id', value: 'REPLACE_WITH_TRIAGE_CORE_WORKFLOW_ID', cachedResultName: 'Dyzania Triage - Core' },
         workflowInputs: {
           mappingMode: 'defineBelow',
           value: Object.fromEntries(inputs.map((n) => [n, '={{ $json.' + n + ' }}'])),
@@ -302,7 +302,7 @@ export function buildGmailWorkflow() {
     {
       id: ID(18), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -240],
       parameters: {
-        content: 'Gmail path for H&M Triage. Polls the +triage alias every minute, runs the Triage Core, then: creates a threaded Gmail DRAFT (only when the rules allow one; never sends), writes a metadata-only log row and one metadata-only ops event, applies Triage/* labels and, for urgent mail, emails an alert that has no message text. There is no node that sends to a sender. Run the manual branch below once to create the labels. Execution data is not saved.',
+        content: 'Gmail path for Dyzania Triage. Polls the +triage alias every minute, runs the Triage Core, then: creates a threaded Gmail DRAFT (only when the rules allow one; never sends), writes a metadata-only log row and one metadata-only ops event, applies Triage/* labels and, for urgent mail, emails an alert that has no message text. There is no node that sends to a sender. Run the manual branch below once to create the labels. Execution data is not saved.',
         width: 760, height: 170
       }
     }
@@ -325,7 +325,7 @@ export function buildGmailWorkflow() {
     'Create triage labels (run once)': { main: [[link('Label names')]] },
     'Label names': { main: [[link('Create label')]] }
   };
-  return { name: 'H&M Triage - Gmail', nodes, connections, settings: PRIVATE_SETTINGS };
+  return { name: 'Dyzania Triage - Gmail', nodes, connections, settings: PRIVATE_SETTINGS };
 }
 
 const TARGETS = [

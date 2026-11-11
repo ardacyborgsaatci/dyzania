@@ -14,7 +14,7 @@ const columns = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'columns.j
 const urgencyJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'firm', 'urgency.json'), 'utf8'));
 
 const MODEL = (o) => () => Object.assign({ category: 'other', priority: 'normal', sentiment: 'neutral', language: 'en', summary: 's', needsHuman: false, humanReason: '', confidence: 0.9, injectionSuspected: false }, o);
-const GOOD = () => ({ reply: 'Hello,\n\nThank you for your message. A member of the team will read it and follow up with you. You can also reach the office on 555-0142.\n\nBest regards,\nHollis & Marr LLP', kbArticlesUsed: ['KB-03'], needsHuman: false, confidence: 0.8 });
+const GOOD = () => ({ reply: 'Hello,\n\nThank you for your message. A member of the team will read it and follow up with you. You can also reach the office on 555-0142.\n\nBest regards,\nDyzania LLP', kbArticlesUsed: ['KB-03'], needsHuman: false, confidence: 0.8 });
 function go(mail, model, draft) {
   const raw = Object.assign({ from: 'Maya Rao <maya@mail.example>', subject: 'Question', body: 'Hello there, I would like to know how your firm works and what to bring.' }, mail);
   return T.triageRun(raw, model === undefined ? MODEL({}) : model, draft === undefined ? GOOD : draft, D, { today: TODAY, now: NOW });
@@ -223,7 +223,7 @@ test('acknowledgement: fixed wording, says what it cannot do, passes the same ru
   assert.match(en, /cannot promise when someone will reply/);
   assert.match(en, /911/);
   assert.match(en, /lawyer referral service/);
-  assert.match(en, /urgent@hollismarr\.example/);
+  assert.match(en, /urgent@dyzania\.example/);
   assert.match(en, /not legal advice/);
   const plain = T.triageAckText({ language: 'en', category: 'new_inquiry' }, [], email, D);
   assert.doesNotMatch(plain, /911|referral service|urgent@/);
@@ -282,7 +282,7 @@ test('draft check: honest sentences that mention the same words are not blocked'
     'You wrote that a response is due December 1. We cannot tell you whether that date is correct.',
     'You mentioned a hearing on Nov 24. A member of the team will read your message and follow up.',
     'The first consultation for a family law matter is 45 minutes and costs $150, credited to the retainer if you hire the firm.',
-    'You can book at https://hollismarr.example/help/booking or write to intake@hollismarr.example.',
+    'You can book at https://dyzania.example/help/booking or write to intake@dyzania.example.',
     'Messages to case teams are answered within 1 business day.',
     'The office is on 220 Canal Street and you can call 555-0142.'
   ];
@@ -293,10 +293,10 @@ test('draft check: honest sentences that mention the same words are not blocked'
 });
 
 test('draft check: a good draft gets the disclaimer exactly once; a blocked one becomes a plain holding reply', () => {
-  const ok = draft('Hello Maya,\n\nThank you for your message. The first consultation for a family law matter costs $150.' + FILL + '\n\nBest regards,\nHollis & Marr LLP');
+  const ok = draft('Hello Maya,\n\nThank you for your message. The first consultation for a family law matter costs $150.' + FILL + '\n\nBest regards,\nDyzania LLP');
   assert.strictEqual(ok.status, 'drafted');
   assert.strictEqual((ok.text.match(/not legal advice/g) || []).length, 1);
-  const again = draft('Hello,\n\nThank you for your message about this.' + FILL + ' This is general information, not legal advice.\n\nBest regards,\nHollis & Marr LLP');
+  const again = draft('Hello,\n\nThank you for your message about this.' + FILL + ' This is general information, not legal advice.\n\nBest regards,\nDyzania LLP');
   assert.strictEqual((again.text.match(/not legal advice/g) || []).length, 1);
   const blocked = draft('We guarantee you will win.' + FILL);
   assert.strictEqual(blocked.status, 'holding_reply');

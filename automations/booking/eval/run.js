@@ -58,7 +58,7 @@ function fixtureRow(f) {
   const r = Object.assign({}, d, f);
   const area = areaOf(r.area);
   const row = {
-    id: r.id, bookingRef: 'HM-FIX-' + r.id, createdAt: '2026-11-01T12:00:00Z', status: r.status, area: r.area, attorney: r.attorney || '',
+    id: r.id, bookingRef: 'DY-FIX-' + r.id, createdAt: '2026-11-01T12:00:00Z', status: r.status, area: r.area, attorney: r.attorney || '',
     startUtc: '', endUtc: '', localDate: '', localTime: '', minutes: 0, name: 'Fixture Person', email: r.email, phone: r.phone, channel: 'form', leadRef: '', confirmation: 'sent', note: '', rulesVersion: B.BOOK_RULES_VERSION
   };
   if (r.startLocal) {
@@ -124,7 +124,7 @@ function randomRows(r, nowMs, n) {
   for (let i = 0; i < n; i++) {
     const att = pick(r, ATTORNEYS), area = pick(r, DATA.areas.areas.filter((a) => a.attorneys.indexOf(att) !== -1)).id;
     const s = Math.floor((nowMs + r() * 31 * 86400000) / 60000) * 60000, mins = areaOf(area).consult.minutes;
-    rows.push({ id: i + 1, bookingRef: 'HM-R' + i, status: pick(r, ['booked', 'booked', 'booked', 'cancelled', 'cancelled_race']), area, attorney: att, startUtc: iso(s), endUtc: iso(s + mins * 60000), email: 'p' + i + '@mail.example', phone: '', minutes: mins });
+    rows.push({ id: i + 1, bookingRef: 'DY-R' + i, status: pick(r, ['booked', 'booked', 'booked', 'cancelled', 'cancelled_race']), area, attorney: att, startUtc: iso(s), endUtc: iso(s + mins * 60000), email: 'p' + i + '@mail.example', phone: '', minutes: mins });
   }
   return rows;
 }
@@ -135,7 +135,7 @@ function slotRows(r, nowMs, n) {
     const area = pick(r, AREAS), slots = B.bookGenerate(area, nowMs, DATA);
     if (!slots.length) continue;
     const s = pick(r, slots);
-    rows.push({ id: i + 1, bookingRef: 'HM-S' + i, status: 'booked', area, attorney: s.attorney, startUtc: iso(s.startMs), endUtc: iso(s.endMs), email: 's' + i + '@mail.example', phone: '', minutes: (s.endMs - s.startMs) / 60000 });
+    rows.push({ id: i + 1, bookingRef: 'DY-S' + i, status: 'booked', area, attorney: s.attorney, startUtc: iso(s.startMs), endUtc: iso(s.endMs), email: 's' + i + '@mail.example', phone: '', minutes: (s.endMs - s.startMs) / 60000 });
   }
   return rows;
 }
@@ -197,7 +197,7 @@ function evaluateSimulation(runs) {
       const area = pick(r, AREAS), person = pick(r, people), offers = B.bookOffers(area, rows, nowMs, DATA, {});
       if (!offers.length) continue;
       const slot = r() < 0.85 ? pick(r, offers) : { startMs: nowMs + Math.floor(r() * 40 * 86400000 / 60000) * 60000 };
-      const d = B.bookDecide({ name: person.name, email: person.email, phone: person.phone, area, otherSide: 'Quiet Pines Cafe', consent: true, channel: 'form', start: iso(slot.startMs) }, rows, nowMs, DATA, { ref: 'HM-SIM' + k + '-' + step, now: iso(nowMs) });
+      const d = B.bookDecide({ name: person.name, email: person.email, phone: person.phone, area, otherSide: 'Quiet Pines Cafe', consent: true, channel: 'form', start: iso(slot.startMs) }, rows, nowMs, DATA, { ref: 'DY-SIM' + k + '-' + step, now: iso(nowMs) });
       if (d.code === 'booked') { rows.push(Object.assign({ id: rows.length + 1 }, d.row)); booked++; } else refused++;
     }
     invariantProblems(rows, nowMs).forEach((p) => problems.push('run ' + k + ': ' + p));
@@ -220,7 +220,7 @@ function evaluateRace(runs) {
     const decisions = [];
     for (let i = 0; i < 6; i++) {
       const slot = pick(r, cluster), who = i % 4 === 3 ? 0 : i;
-      const d = B.bookDecide({ name: 'Racer ' + 'ABCDEF'[who], email: 'race' + who + '@mail.example', area, otherSide: 'Quiet Pines Cafe', consent: true, channel: 'form', start: iso(slot.startMs) }, [], nowMs, DATA, { ref: 'HM-RACE' + k + '-' + i, now: iso(nowMs) });
+      const d = B.bookDecide({ name: 'Racer ' + 'ABCDEF'[who], email: 'race' + who + '@mail.example', area, otherSide: 'Quiet Pines Cafe', consent: true, channel: 'form', start: iso(slot.startMs) }, [], nowMs, DATA, { ref: 'DY-RACE' + k + '-' + i, now: iso(nowMs) });
       if (d.code === 'booked') decisions.push(d.row);
     }
     // insertion order is random; ids follow insertion order
@@ -278,7 +278,7 @@ function requestOf(c) {
 }
 function runBook(c) {
   const nowMs = nowOf(c), rows = (c.bookings || []).map(fixtureRow), req = requestOf(c);
-  return { req, rows, nowMs, result: B.bookDecide(req, rows, nowMs, DATA, { ref: 'HM-TEST01', now: iso(nowMs) }) };
+  return { req, rows, nowMs, result: B.bookDecide(req, rows, nowMs, DATA, { ref: 'DY-TEST01', now: iso(nowMs) }) };
 }
 function checkBook(c) {
   const f = [], ex = c.expect, { result: r } = runBook(c);
@@ -337,7 +337,7 @@ function guaranteeProblems(req, result, rows, nowMs) {
     const clocks = t.match(/\b\d{1,2}:\d{2} [AP]M\b/g) || [];
     const hh = parts(startMs).hh, mm = parts(startMs).mm, want = (hh % 12 || 12) + ':' + String(mm).padStart(2, '0') + ' ' + (hh < 12 ? 'AM' : 'PM');
     if (clocks.length !== 1 || clocks[0] !== want) p.push('confirmation shows a time other than the booked one: ' + clocks.join(','));
-    (t.match(/https?:\/\/[^\s]+/g) || []).forEach((u) => { if (!/^https?:\/\/[^/]*hollismarr\.example/.test(u)) p.push('confirmation links outside the firm domain: ' + u); });
+    (t.match(/https?:\/\/[^\s]+/g) || []).forEach((u) => { if (!/^https?:\/\/[^/]*dyzania\.example/.test(u)) p.push('confirmation links outside the firm domain: ' + u); });
     if (result.confirmation.subject.indexOf('\n') !== -1) p.push('subject has a line break');
     const body = t.split('\n').slice(2).join('\n');
     if (body.indexOf(req.otherSide) !== -1 && req.otherSide.length > 3) p.push('confirmation repeats the other side');

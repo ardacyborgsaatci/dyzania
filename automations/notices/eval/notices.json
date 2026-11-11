@@ -1,7 +1,7 @@
 {
   "version": 1,
   "today": "2026-11-11",
-  "note": "12 invented court papers for Hollis & Marr LLP (fictional). Every court, case number, person and date is made up. 'print' is what is drawn on the image; 'truth' is what a perfect reader returns (events carry the date exactly as printed in dateText and the ISO date in dateIso); 'expect' is what the rules must produce from a perfect reading, with today fixed at 2026-11-11 (a Wednesday). Labels were written before automations/notices/lib was written. They are a same-author regression set, not an independent test. Nothing here was run through a real model. N09 is a blurred, rotated, downscaled copy of a clean page; a person can still read it, so its truth legibility is 'partial'. Poor legibility is covered by property tests in the test folder, not by an image.",
+  "note": "12 invented court papers for Dyzania LLP (fictional). Every court, case number, person and date is made up. 'print' is what is drawn on the image; 'truth' is what a perfect reader returns (events carry the date exactly as printed in dateText and the ISO date in dateIso); 'expect' is what the rules must produce from a perfect reading, with today fixed at 2026-11-11 (a Wednesday). Labels were written before automations/notices/lib was written. They are a same-author regression set, not an independent test. Nothing here was run through a real model. N09 is a blurred, rotated, downscaled copy of a clean page; a person can still read it, so its truth legibility is 'partial'. Poor legibility is covered by property tests in the test folder, not by an image.",
   "cases": [
     {
       "id": "N01", "file": "N01.png", "group": "clean",

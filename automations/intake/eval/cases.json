@@ -1,5 +1,5 @@
 {
-  "note": "Development set for the Hollis & Marr intake. 47 invented leads. Every name, firm and event is made up. The expected values were written from the scoring rules in README.md BEFORE the code was run against them, so a mismatch means either the code or the label is wrong and has to be looked at. They were written by the same person who wrote the code, so this is a regression check, not an independent test. 'len' is the intended description length band (S 40-119, M 120-299, L 300+ characters) and is checked by a test.",
+  "note": "Development set for the Dyzania intake. 47 invented leads. Every name, firm and event is made up. The expected values were written from the scoring rules in README.md BEFORE the code was run against them, so a mismatch means either the code or the label is wrong and has to be looked at. They were written by the same person who wrote the code, so this is a regression check, not an independent test. 'len' is the intended description length band (S 40-119, M 120-299, L 300+ characters) and is checked by a test.",
   "today": "2026-11-11",
   "defaults": { "preferredContact": "email", "phone": "", "location": "harlow_point", "hearing": "none", "incidentDate": "", "otherSide": "", "howHeard": "", "consent": true },
   "cases": [

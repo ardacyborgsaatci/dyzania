@@ -15,8 +15,8 @@ const MAX_SUMMARY = 140;
 // handoffRef when the receiver is a person's queue (the intake coordinator, the paralegals), not another workflow.
 const QUEUE = 'queue';
 
-// A reference this system issues (HM-..., N-...): kept whole, whatever digits it holds.
-const REFERENCE = /\b(?:HM|N)-[A-Z0-9][A-Z0-9-]*/g;
+// A reference this system issues (DY-..., N-...): kept whole, whatever digits it holds.
+const REFERENCE = /\b(?:DY|N)-[A-Z0-9][A-Z0-9-]*/g;
 
 function cleanSummary(text) {
   const scrub = (part) => part

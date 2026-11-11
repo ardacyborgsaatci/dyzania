@@ -36,8 +36,8 @@ test('the journey books one invented visitor through the real endpoints and rule
   const r = await withFastClock((wait) => runJourney({ request: siteRequest(log), wait, now: () => new Date('2026-11-11T15:00:00Z') }));
   assert.equal(r.ok, true, JSON.stringify(r.steps));
   assert.deepEqual(r.steps.map((s) => s.step), ['token', 'intake', 'slots', 'book']);
-  assert.match(r.report.leadRef, /^HM-/);
-  assert.match(r.report.bookingRef, /^HM-/);
+  assert.match(r.report.leadRef, /^DY-/);
+  assert.match(r.report.bookingRef, /^DY-/);
   assert.ok(['book', 'follow_up'].includes(r.report.intakeKind));
   assert.equal(r.report.confirmationSent, true);
   // the booking carries the lead reference the intake returned
@@ -72,11 +72,11 @@ test('the journey stops at the first step that fails and says which', withSite(a
   assert.equal(r.report, null);
   assert.equal(r.steps[r.steps.length - 1].step, 'intake');
   // a site where the intake does not offer booking
-  const noBook = async (method, p) => (p === '/api/token' ? { status: 200, data: { token: 't' } } : { status: 200, data: { ok: true, ref: 'HM-1', kind: 'urgent' } });
+  const noBook = async (method, p) => (p === '/api/token' ? { status: 200, data: { token: 't' } } : { status: 200, data: { ok: true, ref: 'DY-1', kind: 'urgent' } });
   assert.equal((await runJourney({ request: noBook, wait: async () => {} })).steps.pop().step, 'intake kind');
   // a booking that is refused
   const refuse = async (method, p) => (p === '/api/token' ? { status: 200, data: { token: 't' } }
-    : p === '/api/intake' ? { status: 200, data: { ok: true, ref: 'HM-1', kind: 'book' } }
+    : p === '/api/intake' ? { status: 200, data: { ok: true, ref: 'DY-1', kind: 'book' } }
     : p === '/api/slots' ? { status: 200, data: { ok: true, slots: [{ start: '2026-11-12T16:00:00Z' }] } }
     : { status: 409, data: { ok: false, code: 'slot_unavailable' } });
   assert.equal((await runJourney({ request: refuse, wait: async () => {} })).steps.pop().step, 'book');
@@ -84,10 +84,10 @@ test('the journey stops at the first step that fails and says which', withSite(a
 
 // ---- verifying the rows ----
 const T0 = new Date('2026-11-11T15:00:00Z');
-const report = { startedAt: T0.toISOString(), finishedAt: new Date(T0.getTime() + 20000).toISOString(), leadRef: 'HM-L00001', intakeKind: 'book', bookingRef: 'HM-B00001', person: { name: 'Live Check Visitor', email: 'live-check@mail.example', otherSide: 'Invented Cafe Supplies' } };
+const report = { startedAt: T0.toISOString(), finishedAt: new Date(T0.getTime() + 20000).toISOString(), leadRef: 'DY-L00001', intakeKind: 'book', bookingRef: 'DY-B00001', person: { name: 'Live Check Visitor', email: 'live-check@mail.example', otherSide: 'Invented Cafe Supplies' } };
 function goodRows() {
-  const intake = A.intakeEvent({ ok: true, lead: { ref: 'HM-L00001', areaFinal: 'family', tier: 'Hot', nextStep: 'book', urgencyLevel: 'none' } }, { now: new Date(T0.getTime() + 5000) });
-  const booking = A.bookingEvent({ event: { at: T0.toISOString(), code: 'booked', reason: '', area: 'family', channel: 'form', attorney: 'elena-voss' }, row: { bookingRef: 'HM-B00001' } }, { now: new Date(T0.getTime() + 15000), ref: 'HM-B00001', leadRef: 'HM-L00001' });
+  const intake = A.intakeEvent({ ok: true, lead: { ref: 'DY-L00001', areaFinal: 'family', tier: 'Hot', nextStep: 'book', urgencyLevel: 'none' } }, { now: new Date(T0.getTime() + 5000) });
+  const booking = A.bookingEvent({ event: { at: T0.toISOString(), code: 'booked', reason: '', area: 'family', channel: 'form', attorney: 'elena-voss' }, row: { bookingRef: 'DY-B00001' } }, { now: new Date(T0.getTime() + 15000), ref: 'DY-B00001', leadRef: 'DY-L00001' });
   return [E.toRow(intake.event), E.toRow(booking.event)];
 }
 
@@ -114,16 +114,16 @@ test('verify: says what is wrong when an event is missing, mislinked, late, leak
   assert.match(problems([intake, Object.assign({}, booking, { status: 'blocked' })]), /status blocked/);
   assert.match(problems([Object.assign({}, intake, { handoffTo: '', handoffRef: '' }), booking]), /does not hand off to booking/);
   assert.match(problems([intake, Object.assign({}, booking, { ts: new Date(T0.getTime() - 3600000).toISOString() })]), /older than the intake event/);
-  assert.match(problems([intake, Object.assign({}, booking, { summary: booking.summary.replace('HM-B00001', 'HM-B99999') })]), /does not carry the booking reference/);
+  assert.match(problems([intake, Object.assign({}, booking, { summary: booking.summary.replace('DY-B00001', 'DY-B99999') })]), /does not carry the booking reference/);
   assert.match(problems([intake, booking, Object.assign({}, booking, { source: 'handoff', status: 'ok' })]), /exactly one booked event/);
   // private text in a summary: a name, an address, a phone-like number
-  assert.match(problems([intake, Object.assign({}, booking, { summary: 'Booking HM-B00001: booked, family, for Live Check Visitor' })]), /repeats private text/);
+  assert.match(problems([intake, Object.assign({}, booking, { summary: 'Booking DY-B00001: booked, family, for Live Check Visitor' })]), /repeats private text/);
   assert.match(problems([intake, Object.assign({}, booking, { summary: booking.summary + ' live-check@mail.example' })]), /has an @/);
   assert.match(problems([intake, Object.assign({}, booking, { summary: booking.summary + ' call 555 010 0199' })]), /phone-like/);
   // an invalid row anywhere in the table is reported
   assert.match(problems([intake, booking, { ts: T0.toISOString(), automation: 'billing', team: 'x', runId: 'z', source: 'web', status: 'ok', summary: 's' }]), /fails its own checks/);
   // a receiver with no sender
-  assert.match(problems([intake, booking, Object.assign({}, booking, { runId: 'HM-L00077', source: 'handoff' })]), /chain: receiver booking HM-L00077 has no sender/);
+  assert.match(problems([intake, booking, Object.assign({}, booking, { runId: 'DY-L00077', source: 'handoff' })]), /chain: receiver booking DY-L00077 has no sender/);
   // no report
   assert.match(problems([intake, booking], {}), /run the journey first/);
   assert.equal(verifyRows(null, null).ok, false);

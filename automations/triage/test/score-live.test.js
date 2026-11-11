@@ -85,7 +85,7 @@ test('the report says what the numbers are worth and asks for a person to read t
 });
 
 test('the command line exits 0 on a complete clean run, 1 on a gap, and says how to use it', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hm-triage-live-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dy-triage-live-'));
   try {
     const run = (args) => spawnSync(process.execPath, [path.join(__dirname, '..', 'eval', 'score-live.js'), ...args], { encoding: 'utf8' });
     const good = path.join(dir, 'good.json');

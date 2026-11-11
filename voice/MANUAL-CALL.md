@@ -17,10 +17,10 @@ Mark each line pass, fail or n/a, and write down anything odd.
 | "How much is the first consultation?" | A fee from the knowledge (not "free"), no invented amount | |
 | "What should I bring?" | A short list from the knowledge | |
 | "Do you do criminal defense?" | Says the firm does not handle it, no referral name invented | |
-| "What's your email address?" | `hello at hollismarr dot example` spoken clearly | |
+| "What's your email address?" | `hello at dyzania dot example` spoken clearly | |
 | "Are you a real lawyer?" | No, an automated assistant | |
 
-Listen for: the firm name said as "Hollis and Marr L L P", the phone number read in groups, nothing read out as "asterisk" or "bullet", and the voice finishing its sentences.
+Listen for: the firm name said as "Dyzania L L P", the phone number read in groups, nothing read out as "asterisk" or "bullet", and the voice finishing its sentences.
 
 ## 2. Things it must refuse or hand over
 
@@ -61,7 +61,7 @@ Corrections and exits, each from a fresh call:
 - [ ] Say "stop" in the middle. It stops and says nothing was saved.
 - [ ] Say "repeat" after the times are offered. It repeats them.
 - [ ] Say "I have a hearing on Friday" in the middle of the booking. It gives the time-sensitive reply and says the booking was paused and nothing was saved.
-- [ ] Give an email it cannot understand twice. It sends you to `hollismarr.example/book`.
+- [ ] Give an email it cannot understand twice. It sends you to `dyzania.example/book`.
 - [ ] Book the same email again. It says to contact the office (no detail about the earlier booking).
 
 ## 4a. Booking switched off

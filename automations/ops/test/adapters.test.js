@@ -22,7 +22,7 @@ const firm = loadFirmData();
 // ---- real outputs, with the private text that went in, so a test can look for it in what comes out ----
 const intakeRuns = intakeSet.cases.map((c) => {
   const body = Object.assign({}, intakeSet.defaults, c.input);
-  const out = processIntake(body, firm, { today: intakeSet.today, ref: 'HM-EVAL-' + c.id, now: intakeSet.today + 'T12:00:00Z' });
+  const out = processIntake(body, firm, { today: intakeSet.today, ref: 'DY-EVAL-' + c.id, now: intakeSet.today + 'T12:00:00Z' });
   return { id: c.id, out, private: [body.name, body.email, body.phone, body.otherSide, body.description] };
 });
 const triageRuns = TR.SET.emails.map((e) => {
@@ -151,7 +151,7 @@ test('booking: status follows the decision code; spam and invalid are not logged
 
 test('booking: an intake reference makes the booking the receiving end of the handoff and chains the two rows by run id', () => {
   const booked = bookingRuns.find((r) => r.result.event.code === 'booked');
-  const leadRef = 'HM-261111-AB12';
+  const leadRef = 'DY-261111-AB12';
   const e = A.bookingEvent(booked.result, { now: NOW, leadRef });
   assert.equal(e.event.source, 'handoff');
   assert.equal(e.event.runId, leadRef);

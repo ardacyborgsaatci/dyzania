@@ -1,6 +1,6 @@
 'use strict';
 const { extractDates, daysFromToday } = require('../../../firm/lib/urgency');
-// Hollis & Marr court-notice reading. Pure functions: no network, no clock of its own (every function that needs
+// Dyzania court-notice reading. Pure functions: no network, no clock of its own (every function that needs
 // today takes it), no model call. A vision model copies what is printed on a scan into JSON. This file turns that
 // copy into a row, a priority and an alert. The model gives an opinion about the page; these rules decide.
 //
@@ -20,8 +20,8 @@ const { extractDates, daysFromToday } = require('../../../firm/lib/urgency');
 //   - normal: only a document the model says is not a court document, and only if nothing else is wrong with it.
 //   - the alert holds no party names and no text copied from the page other than a date as printed.
 
-const NOTICE_VERSION = 'hm-notices-v1';
-const NOTICE_PROMPT_VERSION = 'hm-notice-extract-v1';
+const NOTICE_VERSION = 'dy-notices-v1';
+const NOTICE_PROMPT_VERSION = 'dy-notice-extract-v1';
 const NOTICE_STATUS = 'Needs attorney confirmation';
 const NOTICE_TYPES = ['hearing_notice', 'summons', 'subpoena', 'order', 'motion_notice', 'other_court_paper', 'not_a_court_document'];
 const NOTICE_KINDS = ['hearing', 'trial', 'conference', 'appearance', 'response_due', 'filing_due', 'other'];

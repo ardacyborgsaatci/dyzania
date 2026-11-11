@@ -2,7 +2,7 @@
 const { classifyArea } = require('../../../firm/lib/areas');
 const { checkConflicts } = require('../../../firm/lib/conflicts');
 const { detectUrgency, daysFromToday } = require('../../../firm/lib/urgency');
-// Hollis & Marr lead intake: validate a website form, match it to a practice area, check conflicts,
+// Dyzania lead intake: validate a website form, match it to a practice area, check conflicts,
 // flag urgent wording, score it 0-100 and decide the next step. Pure functions. No model, no I/O.
 // The visitor reply is a fixed template: it never gives legal advice, never states a legal deadline,
 // never promises a response time and never says why a lead is on hold.
@@ -161,7 +161,7 @@ function visitorMessage(result, data) {
     lines.push('If a time limit may be running, please contact another lawyer quickly.');
   } else {
     headline = 'Thanks, ' + first + '. The firm cannot take this matter.';
-    lines.push('Hollis & Marr helps people in Harlow Point and the surrounding area, and can only take matters in the courts where its attorneys are licensed. We suggest contacting your local bar association\'s lawyer referral service. If a time limit may be running, please contact another lawyer quickly.');
+    lines.push('Dyzania helps people in Harlow Point and the surrounding area, and can only take matters in the courts where its attorneys are licensed. We suggest contacting your local bar association\'s lawyer referral service. If a time limit may be running, please contact another lawyer quickly.');
   }
   const show = result.alsoShow || [];
   if (show.indexOf('emergency') !== -1) lines.push(firm.language.emergency);
@@ -181,7 +181,7 @@ function leadSummary(r) {
 }
 
 // data: { firm, areas (practice-areas.json), urgency (urgency.json), conflicts (conflicts.json entries array as .entries) }
-// ctx: { today: 'YYYY-MM-DD', ref: 'HM-...' , now: ISO string }
+// ctx: { today: 'YYYY-MM-DD', ref: 'DY-...' , now: ISO string }
 function processIntake(body, data, ctx) {
   const v = validateIntake(body, data, ctx.today);
   if (v.spam) return { ok: true, spam: true };
@@ -240,7 +240,7 @@ function processIntake(body, data, ctx) {
   ];
   const alert = {
     send: decision.alert,
-    subject: '[H&M intake] ' + decision.priority.toUpperCase() + ' ' + lead.ref + ' - ' + (areaRow ? areaRow.name : area.area) + ' - ' + decision.nextStep,
+    subject: '[Dyzania intake] ' + decision.priority.toUpperCase() + ' ' + lead.ref + ' - ' + (areaRow ? areaRow.name : area.area) + ' - ' + decision.nextStep,
     text: alertLines.join('\n')
   };
   return { ok: true, lead, visitor, alert, summary: leadSummary(lead) };

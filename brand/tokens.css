@@ -1,37 +1,37 @@
-/* Hollis & Marr tokens: dark, compact, pill-shaped. Built from wrenbookDESIGN.md.md (the dark design system).
+/* Dyzania tokens: dark, compact, pill-shaped. Built from wrenbookDESIGN.md.md (the dark design system).
    One accent (brass), used only for actions and active states. Everything else is grey. */
 :root {
   color-scheme: dark;
 
-  --hm-bg: #121212;
-  --hm-surface: #181818;
-  --hm-surface-2: #1f1f1f;
-  --hm-card: #252525;
-  --hm-line: #2e2e2e;
-  --hm-edge: #7c7c7c;
+  --dy-bg: #121212;
+  --dy-surface: #181818;
+  --dy-surface-2: #1f1f1f;
+  --dy-card: #252525;
+  --dy-line: #2e2e2e;
+  --dy-edge: #7c7c7c;
 
-  --hm-ink: #ffffff;
-  --hm-muted: #b3b3b3;
+  --dy-ink: #ffffff;
+  --dy-muted: #b3b3b3;
 
-  --hm-brass: #d4a94f;
-  --hm-on-brass: #121212;
+  --dy-brass: #d4a94f;
+  --dy-on-brass: #121212;
 
-  --hm-error: #f3727f;
-  --hm-warn: #ffa42b;
-  --hm-info: #539df5;
+  --dy-error: #f3727f;
+  --dy-warn: #ffa42b;
+  --dy-info: #539df5;
 
-  --hm-font-title: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
-  --hm-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
+  --dy-font-title: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
+  --dy-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
 
-  --hm-radius-card: 8px;
-  --hm-radius-input: 4px;
-  --hm-radius-pill: 9999px;
-  --hm-shadow: rgba(0, 0, 0, 0.3) 0 8px 8px;
-  --hm-shadow-lg: rgba(0, 0, 0, 0.5) 0 8px 24px;
+  --dy-radius-card: 8px;
+  --dy-radius-input: 4px;
+  --dy-radius-pill: 9999px;
+  --dy-shadow: rgba(0, 0, 0, 0.3) 0 8px 8px;
+  --dy-shadow-lg: rgba(0, 0, 0, 0.5) 0 8px 24px;
 }
 
 body {
-  background: var(--hm-bg);
-  color: var(--hm-ink);
-  font-family: var(--hm-font-body);
+  background: var(--dy-bg);
+  color: var(--dy-ink);
+  font-family: var(--dy-font-body);
 }

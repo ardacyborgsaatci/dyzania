@@ -53,7 +53,7 @@ function fakeN8n({ now = NOW, confirmationSent = true } = {}) {
 
     if (path.endsWith('/intake')) {
       refNo += 1;
-      const out = intake.processIntake(body, data, { today: now.slice(0, 10), ref: 'HM-L' + String(refNo).padStart(5, '0'), now });
+      const out = intake.processIntake(body, data, { today: now.slice(0, 10), ref: 'DY-L' + String(refNo).padStart(5, '0'), now });
       if (out.spam) return reply(200, { ok: true });
       if (!out.ok) return reply(422, { ok: false, errors: out.errors });
       return reply(200, { ok: true, ref: out.lead.ref, nextStep: out.lead.nextStep, headline: out.visitor.headline, message: out.visitor.text });
@@ -62,7 +62,7 @@ function fakeN8n({ now = NOW, confirmationSent = true } = {}) {
       return reply(200, booking.bookListSlots(body, rows, nowMs, data));
     }
     if (path.endsWith('/booking/book')) {
-      const dec = booking.bookDecide(body, rows, nowMs, data, { ref: 'HM-B' + String(rows.length + 1).padStart(5, '0'), now });
+      const dec = booking.bookDecide(body, rows, nowMs, data, { ref: 'DY-B' + String(rows.length + 1).padStart(5, '0'), now });
       if (!dec.row) return reply(200, dec.public);
       const id = rows.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0) + 1;
       rows.push({ id, ...dec.row });

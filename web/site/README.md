@@ -1,4 +1,4 @@
-# Hollis & Marr LLP site
+# Dyzania LLP site
 
 One static site plus four Vercel functions. No build step. The firm is fictional; use invented details everywhere.
 

@@ -29,7 +29,7 @@ const row = (built, minutesAfter) => toRow(Object.assign({}, built.event, { ts: 
 
 const leads = intakeSet.cases.map((c) => {
   const body = Object.assign({}, intakeSet.defaults, c.input);
-  return { id: c.id, body, out: processIntake(body, firm, { today: intakeSet.today, ref: 'HM-EVAL-' + c.id, now: intakeSet.today + 'T12:00:00Z' }) };
+  return { id: c.id, body, out: processIntake(body, firm, { today: intakeSet.today, ref: 'DY-EVAL-' + c.id, now: intakeSet.today + 'T12:00:00Z' }) };
 }).filter((l) => l.out.ok && !l.out.spam);
 
 test('the four links are written down once, between known automations, with a stated carrier', () => {
@@ -50,7 +50,7 @@ test('intake -> booking: a lead shown the booking page books, and the two rows c
     const slots = B.bookListSlots({ area, limit: 1 }, [], NOW_MS, bookData);
     assert.equal(slots.ok, true, l.id + ' area ' + area + ' can be booked');
     const req = { name: l.body.name, email: l.body.email, phone: '', area, otherSide: l.body.otherSide || '', noOtherSide: !l.body.otherSide, consent: true, channel: 'form', leadRef: l.out.lead.ref, start: slots.slots[0].start, website: '' };
-    const dec = B.bookDecide(req, [], NOW_MS, bookData, { ref: 'HM-B-' + l.id, now: iso(NOW_MS) });
+    const dec = B.bookDecide(req, [], NOW_MS, bookData, { ref: 'DY-B-' + l.id, now: iso(NOW_MS) });
     // The booking row keeps the lead reference, so a person can see which inquiry it came from.
     if (dec.row) assert.equal(dec.row.leadRef, l.out.lead.ref, l.id);
     const sent = A.intakeEvent(l.out, { now: new Date(NOW_MS) });
@@ -89,7 +89,7 @@ test('voice -> booking: the same request gets the same decision on a call as on 
   for (const c of BO.SET.cases.filter((x) => x.kind === 'book')) {
     const { req, rows, nowMs, result: web } = BO.runBook(c);
     if (req.channel !== 'form') continue;
-    const call = B.bookDecide(Object.assign({}, req, { channel: 'voice' }), rows, nowMs, bookData, { ref: 'HM-TEST01', now: iso(nowMs) });
+    const call = B.bookDecide(Object.assign({}, req, { channel: 'voice' }), rows, nowMs, bookData, { ref: 'DY-TEST01', now: iso(nowMs) });
     assert.equal(call.code, web.code, c.id);
     assert.equal(call.reason, web.reason, c.id);
     assert.equal(call.row && call.row.attorney, web.row && web.row.attorney, c.id);
@@ -154,6 +154,6 @@ test('the contract check finds what is wrong: a receiver with no sender, a recei
 function bookingRunsOf(lead) {
   const area = lead.out.lead.areaFinal;
   const slots = B.bookListSlots({ area, limit: 1 }, [], NOW_MS, bookData);
-  const dec = B.bookDecide({ name: lead.body.name, email: lead.body.email, phone: '', area, otherSide: '', noOtherSide: true, consent: true, channel: 'form', leadRef: lead.out.lead.ref, start: slots.slots[0].start, website: '' }, [], NOW_MS, bookData, { ref: 'HM-B-X', now: iso(NOW_MS) });
+  const dec = B.bookDecide({ name: lead.body.name, email: lead.body.email, phone: '', area, otherSide: '', noOtherSide: true, consent: true, channel: 'form', leadRef: lead.out.lead.ref, start: slots.slots[0].start, website: '' }, [], NOW_MS, bookData, { ref: 'DY-B-X', now: iso(NOW_MS) });
   return A.bookingEvent(dec, { now: new Date(NOW_MS), leadRef: lead.out.lead.ref });
 }

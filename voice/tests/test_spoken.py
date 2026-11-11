@@ -170,24 +170,24 @@ class Aloud(unittest.TestCase):
         self.assertEqual(spoken.say_when("2026-12-01", "12:00"), "Tuesday, December 1 at 12 PM")
 
     def test_speakable(self):
-        s = spoken.speakable("Hollis & Marr LLP: call 555-0142 or write hello@hollismarr.example. The fee is $150.")
-        self.assertIn("Hollis and Marr L L P", s)
+        s = spoken.speakable("Dyzania LLP: call 555-0142 or write hello@dyzania.example. The fee is $150.")
+        self.assertIn("Dyzania L L P", s)
         self.assertIn("5 5 5, 0 1 4 2", s)
-        self.assertIn("hello at hollismarr dot example", s)
+        self.assertIn("hello at dyzania dot example", s)
         self.assertIn("150 dollars", s)
         self.assertNotIn("&", s)
         self.assertNotIn("$", s)
 
     def test_speakable_urls(self):
-        s = spoken.speakable("Book at https://hollismarr.example/book. Thank you.")
-        self.assertIn("hollismarr dot example slash book.", s)
+        s = spoken.speakable("Book at https://dyzania.example/book. Thank you.")
+        self.assertIn("dyzania dot example slash book.", s)
         self.assertNotIn("https", s)
 
     def test_speakable_spells_what_it_is_told_to(self):
-        s = spoken.speakable("Email: jane.doe@gmail.com. Phone: 5550100199. Reference HM-4F2K9X.", spell=["jane.doe@gmail.com", "5550100199", "HM-4F2K9X"])
+        s = spoken.speakable("Email: jane.doe@gmail.com. Phone: 5550100199. Reference DY-4F2K9X.", spell=["jane.doe@gmail.com", "5550100199", "DY-4F2K9X"])
         self.assertIn("J, A, N, E, dot, D, O, E, at, gmail dot com", s)
         self.assertIn("5 5 5, 0 1 0, 0 1 9 9", s)
-        self.assertIn("H, M, dash, 4, F, 2, K, 9, X", s)
+        self.assertIn("D, Y, dash, 4, F, 2, K, 9, X", s)
         self.assertNotIn("jane.doe", s)
 
     def test_speakable_strips_markdown(self):

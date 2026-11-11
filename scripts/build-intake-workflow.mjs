@@ -51,7 +51,7 @@ const results = [];
 for (const item of $input.all()) {
   const raw = item.json || {};
   const body = raw.body && typeof raw.body === 'object' ? raw.body : raw;
-  const ref = 'HM-' + TODAY.replace(/-/g, '').slice(2) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const ref = 'DY-' + TODAY.replace(/-/g, '').slice(2) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
   results.push({ json: processIntake(body, DATA, { today: TODAY, ref, now: NOW.toISOString() }) });
 }
 return results;
@@ -171,7 +171,7 @@ export function buildWorkflow() {
     'Spam?': { main: [[link('Reply quietly')], [link('Reply with errors')]] }
   };
   return {
-    name: 'H&M Intake - Lead intake and scoring',
+    name: 'Dyzania Intake - Lead intake and scoring',
     nodes,
     connections,
     settings: {

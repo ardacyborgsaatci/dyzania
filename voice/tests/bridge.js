@@ -18,7 +18,7 @@ if (req.op === 'slots') {
   out = { result: b.bookListSlots(req.body || {}, rows, nowMs, data), rows };
 } else if (req.op === 'book') {
   const refNo = String(rows.length + 1).padStart(6, '0');
-  const dec = b.bookDecide(req.body || {}, rows, nowMs, data, { ref: 'HM-' + refNo, now: new Date(nowMs).toISOString() });
+  const dec = b.bookDecide(req.body || {}, rows, nowMs, data, { ref: 'DY-' + refNo, now: new Date(nowMs).toISOString() });
   if (dec.row) {
     const id = rows.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0) + 1;
     const row = Object.assign({ id }, dec.row);

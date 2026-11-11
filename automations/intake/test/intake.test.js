@@ -9,7 +9,7 @@ const { evaluate } = require('../eval/run');
 
 const data = loadFirmData();
 const TODAY = '2026-11-11';
-const ctx = { today: TODAY, ref: 'HM-TEST-0001', now: '2026-11-11T12:00:00Z' };
+const ctx = { today: TODAY, ref: 'DY-TEST-0001', now: '2026-11-11T12:00:00Z' };
 const base = {
   name: 'Ana Lopez', email: 'ana.lopez@mail.example', phone: '555-0100', preferredContact: 'email', area: 'family',
   description: 'I want a divorce and need some help with the custody of our son. We separated in the summer.',
@@ -152,7 +152,7 @@ test('the alert email carries no message text, no email address and no phone num
   assert.doesNotMatch(all, /555-0100/);
   assert.doesNotMatch(all, /Ana Lopez/);
   assert.doesNotMatch(all, /Oren Kessler/);
-  assert.match(all, /HM-TEST-0001/);
+  assert.match(all, /DY-TEST-0001/);
   assert.match(all, /not legal advice/);
 });
 

@@ -69,7 +69,7 @@ class FixedReplies(unittest.TestCase):
     def test_urgent_reply_for_court_papers(self):
         text = guards.urgent_reply(firmdata.urgent_flags("I was served with papers and have a hearing next week"))
         self.assertIn("time-sensitive", text)
-        self.assertIn("urgent@hollismarr.example", text)
+        self.assertIn("urgent@dyzania.example", text)
         self.assertIn("555-0142", text)
         self.assertIn("can't tell you what a deadline is", text)
         self.assertIn("not a lawyer", text)
@@ -85,7 +85,7 @@ class FixedReplies(unittest.TestCase):
         self.assertIn("doesn't handle criminal or housing", text)
         self.assertIn("bar association", text)
         self.assertNotIn("say book", text)           # booking is not offered for something the firm cannot take
-        self.assertNotIn("urgent@hollismarr.example", text)
+        self.assertNotIn("urgent@dyzania.example", text)
 
     def test_no_reply_states_a_deadline_promises_a_time_or_gives_advice(self):
         replies = [
@@ -102,13 +102,13 @@ class FixedReplies(unittest.TestCase):
 
 
 class AnswerCheck(unittest.TestCase):
-    ALLOWED = "The first consultation is 45 minutes and costs $150. Email hello@hollismarr.example or call 555-0142."
+    ALLOWED = "The first consultation is 45 minutes and costs $150. Email hello@dyzania.example or call 555-0142."
 
     def test_good_answers_pass(self):
         for text in [
             "The first consultation for family law is 45 minutes and costs $150.",
             "The office is at 220 Canal Street, Suite 4, and it is open Monday to Friday.",
-            "You can email hello@hollismarr.example or call 555-0142.",
+            "You can email hello@dyzania.example or call 555-0142.",
             "I can't promise or guarantee any result, but an attorney can talk it through.",
             "Personal injury cases are handled on a contingency basis.",
             "I can't say whether you have a case, only an attorney can.",

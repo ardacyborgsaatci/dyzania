@@ -1,4 +1,4 @@
-# Loom script: Hollis & Marr LLP, five automations (about 3 minutes)
+# Loom script: Dyzania LLP, five automations (about 3 minutes)
 
 One video for the whole firm. Record at 1080p, browser zoom about 110%. The video says what works and what is not measured; keep that, it is the point.
 
@@ -17,7 +17,7 @@ Have ready before you press record:
 
 | Time | On screen | Say |
 |---|---|---|
-| 0:00 | Home page | "Hollis & Marr is a made-up law firm. I built five automations for its team and this is them in one place. Everything you will see is invented, and nothing here gives legal advice or sends a message to a client on its own." |
+| 0:00 | Home page | "Dyzania is a made-up law firm. I built five automations for its team and this is them in one place. Everything you will see is invented, and nothing here gives legal advice or sends a message to a client on its own." |
 | 0:15 | `/ops` page, the five cards | "Each card says what it does, the evidence, and what is not measured. I wrote the labels and the code myself, so these are regression checks, not independent proof." |
 | 0:30 | Contact form: fill in the invented visitor, send | "Intake. A visitor describes a matter. Rules, not a model, match it to a practice area, screen the other side against an invented conflict list, flag a court date or other urgent wording, and score it. The visitor is never told about the conflict screen." |
 | 0:55 | Booking page: pick a time, book | "Booking. The same rules offer free times and choose the attorney. They enforce notice, a buffer, one booking per person and the conflict check. A separate brute-force check agrees with them on 72 scenarios, including both daylight-saving changes." |
