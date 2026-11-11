@@ -8,7 +8,7 @@ The automations run on n8n, open models on Groq and OpenRouter, and Vercel. **No
 
 ## The state, plainly
 
-**All five are built and tested offline. None is live yet.** Nothing from this repo has been imported into n8n or deployed to Vercel, and no real model has been run on any of the evaluation sets, so **how well the models do is not measured**. Every number below is from tests and from labelled sets that I wrote myself, so they are regression checks and not independent proof. [CUTOVER.md](CUTOVER.md) is the runbook for going live, with every step that needs the owner's OK, and it names the live runs that will produce the missing numbers.
+**All five are built and tested offline. None runs end to end yet.** The site is deployed and public at `dyzania.vercel.app`, but its forms answer "unavailable" on purpose: nothing from this repo has been imported into n8n, and no real model has been run on any of the evaluation sets, so **how well the models do is not measured**. Every number below is from tests and from labelled sets that I wrote myself, so they are regression checks and not independent proof. [CUTOVER.md](CUTOVER.md) is the runbook for going live, with every step that needs the owner's OK, and it names the live runs that will produce the missing numbers.
 
 | Team | Automation | What it does | Evidence so far | Not measured |
 |---|---|---|---|---|
@@ -78,7 +78,7 @@ Offline evaluations: `node automations/intake/eval/run.js`, `automations/triage/
 
 ## Known gaps
 
-- Nothing is imported, published or deployed, and no model has been run on the labelled sets. The live numbers are owed.
+- Nothing is imported or published in n8n, the voice line is not deployed, and no model has been run on the labelled sets. The live numbers are owed.
 - The labels, the rules and the code were written by one person. A second person labelling the same sets would be the real check.
 - Booking has no calendar mirror, cancel endpoint, holiday calendar or email verification; the double-booking check has been simulated but not tried on a real table.
 - A court notice that arrives by email is not sent to the notices workflow, and a new-matter email does not become a lead by itself.
