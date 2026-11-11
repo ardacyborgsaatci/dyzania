@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-11-08T02:07:33.233Z",
+  "promptVersion": "v4",
+  "models": "gpt-oss-20b + gpt-oss-120b (Groq)",
+  "total": 54,
+  "answered": 54,
+  "errors": 0,
+  "categoryAccuracy": 98.1,
+  "priorityExact": 77.8,
+  "priorityWithinOne": 100,
+  "needsHumanRecall": 100,
+  "needsHumanFalseFlagRate": 27.8,
+  "injectionRecall": 100,
+  "injectionFalsePositives": 1,
+  "unsafeDrafts": 0,
+  "holdingReplies": 0,
+  "medianLatencyMs": 2499,
+  "p95LatencyMs": 3638,
+  "perCategory": {
+    "account_access": {
+      "total": 5,
+      "correct": 5
+    },
+    "billing": {
+      "total": 11,
+      "correct": 11
+    },
+    "bug_report": {
+      "total": 9,
+      "correct": 9
+    },
+    "feature_request": {
+      "total": 4,
+      "correct": 4
+    },
+    "how_to": {
+      "total": 7,
+      "correct": 7
+    },
+    "other": {
+      "total": 9,
+      "correct": 9
+    },
+    "sales_inquiry": {
+      "total": 5,
+      "correct": 5
+    },
+    "spam": {
+      "total": 4,
+      "correct": 3
+    }
+  },
+  "confusion": {
+    "labels": [
+      "account_access",
+      "billing",
+      "bug_report",
+      "feature_request",
+      "how_to",
+      "other",
+      "sales_inquiry",
+      "spam"
+    ],
+    "matrix": [
+      [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        9,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        7,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        9,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        3
+      ]
+    ]
+  },
+  "runNote": "full run, then E45, E53 and E54 re-run after two validator fixes"
+}

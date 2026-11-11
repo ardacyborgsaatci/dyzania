@@ -1,0 +1,996 @@
+{
+  "name": "Support Triage - Demo API",
+  "nodes": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Triage Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "triage-demo",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "name": "Normalize Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const req = $input.first().json;\nconst b = req.body && typeof req.body === 'object' ? req.body : {};\nconst str = (v, max) => (typeof v === 'string' ? v : '').slice(0, max);\nconst source = b.source === 'eval' ? 'eval' : 'playground';\nconst ipHash = str(b.ipHash, 64).replace(/[^a-zA-Z0-9]/g, '');\nconst sampleRaw = str(b.sampleId, 40);\nconst sampleId = /^[a-z0-9-]{1,32}$/.test(sampleRaw) ? sampleRaw : '';\nconst from = str(b.from, 200).trim();\nconst subject = str(b.subject, 300).trim();\nconst body = typeof b.body === 'string' ? b.body : '';\nlet error = '';\nif (!ipHash) error = 'Missing visitor id.';\nelse if (!from) error = 'Missing sender.';\nelse if (body.length > 4000) error = 'Message is too long (4000 characters max).';\nelse if (!subject && !body.trim()) error = 'Subject or message is required.';\nconst prefix = source === 'eval' ? 'eval-' : 'pg-';\nconst messageId = prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);\nreturn [{ json: { ok: error === '', error, source, ipHash, sampleId, from, subject, body, messageId } }];"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "name": "Request Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.ok }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "name": "Load Rate Limit Rows",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_DEMO_RATE_LIMIT_TABLE_ID"
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "name": "Check Limits",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const norm = $('Normalize Request').first().json;\nconst VISITOR_LIMIT = 3;\nconst DAILY_LIMIT = 40;\nconst HOUR = 3600 * 1000;\nconst DAY = 24 * HOUR;\nif (norm.source === 'eval') {\n  return [{ json: { allowed: true, reason: '', retryAfterSec: 0, remaining: VISITOR_LIMIT } }];\n}\nconst now = Date.now();\nconst tsOf = (r) => {\n  const t = Date.parse(r.requestedAt || r.createdAt || '');\n  return Number.isFinite(t) ? t : 0;\n};\nconst rows = $input.all().map((i) => i.json).filter((r) => r && r.ipHash && r.source !== 'eval');\nconst day = rows.filter((r) => now - tsOf(r) < DAY);\nconst mine = day.filter((r) => r.ipHash === norm.ipHash && now - tsOf(r) < HOUR);\nlet allowed = true;\nlet reason = '';\nlet retryAfterSec = 0;\nif (day.length >= DAILY_LIMIT) {\n  allowed = false;\n  reason = 'daily_cap';\n  const oldest = Math.min(...day.map(tsOf));\n  retryAfterSec = Math.max(60, Math.ceil((oldest + DAY - now) / 1000));\n} else if (mine.length >= VISITOR_LIMIT) {\n  allowed = false;\n  reason = 'visitor_cap';\n  const oldest = Math.min(...mine.map(tsOf));\n  retryAfterSec = Math.max(60, Math.ceil((oldest + HOUR - now) / 1000));\n}\nconst remaining = allowed ? Math.max(0, VISITOR_LIMIT - mine.length - 1) : 0;\nreturn [{ json: { allowed, reason, retryAfterSec, remaining } }];"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000006",
+      "name": "Within Limits?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.allowed }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000007",
+      "name": "Record Request",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_DEMO_RATE_LIMIT_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ipHash": "={{ $(\"Normalize Request\").first().json.ipHash }}",
+            "requestedAt": "={{ $now.toISO() }}",
+            "source": "={{ $(\"Normalize Request\").first().json.source }}"
+          },
+          "schema": [
+            {
+              "id": "ipHash",
+              "displayName": "ipHash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "requestedAt",
+              "displayName": "requestedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000008",
+      "name": "Run Triage Core",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1680,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_TRIAGE_CORE_WORKFLOW_ID",
+          "cachedResultName": "Support Triage - Core"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $(\"Normalize Request\").first().json.source }}",
+            "messageId": "={{ $(\"Normalize Request\").first().json.messageId }}",
+            "sampleId": "={{ $(\"Normalize Request\").first().json.sampleId }}",
+            "from": "={{ $(\"Normalize Request\").first().json.from }}",
+            "subject": "={{ $(\"Normalize Request\").first().json.subject }}",
+            "body": "={{ $(\"Normalize Request\").first().json.body }}"
+          },
+          "schema": [
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sampleId",
+              "displayName": "sampleId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "mode": "once",
+        "options": {}
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000009",
+      "name": "Model Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1800,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.classificationStatus }}",
+              "rightValue": "fallback",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000010",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const r = $input.first().json;\nconst lim = $('Check Limits').first().json;\nreturn [{ json: {\n  ok: true,\n  category: r.category,\n  priority: r.priority,\n  sentiment: r.sentiment,\n  language: r.language,\n  summary: r.summary,\n  confidence: r.confidence,\n  needsHuman: r.needsHuman,\n  humanReason: r.humanReason,\n  injectionSuspected: r.injectionSuspected,\n  skipReason: r.skipReason,\n  classificationStatus: r.classificationStatus,\n  draftStatus: r.draftStatus,\n  draftReply: r.draftReply,\n  draftProblems: r.draftProblems,\n  kbArticlesUsed: r.kbArticlesUsed,\n  draftConfidence: r.draftConfidence,\n  status: r.status,\n  latencyMs: r.latencyMs,\n  promptVersion: r.promptVersion,\n  models: r.models,\n  remaining: lim.remaining\n} }];"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2280,
+        0
+      ],
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "name": "Build Log Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2520,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const norm = $('Normalize Request').first().json;\nconst r = $('Run Triage Core').first().json;\n// Free-text visitor submissions are never stored: only metadata is kept.\n// Preset samples (sampleId set, verified by the Vercel function) keep their text.\nconst keep = norm.sampleId !== '';\nreturn [{ json: {\n  skip: norm.source === 'eval',\n  source: norm.source,\n  messageId: norm.messageId,\n  sampleId: norm.sampleId,\n  receivedAt: r.receivedAt || new Date().toISOString(),\n  fromDomain: keep ? r.fromDomain || '' : '',\n  subject: keep ? r.subject || '' : '',\n  snippet: keep ? r.snippet || '' : '',\n  category: r.category || 'other',\n  priority: r.priority || 'normal',\n  sentiment: r.sentiment || 'neutral',\n  language: r.language || 'en',\n  summary: keep ? r.summary || '' : '',\n  needsHuman: r.needsHuman === true,\n  humanReason: r.humanReason || '',\n  confidence: Number.isFinite(Number(r.confidence)) ? Number(r.confidence) : 0,\n  injectionSuspected: r.injectionSuspected === true,\n  draftCreated: false,\n  status: r.status || 'needs_review',\n  latencyMs: Number.isFinite(Number(r.latencyMs)) ? Number(r.latencyMs) : 0,\n  promptVersion: r.promptVersion || ''\n} }];"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000013",
+      "name": "Log It?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2760,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.skip }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000014",
+      "name": "Insert Log Row",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3000,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_TRIAGE_LOG_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "messageId": "={{ $json.messageId }}",
+            "sampleId": "={{ $json.sampleId }}",
+            "receivedAt": "={{ $json.receivedAt }}",
+            "fromDomain": "={{ $json.fromDomain }}",
+            "subject": "={{ $json.subject }}",
+            "snippet": "={{ $json.snippet }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "sentiment": "={{ $json.sentiment }}",
+            "language": "={{ $json.language }}",
+            "summary": "={{ $json.summary }}",
+            "needsHuman": "={{ $json.needsHuman }}",
+            "humanReason": "={{ $json.humanReason }}",
+            "confidence": "={{ $json.confidence }}",
+            "injectionSuspected": "={{ $json.injectionSuspected }}",
+            "draftCreated": "={{ $json.draftCreated }}",
+            "status": "={{ $json.status }}",
+            "latencyMs": "={{ $json.latencyMs }}",
+            "promptVersion": "={{ $json.promptVersion }}"
+          },
+          "schema": [
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sampleId",
+              "displayName": "sampleId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "receivedAt",
+              "displayName": "receivedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fromDomain",
+              "displayName": "fromDomain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "snippet",
+              "displayName": "snippet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "language",
+              "displayName": "language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "needsHuman",
+              "displayName": "needsHuman",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "humanReason",
+              "displayName": "humanReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "injectionSuspected",
+              "displayName": "injectionSuspected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "draftCreated",
+              "displayName": "draftCreated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "latencyMs",
+              "displayName": "latencyMs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "promptVersion",
+              "displayName": "promptVersion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000015",
+      "name": "Respond 502",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1920,
+        220
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: 'triage_failed' } }}",
+        "options": {
+          "responseCode": 502
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000016",
+      "name": "Respond 503",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2040,
+        140
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: 'ai_unavailable' } }}",
+        "options": {
+          "responseCode": 503,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Retry-After",
+                "value": "300"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000017",
+      "name": "Respond 429",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1440,
+        160
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: 'rate_limited', reason: $json.reason, retryAfterSec: $json.retryAfterSec } }}",
+        "options": {
+          "responseCode": 429,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Retry-After",
+                "value": "={{ String($json.retryAfterSec) }}"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000018",
+      "name": "Respond 400",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        720,
+        160
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: $json.error } }}",
+        "options": {
+          "responseCode": 400
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000019",
+      "name": "Feed Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        520
+      ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "triage-feed",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000020",
+      "name": "Load Triage Log",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        520
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_TRIAGE_LOG_TABLE_ID"
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000021",
+      "name": "Build Feed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        520
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const WINDOW = 30 * 24 * 3600 * 1000;\nconst now = Date.now();\nconst tsOf = (r) => {\n  const t = Date.parse(r.receivedAt || r.createdAt || '');\n  return Number.isFinite(t) ? t : 0;\n};\nconst bool = (v) => v === true || v === 'true';\n// Rows with zero confidence are fallback results (model unavailable); they say nothing about triage quality.\nconst rows = $input.all().map((i) => i.json).filter((r) => r && r.category && r.source !== 'eval' && Number(r.confidence) > 0);\nconst recent = rows.filter((r) => now - tsOf(r) < WINDOW);\nconst countBy = (arr, key) => arr.reduce((m, r) => {\n  const v = r[key] || 'unknown';\n  m[v] = (m[v] || 0) + 1;\n  return m;\n}, {});\nconst lat = recent.map((r) => Number(r.latencyMs)).filter((n) => Number.isFinite(n) && n > 0).sort((a, b) => a - b);\n// Only playground and seed rows are listed. Gmail rows are counted but never shown.\nconst listed = recent\n  .filter((r) => r.source === 'playground' || r.source === 'seed')\n  .sort((a, b) => tsOf(b) - tsOf(a))\n  .slice(0, 25)\n  .map((r) => {\n    const item = {\n      at: r.receivedAt || r.createdAt,\n      source: r.source,\n      category: r.category,\n      priority: r.priority,\n      sentiment: r.sentiment,\n      language: r.language,\n      needsHuman: bool(r.needsHuman),\n      injectionSuspected: bool(r.injectionSuspected),\n      status: r.status,\n      latencyMs: Number(r.latencyMs) || 0\n    };\n    if (r.sampleId) {\n      item.sampleId = r.sampleId;\n      item.subject = r.subject;\n      item.summary = r.summary;\n    }\n    return item;\n  });\nreturn [{ json: {\n  generatedAt: new Date().toISOString(),\n  windowDays: 30,\n  total: recent.length,\n  needsHuman: recent.filter((r) => bool(r.needsHuman)).length,\n  injectionFlagged: recent.filter((r) => bool(r.injectionSuspected)).length,\n  medianLatencyMs: lat.length ? lat[Math.floor((lat.length - 1) / 2)] : null,\n  bySource: countBy(recent, 'source'),\n  byCategory: countBy(recent, 'category'),\n  byPriority: countBy(recent, 'priority'),\n  byStatus: countBy(recent, 'status'),\n  recent: listed\n} }];"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000022",
+      "name": "Respond Feed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        720,
+        520
+      ],
+      "parameters": {
+        "respondWith": "firstIncomingItem",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000023",
+      "name": "Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -260
+      ],
+      "parameters": {
+        "content": "Public entry points, called only by the Vercel functions and the eval runner (Header Auth: X-Triage-Secret). POST /triage-demo validates the request, rate-limits it (3 per visitor per hour, 40 per day overall, sized for the Groq free tier; eval runs bypass the caps), runs the shared Triage Core, answers, then logs metadata only. GET /triage-feed returns aggregate counts plus the 25 most recent playground rows. Gmail rows are counted but never listed, and free-text submissions are never stored.",
+        "width": 760,
+        "height": 230
+      }
+    }
+  ],
+  "connections": {
+    "Triage Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Request": {
+      "main": [
+        [
+          {
+            "node": "Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "Load Rate Limit Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 400",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Rate Limit Rows": {
+      "main": [
+        [
+          {
+            "node": "Check Limits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Limits": {
+      "main": [
+        [
+          {
+            "node": "Within Limits?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Within Limits?": {
+      "main": [
+        [
+          {
+            "node": "Record Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 429",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Request": {
+      "main": [
+        [
+          {
+            "node": "Run Triage Core",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Triage Core": {
+      "main": [
+        [
+          {
+            "node": "Model Available?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 502",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model Available?": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 503",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 200": {
+      "main": [
+        [
+          {
+            "node": "Build Log Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Log Row": {
+      "main": [
+        [
+          {
+            "node": "Log It?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log It?": {
+      "main": [
+        [
+          {
+            "node": "Insert Log Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feed Webhook": {
+      "main": [
+        [
+          {
+            "node": "Load Triage Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Triage Log": {
+      "main": [
+        [
+          {
+            "node": "Build Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Feed": {
+      "main": [
+        [
+          {
+            "node": "Respond Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Public API for the portfolio demo: POST /triage-demo (validate, rate-limit, run the shared triage core, log metadata) and GET /triage-feed (aggregate stats and recent playground rows)."
+  }
+}

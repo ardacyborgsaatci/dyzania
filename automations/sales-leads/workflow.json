@@ -1,0 +1,103 @@
+{
+  "name": "Lead Intake & Scoring",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d9345a0d-ff3a-417f-88dc-3d967c19dd58",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-224, 0],
+      "webhookId": "9c0124a7-bdef-4681-b1b8-2967526950d5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const f = $input.first().json.body || {};\nconst email = (f.email || '').toLowerCase();\nconst domain = email.split('@')[1] || '';\nconst freeDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];\nconst isBusinessEmail = domain !== '' && !freeDomains.includes(domain);\nconst budgetPoints = { 'Under $1k': 5, '$1k-$5k': 15, '$5k-$20k': 25, '$20k+': 35 }[f.budget] ?? 0;\nconst sizePoints = { '1-10': 5, '11-50': 10, '51-200': 15, '200+': 20 }[f.companySize] ?? 0;\nconst timelinePoints = { 'This month': 20, '1-3 months': 15, '3+ months': 5 }[f.timeline] ?? 0;\nconst businessPoints = isBusinessEmail ? 10 : 0;\nconst score = budgetPoints + sizePoints + timelinePoints + businessPoints;\nconst tier = score >= 70 ? 'Hot' : score >= 40 ? 'Warm' : 'Cold';\nreturn [{ json: { submittedAt: new Date().toISOString(), name: f.name, email: f.email, company: f.company, companySize: f.companySize, budget: f.budget, timeline: f.timeline, message: f.message || '', businessEmail: isBusinessEmail, score, tier } }];"
+      },
+      "id": "4a172bbe-8cde-4ced-8179-d6929615d765",
+      "name": "Score Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [32, 0]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "mode": "id", "value": "REPLACE_WITH_GOOGLE_SHEET_ID" },
+        "sheetName": { "__rl": true, "mode": "name", "value": "Leads" },
+        "columns": { "mappingMode": "autoMapInputData", "value": {} },
+        "options": {}
+      },
+      "id": "04e20ef1-4205-4a85-a037-0e482efa9bad",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [256, 0],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": true } }}",
+        "options": {}
+      },
+      "id": "e6008dce-2c91-4a8c-975c-bb702daddefe",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [368, 120]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 1 },
+          "conditions": [
+            {
+              "id": "df7fb408-8439-4266-8b35-ac835ed12205",
+              "leftValue": "={{ $('Score Lead').item.json.tier }}",
+              "rightValue": "Hot",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bf574e0d-e5d9-4472-b01a-fb5e762bcc1e",
+      "name": "Is Hot Lead?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "REPLACE_WITH_YOUR_EMAIL",
+        "subject": "=Hot lead: {{ $('Score Lead').item.json.name }} from {{ $('Score Lead').item.json.company }}",
+        "emailType": "text",
+        "message": "=Name: {{ $('Score Lead').item.json.name }}\nCompany: {{ $('Score Lead').item.json.company }}\nEmail: {{ $('Score Lead').item.json.email }}\nCompany size: {{ $('Score Lead').item.json.companySize }}\nBudget: {{ $('Score Lead').item.json.budget }}\nTimeline: {{ $('Score Lead').item.json.timeline }}\nScore: {{ $('Score Lead').item.json.score }}\n\nMessage:\n{{ $('Score Lead').item.json.message }}",
+        "options": {}
+      },
+      "id": "030e866f-25db-41b2-874f-797a646891b6",
+      "name": "Send Hot Lead Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [816, -16]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Score Lead", "type": "main", "index": 0 }]] },
+    "Score Lead": { "main": [[{ "node": "Save to Google Sheets", "type": "main", "index": 0 }]] },
+    "Save to Google Sheets": { "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]] },
+    "Respond to Webhook": { "main": [[{ "node": "Is Hot Lead?", "type": "main", "index": 0 }]] },
+    "Is Hot Lead?": { "main": [[{ "node": "Send Hot Lead Email", "type": "main", "index": 0 }], []] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": []
+}

@@ -1,0 +1,797 @@
+{
+  "name": "Support Triage - Gmail",
+  "nodes": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "New Support Email",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "maxResults": 10,
+        "filters": {
+          "q": "(deliveredto:YOUR_ADDRESS+support@gmail.com OR to:YOUR_ADDRESS+support@gmail.com) -label:Triage-Processed",
+          "readStatus": "both",
+          "includeSpamTrash": false,
+          "includeDrafts": false
+        },
+        "options": {
+          "downloadAttachments": false
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "name": "Prepare Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const m = $input.item.json;\nconst OWNER = 'YOUR_ADDRESS@gmail.com';\nconst ALIAS = 'YOUR_ADDRESS+support@gmail.com';\nconst f = m.from && m.from.value && m.from.value[0] ? m.from.value[0] : {};\nconst address = String(f.address || '').toLowerCase();\nconst name = String(f.name || '').replace(/[\"<>\\r\\n]/g, '').trim();\nconst hdr = m.headers || {};\nconst routedTo = [m.to && m.to.text, hdr['delivered-to'], hdr['x-original-to']].map((x) => String(x || '')).join(' ').toLowerCase();\nconst forSupport = routedTo.includes(ALIAS) && address !== '';\nconst text = typeof m.text === 'string' ? m.text : '';\nconst body = text.trim() ? text : String(m.html || '');\nconst source = address === OWNER ? 'seed' : 'gmail';\nreturn { json: { forSupport, source, sampleId: source === 'seed' ? 'seed' : '', messageId: 'gm-' + m.id, gmailId: m.id, threadId: m.threadId || m.id, fromAddress: address, from: name ? name + ' <' + address + '>' : address, subject: String(m.subject || ''), body } };"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "name": "For Support Alias?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.forSupport }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "name": "Not Seen Before?",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_TRIAGE_LOG_TABLE_ID"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "messageId",
+              "keyValue": "={{ $json.messageId }}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "name": "Run Triage Core",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_TRIAGE_CORE_WORKFLOW_ID",
+          "cachedResultName": "Support Triage - Core"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "messageId": "={{ $json.messageId }}",
+            "sampleId": "={{ $json.sampleId }}",
+            "from": "={{ $json.from }}",
+            "subject": "={{ $json.subject }}",
+            "body": "={{ $json.body }}"
+          },
+          "schema": [
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sampleId",
+              "displayName": "sampleId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "mode": "each",
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000006",
+      "name": "Combine Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "language": "javaScript",
+        "jsCode": "const r = $input.item.json;\nconst prep = $('Prepare Email').all().map((i) => i.json).find((p) => p.messageId === r.messageId) || {};\nconst base = String(prep.subject || r.subject || '').replace(/^\\s*((re|aw|sv|fwd?)\\s*:\\s*)+/i, '').trim() || '(no subject)';\nconst hasDraft = typeof r.draftReply === 'string' && r.draftReply.trim() !== '' && Boolean(prep.fromAddress);\nreturn { json: { ...r, gmailId: prep.gmailId, threadId: prep.threadId, fromAddress: prep.fromAddress, draftSubject: 'Re: ' + base, hasDraft, draftCreated: hasDraft } };"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000007",
+      "name": "Has Draft?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        -120
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.hasDraft }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000008",
+      "name": "Create Draft",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        -120
+      ],
+      "parameters": {
+        "resource": "draft",
+        "operation": "create",
+        "subject": "={{ $json.draftSubject }}",
+        "emailType": "text",
+        "message": "={{ $json.draftReply }}",
+        "options": {
+          "threadId": "={{ $json.threadId }}",
+          "sendTo": "={{ $json.fromAddress }}"
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000009",
+      "name": "Insert Log Row",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        160
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_WITH_TRIAGE_LOG_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "messageId": "={{ $json.messageId }}",
+            "sampleId": "={{ $json.sampleId }}",
+            "receivedAt": "={{ $json.receivedAt }}",
+            "fromDomain": "={{ $json.fromDomain }}",
+            "subject": "={{ $json.subject }}",
+            "snippet": "={{ $json.snippet }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "sentiment": "={{ $json.sentiment }}",
+            "language": "={{ $json.language }}",
+            "summary": "={{ $json.summary }}",
+            "needsHuman": "={{ $json.needsHuman }}",
+            "humanReason": "={{ $json.humanReason }}",
+            "confidence": "={{ $json.confidence }}",
+            "injectionSuspected": "={{ $json.injectionSuspected }}",
+            "draftCreated": "={{ $json.draftCreated }}",
+            "status": "={{ $json.status }}",
+            "latencyMs": "={{ $json.latencyMs }}",
+            "promptVersion": "={{ $json.promptVersion }}"
+          },
+          "schema": [
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sampleId",
+              "displayName": "sampleId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "receivedAt",
+              "displayName": "receivedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fromDomain",
+              "displayName": "fromDomain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "snippet",
+              "displayName": "snippet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "language",
+              "displayName": "language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "needsHuman",
+              "displayName": "needsHuman",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "humanReason",
+              "displayName": "humanReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "injectionSuspected",
+              "displayName": "injectionSuspected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "draftCreated",
+              "displayName": "draftCreated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "latencyMs",
+              "displayName": "latencyMs",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "promptVersion",
+              "displayName": "promptVersion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000010",
+      "name": "Get Gmail Labels",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        160
+      ],
+      "parameters": {
+        "resource": "label",
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "name": "Pick Label IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const byName = {};\n$input.all().forEach((i) => { if (i.json && i.json.name && i.json.id) byName[i.json.name] = i.json.id; });\nconst CATS = { billing: 'Billing', bug_report: 'Bug-Report', account_access: 'Account-Access', feature_request: 'Feature-Request', sales_inquiry: 'Sales-Inquiry', how_to: 'How-To', spam: 'Spam', other: 'Other' };\nconst bool = (v) => v === true || v === 'true';\nconst one = (s, n) => String(s || '').replace(/\\s+/g, ' ').trim().slice(0, n);\nconst missing = new Set();\nconst out = [];\n$('Insert Log Row').all().forEach((i) => {\n  const r = i.json;\n  const names = ['Triage/' + (CATS[r.category] || 'Other'), 'Triage/P-' + String(r.priority || 'normal').replace(/^./, (c) => c.toUpperCase())];\n  if (bool(r.needsHuman)) names.push('Triage/Needs-Human');\n  if (bool(r.injectionSuspected)) names.push('Triage/Injection-Suspected');\n  names.push('Triage/Processed');\n  const ids = [];\n  names.forEach((n) => { if (byName[n]) ids.push(byName[n]); else missing.add(n); });\n  const summary = one(r.summary, 160);\n  out.push({ json: { gmailId: String(r.messageId || '').replace(/^gm-/, ''), labelIds: ids, priority: r.priority, category: r.category, urgent: r.priority === 'urgent', alertSubject: '[Support triage] URGENT ' + String(r.category || '').replace(/_/g, ' ') + ': ' + one(summary, 90), alertText: ['An urgent email arrived at the support alias.', '', 'Category: ' + r.category, 'Needs a person: ' + (bool(r.needsHuman) ? 'yes' : 'no'), 'Reason: ' + one(r.humanReason, 200), 'Summary: ' + summary, 'Subject: ' + one(r.subject, 120), '', 'A draft reply (if any) is waiting in Gmail Drafts. Nothing was sent to the customer.'].join('\\n') } });\n});\nif (missing.size > 0) throw new Error('Missing Gmail labels: ' + Array.from(missing).join(', ') + '. Run the Create Triage Labels branch once.');\nreturn out;"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "name": "Apply Labels",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2160,
+        160
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "addLabels",
+        "messageId": "={{ $json.gmailId }}",
+        "labelIds": "={{ $json.labelIds }}"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000013",
+      "name": "Collect Urgent Alerts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $('Pick Label IDs').all()\n  .filter((i) => i.json.urgent === true)\n  .map((i) => ({ json: { alertSubject: i.json.alertSubject, alertText: i.json.alertText } }));"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000014",
+      "name": "Email Urgent Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2640,
+        160
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "YOUR_ADDRESS@gmail.com",
+        "subject": "={{ $json.alertSubject }}",
+        "emailType": "text",
+        "message": "={{ $json.alertText }}",
+        "options": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000015",
+      "name": "Create Triage Labels (run once)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        520
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000016",
+      "name": "Label Names",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        520
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const names = ['Triage', 'Triage/Billing', 'Triage/Bug-Report', 'Triage/Account-Access', 'Triage/Feature-Request', 'Triage/Sales-Inquiry', 'Triage/How-To', 'Triage/Spam', 'Triage/Other', 'Triage/P-Urgent', 'Triage/P-High', 'Triage/P-Normal', 'Triage/P-Low', 'Triage/Needs-Human', 'Triage/Injection-Suspected', 'Triage/Processed'];\nreturn names.map((name) => ({ json: { name } }));"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000017",
+      "name": "Create Label",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        520
+      ],
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "={{ $json.name }}"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000018",
+      "name": "Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -260
+      ],
+      "parameters": {
+        "content": "Gmail path. Polls the +support alias every minute, runs the shared Triage Core, then: creates a threaded Gmail DRAFT reply (never sends), writes a log row, applies Triage/* labels and, for urgent mail, emails an alert to the owner. There is no node that sends to customers. Run the manual branch below once to create the labels.",
+        "width": 700,
+        "height": 150
+      }
+    }
+  ],
+  "connections": {
+    "New Support Email": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email": {
+      "main": [
+        [
+          {
+            "node": "For Support Alias?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For Support Alias?": {
+      "main": [
+        [
+          {
+            "node": "Not Seen Before?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Not Seen Before?": {
+      "main": [
+        [
+          {
+            "node": "Run Triage Core",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Triage Core": {
+      "main": [
+        [
+          {
+            "node": "Combine Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Result": {
+      "main": [
+        [
+          {
+            "node": "Has Draft?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Log Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Draft?": {
+      "main": [
+        [
+          {
+            "node": "Create Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Log Row": {
+      "main": [
+        [
+          {
+            "node": "Get Gmail Labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Gmail Labels": {
+      "main": [
+        [
+          {
+            "node": "Pick Label IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Label IDs": {
+      "main": [
+        [
+          {
+            "node": "Apply Labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Labels": {
+      "main": [
+        [
+          {
+            "node": "Collect Urgent Alerts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Urgent Alerts": {
+      "main": [
+        [
+          {
+            "node": "Email Urgent Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Triage Labels (run once)": {
+      "main": [
+        [
+          {
+            "node": "Label Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Label Names": {
+      "main": [
+        [
+          {
+            "node": "Create Label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Polls the +support Gmail alias every minute, runs the shared triage core, saves a threaded Gmail draft reply (never sent), logs the result, applies Triage labels and alerts the owner on urgent mail."
+  }
+}

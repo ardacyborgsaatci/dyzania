@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.vercel/
+__pycache__/
+*.pyc
+.venv/
+*.log
+.DS_Store
+automations/support/eval/results.json

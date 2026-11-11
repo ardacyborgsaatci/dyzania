@@ -1,0 +1,42 @@
+:root {
+  --wb-ink: #12343b;
+  --wb-canvas: #fbf7f0;
+  --wb-surface: #ffffff;
+  --wb-line: #e6dfd2;
+  --wb-body: #3f5a5f;
+  --wb-mute: #6f8386;
+  --wb-wren: #e08a2b;
+  --wb-sage: #6b9080;
+  --wb-ok: #2e7d4f;
+  --wb-warn: #8a5a00;
+  --wb-error: #b3261e;
+
+  --wb-font-display: "Fraunces", Georgia, serif;
+  --wb-font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --wb-font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  --wb-radius-card: 10px;
+  --wb-radius-input: 8px;
+  --wb-radius-pill: 999px;
+  --wb-shadow: 0 1px 2px rgba(18, 52, 59, 0.08), 0 8px 24px -12px rgba(18, 52, 59, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --wb-ink: #f3ede1;
+    --wb-canvas: #0d2227;
+    --wb-surface: #12343b;
+    --wb-line: #24484f;
+    --wb-body: #c3d0d1;
+    --wb-mute: #93a8aa;
+    --wb-ok: #6fcf97;
+    --wb-warn: #e0b24a;
+    --wb-error: #f28b82;
+  }
+}
+
+body {
+  background: var(--wb-canvas);
+  color: var(--wb-ink);
+  font-family: var(--wb-font-body);
+}

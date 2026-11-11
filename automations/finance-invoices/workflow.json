@@ -1,0 +1,74 @@
+{
+  "name": "Wrenbook Finance - Invoice Extraction",
+  "_note": "Exported from n8n workflow r2vlhLodTOdOjXfJ on 2026-11-11. Credentials stripped; sheet ID replaced. Rebrand copy still to be built in the Wrenbook Ops folder.",
+  "settings": { "executionOrder": "v1", "binaryMode": "separate" },
+  "nodes": [
+    {
+      "name": "Invoice Upload Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [240, 304],
+      "parameters": {
+        "formTitle": "Upload an invoice image",
+        "formDescription": "PNG or JPG. The image is read by Nemotron 3.5 Super VL (free) on OpenRouter and saved to the sheet.",
+        "formFields": { "values": [ { "fieldLabel": "invoice", "fieldType": "file", "acceptFileTypes": ".png,.jpg,.jpeg", "requiredField": true } ] },
+        "options": {}
+      }
+    },
+    {
+      "name": "Build Vision Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [544, 304],
+      "parameters": {
+        "jsCode": "const key = Object.keys($input.first().binary)[0];\nconst bin = $input.first().binary[key];\nconst buf = await this.helpers.getBinaryDataBuffer(0, key);\nconst dataUrl = 'data:' + bin.mimeType + ';base64,' + buf.toString('base64');\nconst prompt = 'You are an invoice data extractor. Read the invoice in this image and return ONLY a JSON object with these keys: vendor (string), invoiceNumber (string), invoiceDate (YYYY-MM-DD), currency (3-letter code), subtotal (number), tax (number), total (number), confidence (number from 0 to 1, how sure you are). Use null for any field that is not present. Do not add any other text.';\nreturn [{ json: { requestBody: {\n  model: 'nvidia/nemotron-3.5-super-vl:free',\n  messages: [{ role: 'user', content: [\n    { type: 'text', text: prompt },\n    { type: 'image_url', image_url: { url: dataUrl } }\n  ] }],\n  max_tokens: 4000,\n  temperature: 0\n} } }];"
+      }
+    },
+    {
+      "name": "Ask Nemotron VL (OpenRouter)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [752, 304],
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {}
+      },
+      "credentials": { "httpCustomAuth": { "name": "OpenRouter (attach your own)" } }
+    },
+    {
+      "name": "Parse and Validate Invoice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [944, 304],
+      "parameters": {
+        "jsCode": "const res = $input.first().json;\nlet text = (res.choices && res.choices[0] && res.choices[0].message && res.choices[0].message.content) || '';\ntext = text.trim().replace(/^```(json)?/i, '').replace(/```$/, '').trim();\nlet inv = null;\ntry { inv = JSON.parse(text); } catch (e) { inv = null; }\nif (!inv) {\n  return [{ json: { status: 'Needs review', issues: 'Model did not return valid JSON', processedAt: new Date().toISOString() } }];\n}\nconst issues = [];\n['vendor', 'invoiceDate', 'total'].forEach((k) => {\n  if (inv[k] === null || inv[k] === undefined || inv[k] === '') issues.push('missing ' + k);\n});\nif (typeof inv.confidence !== 'number' || inv.confidence < 0.85) issues.push('low confidence (' + inv.confidence + ')');\nif (typeof inv.subtotal === 'number' && typeof inv.tax === 'number' && typeof inv.total === 'number' && Math.abs(inv.subtotal + inv.tax - inv.total) > 0.01) {\n  issues.push('subtotal + tax does not equal total');\n}\nreturn [{ json: {\n  vendor: inv.vendor,\n  invoiceNumber: inv.invoiceNumber,\n  invoiceDate: inv.invoiceDate,\n  currency: inv.currency,\n  subtotal: inv.subtotal,\n  tax: inv.tax,\n  total: inv.total,\n  confidence: inv.confidence,\n  status: issues.length ? 'Needs review' : 'Auto-approved',\n  issues: issues.join('; '),\n  processedAt: new Date().toISOString()\n} }];"
+      }
+    },
+    {
+      "name": "Save to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [1152, 304],
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "REPLACE_WITH_GOOGLE_SHEET_ID", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "Extraction", "mode": "name" },
+        "columns": { "mappingMode": "autoMapInputData", "value": {}, "matchingColumns": [], "attemptToConvertTypes": false, "convertFieldsToString": false },
+        "options": {}
+      },
+      "credentials": { "googleSheetsOAuth2Api": { "name": "Google Sheets account (attach your own)" } }
+    }
+  ],
+  "connections": {
+    "Invoice Upload Form": { "main": [[{ "node": "Build Vision Request", "type": "main", "index": 0 }]] },
+    "Build Vision Request": { "main": [[{ "node": "Ask Nemotron VL (OpenRouter)", "type": "main", "index": 0 }]] },
+    "Ask Nemotron VL (OpenRouter)": { "main": [[{ "node": "Parse and Validate Invoice", "type": "main", "index": 0 }]] },
+    "Parse and Validate Invoice": { "main": [[{ "node": "Save to Google Sheet", "type": "main", "index": 0 }]] }
+  }
+}

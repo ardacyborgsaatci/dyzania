@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Agent</title>
+<meta name="description" content="A hands-free voice agent you talk to like a phone call. Ask it about Marlow & Pine, a fictional coffee roaster.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f1e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12100d" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%232f5a45'/%3E%3Cpath d='M10 18v4M15 14v12M20 10v20M25 14v12M30 18v4' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f1e8; --surface: #fffdf9; --text: #231f1a; --muted: #5f564d; --border: #ded5c7;
+    --accent: #2f5a45; --accent-hover: #264b39; --on-accent: #ffffff;
+    --danger: #a63d2b; --danger-hover: #8f3324; --on-danger: #ffffff;
+    --you: #dfeae2; --agent: #f7f1e6; --tint: #efe8da; --focus: #2f5a45;
+    --shadow: 0 1px 2px rgba(35, 31, 26, 0.04), 0 18px 40px -24px rgba(35, 31, 26, 0.25);
+    /* One colour per call state. Each is at least 3:1 against the page background. */
+    --s-idle: #8b8073; --s-calibrating: #a87a12; --s-listening: #3f7a5b;
+    --s-recording: #c4693a; --s-busy: #a87a12; --s-speaking: #2b7f86;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12100d; --surface: #1b1814; --text: #f0e9de; --muted: #aea296; --border: #302a22;
+      --accent: #8cc4a0; --accent-hover: #a3d3b4; --on-accent: #0e1a12;
+      --danger: #ee8a76; --danger-hover: #f4a493; --on-danger: #1d0e0a;
+      --you: #24322a; --agent: #221e18; --tint: #25201a; --focus: #8cc4a0;
+      --shadow: none;
+      --s-idle: #7d7366; --s-calibrating: #d9a93a; --s-listening: #6fbf94;
+      --s-recording: #e58a5c; --s-busy: #d9a93a; --s-speaking: #5bbac2;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-height: 100dvh; overflow-x: clip;
+    background: radial-gradient(900px 420px at 15% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent), var(--bg);
+    color: var(--text); font: 16px/1.5 var(--sans);
+    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+             max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  [hidden] { display: none !important; }
+
+  /* ---------- layout ---------- */
+  .app { --state: var(--s-idle); width: 100%; max-width: 560px; display: grid; gap: 28px; }
+  .app[data-mode="calibrating"] { --state: var(--s-calibrating); }
+  .app[data-mode="listening"]   { --state: var(--s-listening); }
+  .app[data-mode="recording"]   { --state: var(--s-recording); }
+  .app[data-mode="busy"]        { --state: var(--s-busy); }
+  .app[data-mode="speaking"]    { --state: var(--s-speaking); }
+
+  .call { display: flex; flex-direction: column; min-width: 0; }
+
+  .brand { display: flex; gap: 14px; align-items: flex-start; }
+  .mark { flex: none; width: 40px; height: 40px; margin-top: 2px; }
+  .mark circle { fill: var(--accent); }
+  .mark path { stroke: var(--on-accent); }
+  h1 { font: 600 1.75rem/1.15 var(--serif); letter-spacing: -0.01em; margin: 0 0 6px; text-wrap: balance; }
+  .sub { margin: 0; color: var(--muted); max-width: 40ch; text-wrap: pretty; }
+
+  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 0 8px; }
+
+  /* ---------- the orb: shows what the call is doing ---------- */
+  .orb-wrap { position: relative; isolation: isolate; }
+  .orb-wrap::before {
+    content: ""; position: absolute; inset: -30%; z-index: -1; border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--state) 24%, transparent), transparent);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .app:not([data-mode="idle"]) .orb-wrap::before { opacity: 1; }
+  .orb { --size: 176px; position: relative; width: var(--size); height: var(--size); display: grid; place-items: center; }
+  .ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--state); opacity: 0; }
+  .arc {
+    position: absolute; inset: 7%; border-radius: 50%; border: 3px solid transparent;
+    border-top-color: var(--state); border-right-color: var(--state); opacity: 0;
+  }
+  .body { width: 62%; aspect-ratio: 1; display: grid; }
+  .core {
+    grid-area: 1 / 1; border-radius: 50%;
+    background: var(--state);
+    background: radial-gradient(circle at 34% 28%, color-mix(in oklab, var(--state) 58%, white), var(--state) 64%);
+    box-shadow: 0 16px 36px -14px var(--state);
+    transform: scale(calc(1 + var(--level, 0) * 0.28));  /* grows with your voice */
+    transition: transform 90ms linear;
+  }
+  .app[data-mode="calibrating"] .arc, .app[data-mode="busy"] .arc { opacity: 1; animation: spin 1.1s linear infinite; }
+  .app[data-mode="listening"] .body { animation: breathe 4.2s ease-in-out infinite; }
+  .app[data-mode="speaking"] .body { animation: speak 1.7s ease-in-out infinite; }
+  .app[data-mode="recording"] .ring, .app[data-mode="speaking"] .ring { animation: ripple 2.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; }
+  .app[data-mode="recording"] .ring.b, .app[data-mode="speaking"] .ring.b { animation-delay: 1.1s; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes breathe { 50% { transform: scale(1.05); } }
+  @keyframes speak { 20% { transform: scale(1.06); } 45% { transform: scale(0.99); } 70% { transform: scale(1.08); } }
+  @keyframes ripple { from { transform: scale(0.62); opacity: 0.55; } to { transform: scale(1.12); opacity: 0; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+
+  /* ---------- status + controls ---------- */
+  .readout { margin-top: 28px; text-align: center; }
+  .status {
+    margin: 0; min-height: 2.9em; display: flex; align-items: center; justify-content: center;
+    font-size: 1.25rem; line-height: 1.45; font-weight: 600; text-wrap: balance;
+  }
+  .clock { margin: 4px 0 0; color: var(--muted); font-size: 0.9375rem; font-variant-numeric: tabular-nums; }
+  .clock[hidden] { display: block !important; visibility: hidden; }
+  .controls { display: flex; justify-content: center; margin-top: 22px; min-height: 52px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 52px; padding: 0 30px; border: 2px solid transparent; border-radius: 999px;
+    font: inherit; font-weight: 650; cursor: pointer; touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s, transform 0.1s;
+  }
+  .btn svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-start { background: var(--accent); color: var(--on-accent); }
+  .btn-start:hover:not(:disabled) { background: var(--accent-hover); }
+  .btn-hang { background: var(--danger); color: var(--on-danger); }
+  .btn-hang:hover { background: var(--danger-hover); }
+  .btn-hang svg { transform: rotate(135deg); }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn:focus-visible, #log:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .hint { margin: 18px auto 0; max-width: 36ch; text-align: center; color: var(--muted); font-size: 0.875rem; text-wrap: pretty; }
+
+  /* ---------- transcript ---------- */
+  .panel {
+    min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 24px; box-shadow: var(--shadow);
+  }
+  .panel-head { padding: 16px 22px 14px; border-bottom: 1px solid var(--border); }
+  .panel-head h2 { margin: 0; font-size: 0.8125rem; line-height: 1.2; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  #log {
+    flex: 1; min-height: 220px; max-height: 46dvh; overflow-y: auto; overscroll-behavior: contain;
+    padding: 20px 22px; display: flex; flex-direction: column; gap: 14px;
+  }
+  #log:focus-visible { outline-offset: -3px; border-radius: 20px; }
+
+  .line { display: flex; flex-direction: column; gap: 4px; max-width: 88%; animation: rise 0.22s ease-out; }
+  .line.you { align-self: flex-end; align-items: flex-end; }
+  .line.agent { align-self: flex-start; }
+  .who { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+  .said { margin: 0; padding: 10px 14px; border-radius: 18px; overflow-wrap: anywhere; text-wrap: pretty; }
+  .line.you .said { background: var(--you); border-bottom-right-radius: 6px; }
+  .line.agent .said { background: var(--agent); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
+  .line.error { align-self: stretch; max-width: none; }
+  .line.error .who { color: var(--danger); }
+  .line.error .said { background: transparent; border: 1px solid var(--danger); color: var(--danger); border-radius: 14px; }
+
+  .empty { margin: auto 0; padding: 8px 0; text-align: center; }
+  .empty-title { margin: 0; font: 600 1.25rem/1.3 var(--serif); }
+  .empty-sub { margin: 6px 0 16px; color: var(--muted); font-size: 0.9375rem; }
+  .examples { list-style: none; margin: 0 auto; padding: 0; max-width: 360px; display: grid; gap: 8px; }
+  .examples li { padding: 10px 14px; border-radius: 14px; background: var(--tint); text-align: left; text-wrap: pretty; }
+
+  @media (min-width: 900px) {
+    body { align-items: center; }
+    .app {
+      max-width: 1080px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px;
+      height: min(700px, calc(100dvh - 40px)); min-height: 580px;
+    }
+    .orb { --size: 224px; }
+    .stage { padding-top: 0; }
+    #log { max-height: none; }
+  }
+
+  /* Motion off: keep the state readable with static shapes instead of movement. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .core { transform: none; }
+    .app[data-mode="recording"] .ring.a, .app[data-mode="speaking"] .ring.a { opacity: 0.45; transform: scale(0.82); }
+    .app[data-mode="busy"] .arc, .app[data-mode="calibrating"] .arc { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<main class="app" id="app" data-mode="idle">
+  <section class="call" aria-labelledby="title">
+    <header class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        <circle cx="20" cy="20" r="20"/>
+        <path d="M10 18v4M15 14v12M20 10v20M25 14v12M30 18v4" fill="none" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1 id="title">Voice Agent</h1>
+        <p class="sub">Talk to it like a phone call. Ask about <span translate="no">Marlow&nbsp;&amp;&nbsp;Pine</span>, a fictional coffee roaster.</p>
+      </div>
+    </header>
+
+    <div class="stage">
+      <div class="orb-wrap">
+        <div class="orb" id="orb" aria-hidden="true">
+          <span class="ring a"></span>
+          <span class="ring b"></span>
+          <span class="arc"></span>
+          <span class="body"><span class="core"></span></span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <p class="status" id="status">Press Start Call to begin.</p>
+        <p class="clock" id="clock" role="timer" hidden><span class="sr-only">Call time </span><span id="clockText">00:00</span></p>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-start" id="start" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+          Start Call
+        </button>
+        <button class="btn btn-hang" id="hangup" type="button" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+          Hang Up
+        </button>
+      </div>
+      <p class="hint">Headphones work best. Talk over the agent to interrupt it. Your voice is sent to a server to be transcribed and answered.</p>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="log-title">
+    <div class="panel-head"><h2 id="log-title">Conversation</h2></div>
+    <div id="log" role="log" aria-live="off" aria-labelledby="log-title" tabindex="0">
+      <div class="empty" id="empty">
+        <p class="empty-title">Nothing said yet</p>
+        <p class="empty-sub">Start a call, then try saying:</p>
+        <ul class="examples">
+          <li>“What’s the Harbor Blend price?”</li>
+          <li>“Are you open on Sunday?”</li>
+          <li>“How does the loyalty card work?”</li>
+          <li>“Do you ship to Canada?”</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen readers hear only the important changes here; the rest would talk over the call. -->
+  <p class="sr-only" id="announce" role="status"></p>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const appEl = $("app"), orbEl = $("orb"), statusEl = $("status"), announceEl = $("announce");
+const clockEl = $("clock"), clockTextEl = $("clockText");
+const logEl = $("log"), emptyEl = $("empty");
+const startBtn = $("start"), hangBtn = $("hangup");
+
+const TICK_MS = 30;
+const CALIBRATION_TICKS = 33;   // ~1 s of silence to learn background noise
+const MIN_SPEECH_MS = 120;      // sound this long counts as speech
+const SILENCE_END_MS = 600;     // quiet this long ends your turn
+const BARGE_IN_MS = 600;        // talking this long over the agent interrupts it
+const LISTENING_TEXT = "Listening. Just start talking.";
+
+const messages = [];  // conversation so far, sent with every turn (the server keeps no state)
+let stream, ctx, analyser, buf, timer, recorder, chunks = [];
+// Streaming playback state: the reply audio arrives as raw PCM and is scheduled chunk by chunk.
+let streamAbort = null, sources = [], nextTime = 0, pcmRate = 24000, carryByte = null, streamDone = true;
+let threshold = 0.01, noise = [], mode = "idle";
+let speechMs = 0, silenceMs = 0, loudMs = 0;
+let level01 = 0, levelShown = "";   // smoothed 0..1 mic level that drives the orb
+let callStart = 0, clock = null;
+
+// say = true also tells screen readers; used only for changes that matter, so it never talks over the call.
+function setMode(next, text, say = false) {
+  mode = next;
+  appEl.dataset.mode = next;
+  if (text) {
+    statusEl.textContent = text;
+    if (say) announceEl.textContent = text;
+  }
+}
+
+function addLine(kind, text) {
+  emptyEl.hidden = true;
+  const div = document.createElement("div");
+  div.className = "line " + kind.toLowerCase();
+  if (kind === "Error") div.setAttribute("role", "alert");
+  const label = document.createElement("span");
+  label.className = "who";
+  label.textContent = kind;
+  const body = document.createElement("p");
+  body.className = "said";
+  body.textContent = text;
+  div.append(label, body);
+  logEl.append(div);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function rms() {
+  analyser.getFloatTimeDomainData(buf);
+  let sum = 0;
+  for (const v of buf) sum += v * v;
+  return Math.sqrt(sum / buf.length);
+}
+
+// Eases the orb toward the current loudness (0 = quiet, 1 = loud) so it moves smoothly.
+function showLevel(raw) {
+  const target = raw > 0 ? Math.min(1, Math.max(0, (raw - threshold * 0.6) / (threshold * 4))) : 0;
+  level01 += (target - level01) * 0.35;
+  if (level01 < 0.01) level01 = 0;
+  const value = level01.toFixed(2);
+  if (value !== levelShown) {
+    levelShown = value;
+    orbEl.style.setProperty("--level", value);
+  }
+}
+
+function renderClock() {
+  const secs = Math.floor((Date.now() - callStart) / 1000);
+  clockTextEl.textContent = String(Math.floor(secs / 60)).padStart(2, "0") + ":" + String(secs % 60).padStart(2, "0");
+}
+
+function micErrorText(err) {
+  if (!navigator.mediaDevices) return "This page can’t use the microphone. Open it over HTTPS, then press Start Call.";
+  if (err.name === "NotAllowedError" || err.name === "SecurityError")
+    return "Microphone access is blocked. Allow it in your browser’s site settings, then press Start Call again.";
+  if (err.name === "NotFoundError") return "No microphone was found. Plug one in, then press Start Call again.";
+  return "The microphone couldn’t start (" + err.message + "). Close other apps that use it, then press Start Call again.";
+}
+
+async function start() {
+  startBtn.disabled = true;
+  setMode("idle", "Waiting for microphone access…", true);
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    });
+  } catch (err) {
+    setMode("idle", "Couldn’t start the call.");
+    addLine("Error", micErrorText(err));
+    startBtn.disabled = false;
+    return;
+  }
+  startBtn.hidden = true;
+  hangBtn.hidden = false;
+  hangBtn.focus();
+  ctx = new AudioContext();
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 1024;
+  ctx.createMediaStreamSource(stream).connect(analyser);
+  buf = new Float32Array(analyser.fftSize);
+
+  callStart = Date.now();
+  renderClock();
+  clockEl.hidden = false;
+  clock = setInterval(renderClock, 1000);
+
+  noise = [];
+  setMode("calibrating", "Calibrating… stay quiet for a second.", true);
+  timer = setInterval(tick, TICK_MS);
+}
+
+function tick() {
+  const level = rms();
+  showLevel(mode === "calibrating" || mode === "listening" || mode === "recording" ? level : 0);
+
+  if (mode === "calibrating") {
+    noise.push(level);
+    if (noise.length >= CALIBRATION_TICKS) {
+      const sorted = [...noise].sort((a, b) => a - b);
+      threshold = Math.max(sorted[Math.floor(sorted.length / 2)] * 3, 0.01);
+      speechMs = 0;
+      setMode("listening", LISTENING_TEXT, true);
+    }
+    return;
+  }
+
+  const isSpeech = level > threshold;
+
+  if (mode === "speaking") {
+    // Only watch for a sustained interruption while the agent talks.
+    loudMs = isSpeech ? loudMs + TICK_MS : 0;
+    if (loudMs >= BARGE_IN_MS) {
+      stopPlayback();
+      backToListening();
+    }
+  } else if (mode === "listening") {
+    if (isSpeech) {
+      speechMs += TICK_MS;
+      if (speechMs >= MIN_SPEECH_MS) startRecording();
+    } else {
+      speechMs = 0;
+    }
+  } else if (mode === "recording") {
+    if (isSpeech) {
+      silenceMs = 0;
+    } else {
+      silenceMs += TICK_MS;
+      if (silenceMs >= SILENCE_END_MS) stopRecording();
+    }
+  }
+  // mode === "busy": waiting on the server, ignore the mic.
+}
+
+function startRecording() {
+  silenceMs = 0;
+  chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+  recorder.onstop = () => sendTurn(new Blob(chunks, { type: recorder.mimeType }));
+  recorder.start();
+  setMode("recording", "Hearing you…");
+}
+
+function stopRecording() {
+  setMode("busy", "Thinking…");
+  recorder.stop();
+}
+
+function backToListening() {
+  speechMs = 0;
+  setMode("listening", LISTENING_TEXT);
+}
+
+function concatBytes(a, b) {
+  const out = new Uint8Array(a.length + b.length);
+  out.set(a, 0);
+  out.set(b, a.length);
+  return out;
+}
+
+async function sendTurn(blob) {
+  const form = new FormData();
+  form.append("audio", blob, "speech.webm");
+  form.append("history", JSON.stringify(messages.slice(-20)));
+  const controller = new AbortController();
+  streamAbort = controller;
+  try {
+    const res = await fetch("/api/turn", { method: "POST", body: form, signal: controller.signal });
+    if (!res.ok) {
+      let detail = await res.text();
+      try { detail = JSON.parse(detail).detail || detail; } catch (_) {}
+      throw new Error(detail);
+    }
+    await playStream(res.body.getReader());
+  } catch (err) {
+    if (err.name === "AbortError") return;  // interrupted or hung up
+    addLine("Error", "Something went wrong (" + String(err.message).slice(0, 200) + "). Keep talking to try again.");
+    stopPlayback();
+    if (mode === "busy" || mode === "speaking") backToListening();
+  }
+}
+
+// The response is one JSON line (texts, sample rate) followed by raw 16-bit PCM audio.
+// Audio starts playing as soon as the first chunk arrives, while the rest is still generated.
+async function playStream(reader) {
+  let head = new Uint8Array(0);
+  let gotHeader = false;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    if (mode !== "busy" && mode !== "speaking") {  // hung up or interrupted meanwhile
+      reader.cancel();
+      return;
+    }
+    let bytes = value;
+    if (!gotHeader) {
+      head = concatBytes(head, bytes);
+      const newline = head.indexOf(10);
+      if (newline === -1) continue;
+      const info = JSON.parse(new TextDecoder().decode(head.subarray(0, newline)));
+      bytes = head.subarray(newline + 1);
+      gotHeader = true;
+      if (!info.reply) {  // nothing was understood
+        reader.cancel();
+        backToListening();
+        return;
+      }
+      messages.push({ role: "user", content: info.user_text }, { role: "assistant", content: info.reply });
+      addLine("You", info.user_text);
+      addLine("Agent", info.reply);
+      beginSpeaking(info.sample_rate);
+    }
+    if (bytes.length) queuePcm(bytes);
+  }
+  streamDone = true;
+  maybeFinishSpeaking();
+}
+
+function beginSpeaking(rate) {
+  pcmRate = rate;
+  nextTime = 0;
+  carryByte = null;
+  streamDone = false;
+  loudMs = 0;
+  ctx.resume();
+  setMode("speaking", "Agent speaking… talk to interrupt.");
+}
+
+function queuePcm(bytes) {
+  if (carryByte !== null) {  // a 16-bit sample was split across two network chunks
+    const merged = new Uint8Array(bytes.length + 1);
+    merged[0] = carryByte;
+    merged.set(bytes, 1);
+    bytes = merged;
+    carryByte = null;
+  }
+  if (bytes.length % 2) {
+    carryByte = bytes[bytes.length - 1];
+    bytes = bytes.subarray(0, bytes.length - 1);
+  }
+  const count = bytes.length / 2;
+  if (!count) return;
+
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.length);
+  const audioBuffer = ctx.createBuffer(1, count, pcmRate);
+  const samples = audioBuffer.getChannelData(0);
+  for (let i = 0; i < count; i++) samples[i] = view.getInt16(i * 2, true) / 32768;
+
+  const source = ctx.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(ctx.destination);
+  // Chain chunks back to back so playback is gapless. The first chunk starts 150 ms from now, a small
+  // cushion so network jitter in the next chunks doesn't cause stutter.
+  const startAt = nextTime === 0 ? ctx.currentTime + 0.15 : Math.max(ctx.currentTime + 0.02, nextTime);
+  source.start(startAt);
+  nextTime = startAt + audioBuffer.duration;
+  sources.push(source);
+  source.onended = () => {
+    sources = sources.filter((s) => s !== source);
+    maybeFinishSpeaking();
+  };
+}
+
+function maybeFinishSpeaking() {
+  if (streamDone && sources.length === 0 && mode === "speaking") backToListening();
+}
+
+function stopPlayback() {
+  if (streamAbort) {
+    streamAbort.abort();
+    streamAbort = null;
+  }
+  for (const source of sources) {
+    source.onended = null;
+    try { source.stop(); } catch (_) {}
+  }
+  sources = [];
+  streamDone = true;
+}
+
+function hangup() {
+  clearInterval(timer);
+  clearInterval(clock);
+  stopPlayback();
+  if (recorder && recorder.state !== "inactive") {
+    recorder.onstop = null;
+    recorder.stop();
+  }
+  stream.getTracks().forEach((t) => t.stop());
+  ctx.close();
+  level01 = 0;
+  levelShown = "";
+  orbEl.style.removeProperty("--level");
+  clockEl.hidden = true;
+  setMode("idle", "Call ended. Press Start Call to talk again.", true);
+  hangBtn.hidden = true;
+  startBtn.hidden = false;
+  startBtn.disabled = false;
+  startBtn.focus();
+}
+
+startBtn.addEventListener("click", start);
+hangBtn.addEventListener("click", hangup);
+</script>
+</body>
+</html>

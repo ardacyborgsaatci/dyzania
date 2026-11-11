@@ -1,0 +1,97 @@
+{
+  "name": "Support Triage - Error Alert",
+  "nodes": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Workflow Failed",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "name": "Build Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const e = $input.first().json;\nconst wf = (e.workflow && e.workflow.name) || 'Unknown workflow';\nconst ex = e.execution || {};\nconst err = ex.error || {};\nconst message = String(err.message || 'Unknown error').slice(0, 500);\nconst lastNode = ex.lastNodeExecuted || (err.node && err.node.name) || 'unknown node';\nconst subject = '[Support triage] Failure in ' + wf;\nconst text = ['A workflow failed.', '', 'Workflow: ' + wf, 'Node: ' + lastNode, 'Error: ' + message, 'Mode: ' + (ex.mode || ''), 'Execution: ' + (ex.url || ex.id || ''), '', 'No customer email was sent. Drafts are never sent automatically.'].join('\\n');\nreturn [{ json: { subject, text } }];"
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "name": "Email Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "YOUR_ADDRESS@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "name": "Notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -200
+      ],
+      "parameters": {
+        "content": "Set as the error workflow of the Gmail triage, demo API and daily digest workflows. When one of them fails in production, this emails the workflow name, node and error to the owner. The only recipient is the hard-coded owner address.",
+        "width": 520,
+        "height": 140
+      }
+    }
+  ],
+  "connections": {
+    "Workflow Failed": {
+      "main": [
+        [
+          {
+            "node": "Build Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Alert": {
+      "main": [
+        [
+          {
+            "node": "Email Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Error workflow for the support triage project: emails the owner the workflow, node and error when a production run fails."
+  }
+}
