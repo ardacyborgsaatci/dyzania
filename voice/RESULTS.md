@@ -1,16 +1,37 @@
-# Voice question results
+# Voice results
 
-Text-only run of the 15 questions in `test_questions.md`: same knowledge lookup and chat model as `server.py` (`openai/gpt-oss-20b` on Groq, 19 knowledge sections), no speech-to-text and no Fish voice. Answers for the last run are in `results/2026-11-11-run3.json`.
+Status on 2026-11-11, after converting the voice line to Hollis & Marr LLP. **No live model run has been done yet**, so no accuracy number for the chat model is claimed here. What is measured, and what is still owed:
 
-| Run | System prompt | Facts and refusals right | Notes |
-|---|---|---|---|
-| 1 | original | 14 of 15 | Q14 (Xero) invented an integration: "Yes, we support Xero". Q2 and Q6 incomplete. |
-| 2 | "only state what is listed" | 13 of 15 | Q14 fixed, but Q4 (refund) and Q12 (office) wrongly said "I don't know". |
-| 3 | "answer from the knowledge whenever it covers the question; never invent; otherwise say you don't know" | **15 of 15** | Q6 omits the identity check and the 1-day wait. Q4, Q5 and Q10 run longer than 3 sentences. |
+## Measured offline (no keys, no network)
 
-How to read it:
-- **Development results.** The prompt was changed twice after seeing the answers to these same 15 questions, so run 3 is optimistic. A fresh set of questions is the stricter check.
-- **One answer per question per run**, and the model is not deterministic, so a re-run can differ.
-- **Text only.** Speech recognition, the voice, interruptions and latency are not covered. A real microphone test is still owed.
-- Retrieval was checked separately: refund, office and Xero questions pull the sections you would expect, so the Run 2 misses were over-caution in the model, not missing knowledge.
-- Length is the open issue: spoken answers should be 1 to 3 sentences, and 3 of 15 are longer.
+| Check | Result | What it proves |
+|---|---|---|
+| Python tests (`python -m unittest discover -s tests`) | 124 of 124 pass | The booking dialog, the fixed replies, the answer check, the spoken-text parsers, the sealed state, the server and the question set behave as written. |
+| Booking dialog against the real booking rules | passes, through `tests/bridge.js` | The same rules the website form uses, run for real: 4 hours notice, one active booking per email and phone, a double booking race, a stale slot, a service outage, a failed confirmation email, a repeat booking that gets the same words as a conflict hold. |
+| Parity with the website's matching (`tests/parity.js`) | 34 of 34 sentences agree | The voice line and the website classify the practice area and the urgent wording the same way. |
+| Fixed paths in `questions.json` | 11 of 11 get the expected source and words | Urgent, advice, person, change and booking questions are answered without the model. |
+| Retrieval | dev 28 of 28, holdout 15 of 15 send a section that holds the answer | The right knowledge reaches the model. Not the same as the model answering well. |
+| Ideal answers through the answer check | all 43 pass unchanged | A good answer is not blocked by the guards. |
+| Everything else in the repo | firm 20, intake 26, triage 46, booking 43, notices 49, ops 8, handoffs 8, site 65, finance 9, sales eval 9: all pass | Nothing else broke. |
+
+## How the sets were used
+
+- **dev** (39 questions) was used while tuning: the retrieval words and the guards were changed after seeing misses on it. Two questions (Q27, Q28, the office address) were added after a router test showed that asking for the address did not pull the section that holds it; the fix was an address and "located" expansion in `knowledge.py`.
+- **holdout** (15 questions) was written and then not tuned on. Its retrieval was run once, after tuning on dev only, and passed 13 of 13 questions that name a required section on the first run (15 of 15 including two with no required section). It passed again after the address fix, which came from a test and not from the holdout.
+- Both sets were written by the same person who wrote the knowledge. Real callers will word things differently.
+
+## Owed
+
+1. **Live text run.** `python run_questions.py` with a `GROQ_API_KEY`. One answer per question, the model is not deterministic, and the words check is rough, so read the answers. When it is done, add a row below with the date, the model, how many pass on each set, and what failed.
+2. **A real call.** `MANUAL-CALL.md`. Covers speech recognition, the voice reading emails and phone numbers, interruptions, and delay. None of that is tested by text.
+3. **Booking through n8n.** The booking workflow has to be imported, published and given its two tables before the voice line can book for real (Phase 7). Until then, with `N8N_BOOKING_BASE` empty, a caller who asks to book is sent to the website.
+
+## Live runs
+
+| Date | Model | Dev | Holdout | Notes |
+|---|---|---|---|---|
+| (none yet) | | | | |
+
+## Earlier results
+
+The 2026-11-11 results for the old Wrenbook version (15 questions, 15 of 15 after two prompt changes) were for a different knowledge base and prompt, so they were removed. They are in git history.

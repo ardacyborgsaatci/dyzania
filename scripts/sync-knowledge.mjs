@@ -1,5 +1,6 @@
 // Copies the shared knowledge base (knowledge/*.md) to the places that need their own copy:
 //   - voice/knowledge/            (the voice agent bundles its own folder on Vercel)
+//   - voice/firm/                 (firm.json, practice-areas.json, urgency.json, availability.json: contact facts, area words, urgent wording, notice rules)
 //   - the "## Knowledge base" block inside the Draft Reply prompt of the support Core workflow
 // Usage: node scripts/sync-knowledge.mjs          write the copies
 //        node scripts/sync-knowledge.mjs --check  exit 1 if any copy is out of date
@@ -24,6 +25,20 @@ for (const f of files) {
 }
 for (const f of fs.readdirSync(dest)) {
   if (/\.(md|txt)$/.test(f) && !files.includes(f)) { stale.push("voice/knowledge/" + f + " (extra)"); if (!check) fs.unlinkSync(path.join(dest, f)); }
+}
+
+// 1b. firm facts the voice line needs (the voice project deploys from voice/ alone, so it cannot read ../firm)
+const firmDest = path.join(root, "voice", "firm");
+fs.mkdirSync(firmDest, { recursive: true });
+const VOICE_FIRM_FILES = ["firm.json", "practice-areas.json", "urgency.json", "availability.json"];
+for (const f of VOICE_FIRM_FILES) {
+  const want = fs.readFileSync(path.join(root, "firm", f), "utf8");
+  const p = path.join(firmDest, f);
+  const have = fs.existsSync(p) ? fs.readFileSync(p, "utf8") : null;
+  if (have !== want) { stale.push("voice/firm/" + f); if (!check) fs.writeFileSync(p, want); }
+}
+for (const f of fs.readdirSync(firmDest)) {
+  if (f.endsWith(".json") && !VOICE_FIRM_FILES.includes(f)) { stale.push("voice/firm/" + f + " (extra)"); if (!check) fs.unlinkSync(path.join(firmDest, f)); }
 }
 
 // 2. support Core draft prompt
