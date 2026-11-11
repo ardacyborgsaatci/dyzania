@@ -1,0 +1,11 @@
+{
+  "name": "hollis-marr-booking",
+  "private": true,
+  "description": "First-consultation booking for Hollis & Marr LLP (fictional): slot rules, conflict gate, race check, fixed confirmation, offline evaluation.",
+  "scripts": {
+    "test": "node --test test/",
+    "eval": "node eval/run.js",
+    "build": "node ../../scripts/build-booking-workflow.mjs",
+    "check": "node ../../scripts/build-booking-workflow.mjs --check"
+  }
+}

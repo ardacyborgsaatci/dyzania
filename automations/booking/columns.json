@@ -1,0 +1,20 @@
+[
+  { "name": "bookingRef", "type": "string" },
+  { "name": "createdAt", "type": "string" },
+  { "name": "status", "type": "string" },
+  { "name": "area", "type": "string" },
+  { "name": "attorney", "type": "string" },
+  { "name": "startUtc", "type": "string" },
+  { "name": "endUtc", "type": "string" },
+  { "name": "localDate", "type": "string" },
+  { "name": "localTime", "type": "string" },
+  { "name": "minutes", "type": "number" },
+  { "name": "name", "type": "string" },
+  { "name": "email", "type": "string" },
+  { "name": "phone", "type": "string" },
+  { "name": "channel", "type": "string" },
+  { "name": "leadRef", "type": "string" },
+  { "name": "confirmation", "type": "string" },
+  { "name": "note", "type": "string" },
+  { "name": "rulesVersion", "type": "string" }
+]
