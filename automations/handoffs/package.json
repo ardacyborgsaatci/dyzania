@@ -1,5 +1,5 @@
 {
-  "name": "wrenbook-handoffs",
+  "name": "hollis-marr-handoffs",
   "version": "1.0.0",
   "private": true,
   "scripts": { "test": "node --test test/" }

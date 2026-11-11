@@ -1,0 +1,15 @@
+{
+  "_note": "Copy to cutover.local.json (gitignored) and fill in. Values starting with SET_ count as not provided yet.",
+  "tables": {
+    "intake_leads": "SET_AFTER_CREATING_THE_TABLE",
+    "bookings": "SET_AFTER_CREATING_THE_TABLE",
+    "triage_log": "SET_AFTER_CREATING_THE_TABLE",
+    "court_notices": "SET_AFTER_CREATING_THE_TABLE",
+    "ops_events": "SET_AFTER_CREATING_THE_TABLE"
+  },
+  "triageCoreWorkflowId": "SET_AFTER_IMPORTING_THE_TRIAGE_CORE",
+  "ownerEmail": "SET_BY_OWNER",
+  "attorneyOnDutyEmail": "SET_BY_OWNER",
+  "triageMailbox": "SET_BY_OWNER (the gmail.com address n8n is connected to)",
+  "timezone": "SET_BY_OWNER (an IANA name such as America/Chicago)"
+}

@@ -116,5 +116,5 @@ Read that number with care:
 ## Not done in this phase
 
 - The generated workflow has **not been imported into n8n and run there** yet. The Code node's text is run in Node against all 48 leads; the node shapes (data table insert, webhook, respond) copy workflows that already run live in this project. A pinned-data run in n8n is the first step of the cutover.
-- The website form (Phase 6) and the handoff to the booking agent (Phase 7).
-- The `intake_leads` table holds the form text. A retention rule and the cleanup job come with the cutover.
+- The website form and the handoff to booking are built (`web/site`; the `book` and `follow_up` next steps show the booking page, and the booking keeps the lead reference as `leadRef`). Neither has run against n8n. The workflow also writes one metadata-only ops event per lead, with a handoff to booking when the booking page is offered; that is tested in Node and has not run in n8n.
+- The `intake_leads` table holds the form text. Nothing deletes it automatically: the nightly cleanup covers only the activity log and the inbox log, so removing leads is done by hand. The privacy page says so.

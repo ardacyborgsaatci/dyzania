@@ -1,19 +1,31 @@
 # Handoffs
 
-Four links between automations. All are drafts-only or data-only: nothing here sends mail to a customer. Helpers live in `lib/handoffs.js` and are pasted into Code nodes at the cutover.
+Four links between Hollis & Marr's automations. None of them sends a message to a client: a handoff is a reference, a label on an email, or a log row. The firm is fictional and every row is invented demo data.
 
-| # | Link | Trigger | Result | Where |
+| # | Link | Carried by | What happens | Not done |
 |---|---|---|---|---|
-| 1 | support -> leads | category `sales_inquiry` | Unscored lead row (no budget, size or timeline was given), no reply | `leadFromSupport` |
-| 2 | leads -> booking | tier `Hot` | Gmail **draft** inviting the lead to book, labelled `Booking/Awaiting-Send`; owner sends it | `bookingInvite` |
-| 3 | voice -> leads | caller asks for a demo | Voice page shows a link to the sales form with `topic=demo`; the form pre-fills a one-line message. No email is taken by voice. | `voice/demo_intent.py`, `web/lead-intake/contact.js` |
-| 4 | invoices -> ops | status `Needs review` | Event row, a digest line, and an owner alert above a configured amount | `invoiceEvent` |
+| 1 | intake -> booking | the lead reference in the booking page link (`/book?area=...&ref=...`) | After `book` or `follow_up`, the visitor is shown the booking page. The booking row keeps the reference as `leadRef`; its event has `source=handoff` and `runId` equal to the reference. | A visitor who never books leaves an open offer, which is normal. |
+| 2 | voice -> booking | the booking channel (`voice`) | A call books through the same rules as the website and gets the same decision. The event has `source=voice`. | The call has no lead reference unless the caller came from intake. |
+| 3 | triage -> intake | a Gmail label and a queue (`handoffRef=queue`) | A new inquiry arriving by email is labelled for the intake coordinator. Court-notice mail is labelled for the paralegals the same way. | No lead row is created from an email, and the attachment is not passed to the notices workflow. Both are listed as later links in `web/site/data/status.json`. |
+| 4 | notices -> ops | an ops event | Every notice is a `needs_human` row, a line in the digest and, if urgent, an owner-only alert. | Nothing confirms a notice automatically; an attorney does. |
 
-Linked events: the sender row carries `handoffTo` and `handoffRef`; the receiver row has `source=handoff` and `runId` equal to that ref (`handoffEvents`).
+`lib/handoffs.js` holds the four links as data (`HANDOFFS`) and two checks on `ops_events` rows:
 
-Safety notes
-- Lead names are stripped to letters, digits and a few marks before they reach the draft greeting, and the draft contains only fixed text plus the brand domain.
-- Only a Hot lead is invited. An unscored lead from support waits for a person.
-- Injection-flagged support mail never becomes a lead.
+- `chainProblems(rows)`: a receiving row must have a sender (same reference, sent no later), a sender must name a known automation and a reference, and nothing hands off to itself.
+- `openHandoffs(rows)`: offers to another automation that no receiving row has answered yet. A queue is never an open offer.
 
-Run the tests: `cd automations/handoffs && npm test` (8 tests) and `python -I voice/tests/test_demo_intent.py`.
+The live check at the cutover runs `chainProblems` on the real table.
+
+## Safety notes
+
+- Injected email is never handed off (tested on the triage set).
+- A conflict hold, an urgent matter or a referral out never shows the booking page, so none of them claims a handoff. The visitor message is written never to reveal a conflict check, and this log stays internal.
+- No handoff adds a client-facing email. The only email any automation sends to a client is the fixed booking confirmation.
+
+## Tests
+
+```bash
+cd automations/handoffs && npm test
+```
+
+Eight tests, driven by the real intake, triage, notices and booking libraries and their own evaluation sets: leads from the 48-case intake set actually book through the 86-case booking rules, the same 60 booking requests give the same decision by voice as by web, and the digest and the owner alert agree on which notices are urgent.

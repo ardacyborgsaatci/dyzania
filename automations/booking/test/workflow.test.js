@@ -105,7 +105,12 @@ test('the workflow shape: two authenticated endpoints, every path answers, one e
   const has = (name) => !!node(name);
   const out = (name) => ((wf.connections[name] || {}).main || []).reduce((a, b) => a.concat(b), []).map((l) => l.node);
   // every node that ends a path is a reply (or a note)
-  wf.nodes.forEach((n) => { if (!out(n.name).length && n.type !== 'n8n-nodes-base.stickyNote') assert.strictEqual(n.type, 'n8n-nodes-base.respondToWebhook', n.name + ' ends a path without a reply'); });
+  // (the ops log is the one exception: it is only ever reached after a reply, checked below)
+  wf.nodes.forEach((n) => { if (!out(n.name).length && n.type !== 'n8n-nodes-base.stickyNote' && n.name !== 'Log ops event') assert.strictEqual(n.type, 'n8n-nodes-base.respondToWebhook', n.name + ' ends a path without a reply'); });
+  const repliesIn = wf.nodes.filter((n) => n.type === 'n8n-nodes-base.respondToWebhook').map((n) => n.name).filter((name) => name !== 'Reply with slots');
+  assert.deepStrictEqual(repliesIn.slice().sort(), ['Reply booked', 'Reply held', 'Reply lost slot', 'Reply no booking'], 'every way a booking run ends has a reply');
+  repliesIn.forEach((name) => assert.deepStrictEqual(out(name), ['Build ops event'], name + ' is followed by the ops event, never preceded by it'));
+  assert.deepStrictEqual(out('Reply with slots'), [], 'listing free times is not a booking event');
   // every webhook reaches a reply
   const reach = (start) => { const seen = new Set(), todo = [start]; while (todo.length) { const x = todo.pop(); if (seen.has(x)) continue; seen.add(x); out(x).forEach((y) => todo.push(y)); } return seen; };
   hooks.forEach((h) => assert.ok(Array.from(reach(h.name)).some((x) => node(x).type === 'n8n-nodes-base.respondToWebhook'), h.name));
@@ -123,7 +128,7 @@ test('the workflow shape: two authenticated endpoints, every path answers, one e
 
 test('the order inside the booking path: insert, read again, verify, only then email', () => {
   const chain = (from) => { const order = []; let cur = from; while (cur) { order.push(cur); const next = ((wf.connections[cur] || {}).main || [])[0]; cur = next && next[0] && next[0].node; if (order.indexOf(cur) !== -1) break; } return order; };
-  assert.deepStrictEqual(chain('Booked?'), ['Booked?', 'Insert booking', 'Load bookings (verify)', 'Verify winner', 'Won the slot?', 'Send confirmation', 'Confirmation outcome', 'Record confirmation status', 'Reply booked']);
+  assert.deepStrictEqual(chain('Booked?'), ['Booked?', 'Insert booking', 'Load bookings (verify)', 'Verify winner', 'Won the slot?', 'Send confirmation', 'Confirmation outcome', 'Record confirmation status', 'Reply booked', 'Build ops event', 'Log ops event']);
   assert.deepStrictEqual(wf.connections['Won the slot?'].main[1].map((l) => l.node), ['Cancel losing row'], 'the loser is cancelled, not emailed');
   assert.deepStrictEqual(wf.connections['Cancel losing row'].main[0].map((l) => l.node), ['Reply lost slot']);
   assert.deepStrictEqual(wf.connections['Booked?'].main[1].map((l) => l.node), ['Held for review?']);
@@ -141,11 +146,75 @@ test('table nodes use exactly the declared columns; no credentials or real ids a
   });
   const text = JSON.stringify(wf);
   assert.doesNotMatch(text, /"credentials"/);
-  assert.deepStrictEqual(Array.from(new Set(text.match(/REPLACE_WITH_[A-Z_]+/g))), ['REPLACE_WITH_BOOKINGS_TABLE_ID']);
+  assert.deepStrictEqual(Array.from(new Set(text.match(/REPLACE_WITH_[A-Z_]+/g))), ['REPLACE_WITH_BOOKINGS_TABLE_ID', 'REPLACE_WITH_OPS_EVENTS_TABLE_ID']);
   assert.doesNotMatch(text, /sk-|gsk_|AIza|xox[bp]-|Bearer /);
   assert.deepStrictEqual({ a: wf.settings.saveDataSuccessExecution, b: wf.settings.saveDataErrorExecution, c: wf.settings.saveExecutionProgress }, { a: 'none', b: 'none', c: false });
   assert.deepStrictEqual(node('Cancel losing row').parameters.columns.value, { status: 'cancelled_race' });
   assert.strictEqual(node('Cancel losing row').parameters.filters.conditions[0].keyName, 'bookingRef');
+});
+
+// ---- the ops event ----
+const opsAdapters = require('../../ops/lib/adapters');
+const opsEvent = require('../../ops/lib/event');
+const opsSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'ops', 'ops_events.schema.json'), 'utf8'));
+
+test('the ops event node gives the row the library gives, for every labelled booking case, and nothing for invalid input or spam', () => {
+  let logged = 0, skipped = 0;
+  E.SET.cases.filter((c) => c.kind === 'book').forEach((c) => {
+    const { req, rows, nowMs } = E.runBook(c);
+    const nowIso = new Date(nowMs).toISOString();
+    const dec = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
+    const refs = { 'Decide booking': dec };
+    const got = runNode('Build ops event', [{}], refs, nowIso);
+    const want = opsAdapters.bookingEvent(dec, { now: new Date(nowIso), ref: (dec.row && dec.row.bookingRef) || '', leadRef: (dec.row && dec.row.leadRef) || '' });
+    if (!want) { assert.deepStrictEqual(got, [], c.id + ' logs nothing'); skipped++; return; }
+    assert.strictEqual(got.length, 1, c.id);
+    assert.deepStrictEqual(got[0].json.row, opsEvent.toRow(want.event), c.id);
+    assert.deepStrictEqual(Object.keys(got[0].json.row), opsSchema.columns.map((x) => x.name), c.id);
+    // nothing private: not the name, the address, the phone or the other side
+    const text = JSON.stringify(got[0].json.row).toLowerCase();
+    [req.name, req.email, req.phone, req.otherSide].forEach((s) => { if (s && s.length >= 5) assert.ok(!text.includes(String(s).toLowerCase()), c.id + ' repeats ' + s); });
+    logged++;
+  });
+  assert.strictEqual(logged + skipped, 60);
+  assert.ok(logged >= 40 && skipped >= 10, 'logged ' + logged + ', skipped ' + skipped);
+});
+
+test('the ops event node follows the race: a booking that lost the slot is logged as blocked, not as booked', () => {
+  const c = E.SET.cases.find((x) => x.kind === 'book' && x.expect.code === 'booked');
+  const { req, rows, nowMs } = E.runBook(c);
+  const nowIso = new Date(nowMs).toISOString();
+  const dec = plain(B.bookDecide(req, rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
+  const won = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: true, ref: 'HM-TEST01', decision: dec } }, nowIso)[0].json.row;
+  assert.strictEqual(won.status, 'ok');
+  assert.match(won.summary, /: booked,/);
+  const lost = plain(B.bookRaceLost(dec.row, 'slot_taken', rows, nowMs, E.DATA));
+  const got = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: false, ref: 'HM-TEST01', decision: dec, lost } }, nowIso)[0].json.row;
+  assert.strictEqual(got.status, 'blocked');
+  assert.match(got.summary, /slot_taken/);
+  assert.doesNotMatch(got.summary, /: booked,/);
+});
+
+test('a booking that came from an intake lead is the receiving end of the handoff and chains by the lead reference', () => {
+  const c = E.SET.cases.find((x) => x.kind === 'book' && x.expect.code === 'booked');
+  const { req, rows, nowMs } = E.runBook(c);
+  const nowIso = new Date(nowMs).toISOString();
+  const dec = plain(B.bookDecide(Object.assign({}, req, { leadRef: 'HM-261111-AB12' }), rows, nowMs, E.DATA, { ref: 'HM-TEST01', now: nowIso }));
+  const row = runNode('Build ops event', [{}], { 'Decide booking': dec, 'Verify winner': { won: true, ref: 'HM-TEST01', decision: dec } }, nowIso)[0].json.row;
+  assert.strictEqual(row.source, 'handoff');
+  assert.strictEqual(row.runId, 'HM-261111-AB12');
+  assert.match(row.summary, /HM-TEST01/, 'the booking reference is in the summary');
+});
+
+test('the log node writes the table the schema describes, continues on failure and uses a placeholder id', () => {
+  const log = node('Log ops event');
+  assert.strictEqual(log.parameters.operation, 'insert');
+  assert.strictEqual(log.onError, 'continueRegularOutput');
+  assert.strictEqual(log.parameters.dataTableId.value, 'REPLACE_WITH_OPS_EVENTS_TABLE_ID');
+  assert.deepStrictEqual(Object.keys(log.parameters.columns.value), opsSchema.columns.map((x) => x.name));
+  const text = code('Build ops event');
+  assert.match(text, /^\/\/ GENERATED by scripts\/build-booking-workflow\.mjs/);
+  assert.doesNotMatch(text, /\brequire\(|module\.exports|\bfetch\(|\bprocess\./);
 });
 
 test('the library has no clock and no randomness of its own; the Code nodes are the library plus a few glue lines', () => {

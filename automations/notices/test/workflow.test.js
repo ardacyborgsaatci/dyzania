@@ -132,9 +132,13 @@ test('the workflow shape: one authenticated upload form, one model call, one tab
   chain.forEach((n, i) => {
     const next = ((wf.connections[n] || {}).main || [])[0];
     if (i === chain.length - 1) assert.strictEqual(next, undefined, 'the email is the end');
-    else assert.deepStrictEqual(next.map((l) => l.node), [chain[i + 1]], n);
+    else assert.ok(next.map((l) => l.node).includes(chain[i + 1]), n);
   });
-  assert.deepStrictEqual(Object.keys(wf.connections), chain.slice(0, -1));
+  // the alert path is the chain above; the ops event hangs beside it from the saved rows, so it cannot stop the alert
+  assert.deepStrictEqual(wf.connections['Save to court_notices'].main[0].map((l) => l.node), ['Collect urgent alert', 'Build ops event']);
+  assert.deepStrictEqual(wf.connections['Build ops event'].main[0].map((l) => l.node), ['Log ops event']);
+  assert.strictEqual(wf.connections['Log ops event'], undefined, 'the ops log is the end of its branch');
+  assert.deepStrictEqual(Object.keys(wf.connections).sort(), chain.slice(0, -1).concat(['Build ops event']).sort());
   const form = node('Notice Upload Form');
   assert.strictEqual(form.type, 'n8n-nodes-base.formTrigger');
   assert.strictEqual(form.parameters.authentication, 'basicAuth', 'notices are privileged: the form is not public');
@@ -167,9 +171,61 @@ test('the table node uses exactly the declared columns; no credentials, ids or s
   assert.deepStrictEqual(cols.filter((c) => !(c in E.assess('C', JSON.stringify(E.SET.cases[0].truth)).row)), [], 'every column is filled by the rules');
   const text = JSON.stringify(wf);
   wf.nodes.forEach((n) => Object.values(n.credentials || {}).forEach((c) => assert.deepStrictEqual(Object.keys(c), ['name'], n.name + ' names a credential without an id')));
-  assert.deepStrictEqual(Array.from(new Set(text.match(/REPLACE_WITH_[A-Z_]+/g))).sort(), ['REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS', 'REPLACE_WITH_COURT_NOTICES_TABLE_ID']);
+  assert.deepStrictEqual(Array.from(new Set(text.match(/REPLACE_WITH_[A-Z_]+/g))).sort(), ['REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS', 'REPLACE_WITH_COURT_NOTICES_TABLE_ID', 'REPLACE_WITH_OPS_EVENTS_TABLE_ID']);
   assert.doesNotMatch(text, /sk-|gsk_|AIza|xox[bp]-|Bearer /);
   assert.deepStrictEqual({ a: wf.settings.saveDataSuccessExecution, b: wf.settings.saveDataErrorExecution, c: wf.settings.saveExecutionProgress, d: wf.settings.binaryMode }, { a: 'none', b: 'none', c: false, d: 'separate' });
+});
+
+// ---- the ops event ----
+const opsAdapters = require('../../ops/lib/adapters');
+const opsEvent = require('../../ops/lib/event');
+const opsSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'ops', 'ops_events.schema.json'), 'utf8'));
+
+async function readAll() {
+  const prepared = E.SET.cases.map((c) => ({ json: { fileName: c.file, ref: 'N-TEST-' + c.id, today: E.SET.today, now: '2026-11-11T15:00:00.000Z', requestBody: { model: 'stand-in' } } }));
+  return runNode('Read and check', E.SET.cases.map((c) => answerOf(JSON.stringify(c.truth))), { 'Prepare images': prepared }, NOW);
+}
+
+test('the ops event node gives the row the library gives for every notice, and no private text from the page', async () => {
+  const read = await readAll();
+  const saved = read.map((_, i) => ({ json: { id: i + 1 } }));
+  const out = await runNode('Build ops event', saved, { 'Read and check': read }, NOW);
+  assert.strictEqual(out.length, 12);
+  E.SET.cases.forEach((c, i) => {
+    const want = opsAdapters.noticeEvent(read[i].json.result, { now: new Date(NOW) });
+    assert.deepStrictEqual(out[i].json.row, opsEvent.toRow(want.event), c.id);
+    assert.deepStrictEqual(Object.keys(out[i].json.row), opsSchema.columns.map((x) => x.name));
+    assert.strictEqual(out[i].json.row.status, 'needs_human', c.id);
+    assert.strictEqual(out[i].json.row.runId, 'N-TEST-' + c.id);
+    assert.deepStrictEqual(out[i].pairedItem, { item: i });
+    const t = c.truth;
+    const text = JSON.stringify(out[i].json.row).toLowerCase();
+    [t.court, t.caseNumber, t.partyOne, t.partyTwo].concat(t.events.map((e) => e.label), t.events.map((e) => e.location), t.relativeDeadlines || []).forEach((x) => { if (x && x.length >= 4) assert.ok(!text.includes(String(x).toLowerCase()), c.id + ' repeats ' + x); });
+  });
+});
+
+test('a notice whose table row could not be saved is logged as an error, because nobody can find it; the others are unaffected', async () => {
+  const read = await readAll();
+  const saved = read.map((_, i) => (i === 2 ? { json: { error: 'table gone' } } : i === 5 ? { json: {} } : { json: { id: i + 1 } }));
+  const out = await runNode('Build ops event', saved, { 'Read and check': read }, NOW);
+  assert.deepStrictEqual(out.map((o) => o.json.row.status), read.map((_, i) => (i === 2 || i === 5 ? 'error' : 'needs_human')));
+  assert.match(out[2].json.row.summary, /was read but its table row could not be saved/);
+  assert.strictEqual(out[2].json.row.runId, 'N-TEST-' + E.SET.cases[2].id);
+  // the alert still comes out whether or not the ops branch ran
+  const alert = await runNode('Collect urgent alert', saved, { 'Read and check': read }, NOW);
+  assert.strictEqual(alert.length, 1);
+});
+
+test('the ops log writes the table the schema describes, continues on failure, and ends its own branch', () => {
+  const log = node('Log ops event');
+  assert.strictEqual(log.parameters.operation, 'insert');
+  assert.strictEqual(log.onError, 'continueRegularOutput');
+  assert.strictEqual(log.parameters.dataTableId.value, 'REPLACE_WITH_OPS_EVENTS_TABLE_ID');
+  assert.deepStrictEqual(Object.keys(log.parameters.columns.value), opsSchema.columns.map((x) => x.name));
+  const text = code('Build ops event');
+  assert.match(text, /^\/\/ GENERATED by scripts\/build-notices-workflow\.mjs/);
+  assert.doesNotMatch(text, /\brequire\(|module\.exports|\bfetch\(|\bprocess\./);
+  assert.strictEqual(wf.nodes.filter((n) => n.type === 'n8n-nodes-base.gmail').length, 1, 'logging adds no email node');
 });
 
 test('the library has no clock and no randomness of its own; the Code nodes are the library plus a few glue lines', () => {

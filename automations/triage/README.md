@@ -94,7 +94,7 @@ Read the numbers with care:
 - I wrote the emails, the labels and the code. It is a **regression set**, not an independent test. A second person labelling the same emails would be the real check.
 - Before the first run I traced the labels by hand against the rules and changed the rules in three places because of it: two deadline phrases (`respond by`, `response due`) were added to `firm/urgency.json`; "I keep hearing" and "been hearing from" are no longer read as a court hearing (this also changed the intake rules, with a test and a note in its README); and the rule screen reads the **whole** message while the model reads only the new text (a hearing date after 4000 characters, or inside an Outlook-style forward, would otherwise be missed).
 - The first run then disagreed in two places. One label said Spanish mail needs no person; the rule I had decided on says it does, so the label was changed. The other was real: with a hostile model, spam got a draft. Spam recognition is model-only, so it was listed as a limit, and a real fix was made: **when the classifier gives nothing usable, no draft is made.**
-- How good the real model is at the 54 emails is **not measured**. That needs the workflow run live with Groq, which is the next evaluation step (Phase 7). Until then, treat the model's category accuracy as unknown.
+- How good the real model is at the 54 emails is **not measured**. That needs the core workflow run live with Groq (a step in [CUTOVER.md](../../CUTOVER.md), which needs the owner's OK because it spends Groq quota). The scorer for that run is ready: `node eval/score-live.js results.json` reads the core's final output for each email and reports the fields that match, needs-human recall, injections flagged, urgent mail raised, any classifier fallback and any broken guarantee, and it lists the drafts a person must read. It is tested on stand-in results only. Until the live run, treat the model's category accuracy as unknown.
 - The mutation check: 22 deliberate breakages of the rules (removing the priority floor, the injection cap, the court and lawyer rules, the draft blocks, the non-English flag, the amount check, the negation guard, the hidden-character removal, the whole-message screen, and others). 20 were caught at once, one (hidden characters in the subject line) was not and now has a test, and one (an alert that leaks the subject) is not a real break because the result never holds the subject. A negative control (a wrong label and tampered results) is reported as a failure.
 
 ## Known limits
@@ -122,9 +122,10 @@ Read the numbers with care:
 | `prompts/classify.md`, `prompts/draft.md` | the two prompts (the knowledge base is appended to the draft prompt at build time) |
 | `columns.json` | the 21 columns of the `triage_log` data table |
 | `eval/emails.json`, `eval/run.js` | the 54 labelled emails and the offline scorer (`npm run eval`) |
+| `eval/score-live.js` | scores a live run of the core against the labels (`node eval/score-live.js results.json`) |
 | `workflow-core.json`, `workflow-gmail.json` | the n8n workflows, **generated** |
 | `../../scripts/build-triage-workflow.mjs` | builds both workflow files; `--check` fails if either is out of date |
-| `test/` | 46 tests |
+| `test/` | 55 tests |
 
 ## The n8n workflows
 
@@ -132,10 +133,11 @@ Read the numbers with care:
 
 The Code nodes are **generated** from the tested library with the firm data inlined. Change the rules in `lib/`, `rules.json` or `firm/`, run `npm test`, run `npm run build`. A test fails if either file is out of date, and another runs every Code node's text over all 54 emails with three kinds of model answer and compares the result with the library.
 
-To use them: create the `triage_log` data table from `columns.json`, import both files, replace `REPLACE_WITH_TRIAGE_LOG_TABLE_ID`, `REPLACE_WITH_TRIAGE_CORE_WORKFLOW_ID`, `REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS` and `YOUR_ADDRESS`, attach a Groq credential to the two model nodes and a Gmail credential to the Gmail nodes, run the label branch once. Publishing waits for the cutover and the owner's OK. The old Wrenbook triage (`automations/support`) polls a different alias (`+support`), so the two do not double-process mail until it is retired.
+To use them, follow [CUTOVER.md](../../CUTOVER.md): create the firm's triage log table from `columns.json` (as `hm_triage_log`, because the old table holds the name `triage_log`), run `node scripts/prepare-import.mjs` to fill the table id, the triage core's workflow id, the attorney-on-duty address and the mailbox into copies of both files, import them, attach a Groq credential to the two model nodes and a Gmail credential to the Gmail nodes, run the label branch once. Publishing waits for the cutover and the owner's OK. The old Wrenbook triage (`automations/support`) polls a different alias (`+support`), so the two do not double-process mail until it is retired; they do share the Gmail account and the `Triage/...` label names.
 
-## Not done in this phase
+## Not done
 
-- **Not imported into n8n and not run there.** The Code nodes' text is run in Node against all 54 emails; the node shapes copy workflows that already run in this project. A pinned-data run in n8n and a **live run of the 54 emails through Groq** are the first steps of the cutover and of the evaluation (Phase 7).
-- The hand-offs to intake and extraction, and the website playground (Phases 6 and 7).
-- The firm's `triage_log` table in n8n (the old `triage_log` has Wrenbook columns that hold subjects and summaries; the firm's is created from `columns.json` at the cutover).
+- **Not imported into n8n and not run there.** The Code nodes' text is run in Node against all 54 emails; the node shapes copy workflows that already run in this project. A pinned-data run in n8n and a **live run of the 54 emails through Groq** are the first steps of the cutover and of the evaluation.
+- **Ops events.** The Gmail workflow writes one metadata-only row per email to `ops_events` (a handoff to the intake coordinator's or the paralegals' queue when it applies). That is tested in Node; it has not run in n8n.
+- **No automatic hand-off to intake or extraction.** A new inquiry is labelled for the intake coordinator and court mail for the paralegals. No lead row is created from an email and an attachment is not passed on (listed as later links on the site's "how it runs" page).
+- The firm's triage log table does not exist in n8n yet (the old `triage_log` has Wrenbook columns that hold subjects and summaries; the firm's is created from `columns.json` at the cutover).

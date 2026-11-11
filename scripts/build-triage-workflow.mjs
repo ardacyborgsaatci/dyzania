@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { opsBuildNode, opsLogNode } from './lib/ops-nodes.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rel = (...p) => path.join(root, ...p);
@@ -98,6 +99,17 @@ return $('Pick label IDs').all()
 return triageAllLabelNames().map((name) => ({ json: { name } }));
 `
 };
+
+// The ops event for each email: what the triage decided, as a metadata-only row. It is built from the row just written to
+// triage_log (no subject, no body, no sender address are in it). A row that cannot be turned into an event becomes an error
+// row, so there is always one item per email and the labelling that follows is never starved.
+const OPS_GLUE = `
+return $input.all().map((item, i) => {
+  const row = item.json || {};
+  const built = orFallback(triageEvent(row, { now: NOW }), { automation: 'triage', source: 'gmail', runId: String(row.messageId || 'unknown'), summary: 'The ops event for an email could not be built' }, NOW);
+  return { json: { row: toRow(built.event) }, pairedItem: { item: i } };
+});
+`;
 
 export function wrapperCode(step) {
   return HEADER + '\n' + libText(WRAPPER_FILES) + '\n// ---- n8n glue ----' + WRAPPER_GLUE[step];
@@ -273,12 +285,15 @@ export function buildGmailWorkflow() {
         options: {}
       }
     },
-    { id: ID(10), name: 'Get Gmail labels', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [1568, 120], parameters: { resource: 'label', operation: 'getAll', returnAll: true } },
-    codeAll(11, 'Pick label IDs', [1792, 120], wrapperCode('pick')),
-    { id: ID(12), name: 'Apply labels', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [2016, 120], parameters: { resource: 'message', operation: 'addLabels', messageId: '={{ $json.gmailId }}', labelIds: '={{ $json.labelIds }}' } },
-    codeAll(13, 'Collect urgent alerts', [2240, 120], wrapperCode('alerts')),
+    // The ops event is written right after the triage log row and before the labelling. Both nodes continue on failure.
+    opsBuildNode({ id: ID(19), name: 'Build ops event', position: [1568, 120], generator: 'build-triage-workflow.mjs', glue: OPS_GLUE }),
+    opsLogNode({ id: ID(20), name: 'Log ops event', position: [1792, 120] }),
+    { id: ID(10), name: 'Get Gmail labels', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [2016, 120], parameters: { resource: 'label', operation: 'getAll', returnAll: true } },
+    codeAll(11, 'Pick label IDs', [2240, 120], wrapperCode('pick')),
+    { id: ID(12), name: 'Apply labels', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [2464, 120], parameters: { resource: 'message', operation: 'addLabels', messageId: '={{ $json.gmailId }}', labelIds: '={{ $json.labelIds }}' } },
+    codeAll(13, 'Collect urgent alerts', [2688, 120], wrapperCode('alerts')),
     {
-      id: ID(14), name: 'Email urgent alert', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [2464, 120],
+      id: ID(14), name: 'Email urgent alert', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [2912, 120],
       parameters: { resource: 'message', operation: 'send', sendTo: 'REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS', subject: '={{ $json.alertSubject }}', emailType: 'text', message: '={{ $json.alertText }}', options: { appendAttribution: false } }
     },
     { id: ID(15), name: 'Create triage labels (run once)', type: 'n8n-nodes-base.manualTrigger', typeVersion: 1, position: [0, 360], parameters: {} },
@@ -287,7 +302,7 @@ export function buildGmailWorkflow() {
     {
       id: ID(18), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -240],
       parameters: {
-        content: 'Gmail path for H&M Triage. Polls the +triage alias every minute, runs the Triage Core, then: creates a threaded Gmail DRAFT (only when the rules allow one; never sends), writes a metadata-only log row, applies Triage/* labels and, for urgent mail, emails an alert that has no message text. There is no node that sends to a sender. Run the manual branch below once to create the labels. Execution data is not saved.',
+        content: 'Gmail path for H&M Triage. Polls the +triage alias every minute, runs the Triage Core, then: creates a threaded Gmail DRAFT (only when the rules allow one; never sends), writes a metadata-only log row and one metadata-only ops event, applies Triage/* labels and, for urgent mail, emails an alert that has no message text. There is no node that sends to a sender. Run the manual branch below once to create the labels. Execution data is not saved.',
         width: 760, height: 170
       }
     }
@@ -300,7 +315,9 @@ export function buildGmailWorkflow() {
     'Run triage core': { main: [[link('Combine result')]] },
     'Combine result': { main: [[link('Has draft?'), link('Insert log row')]] },
     'Has draft?': { main: [[link('Create draft')]] },
-    'Insert log row': { main: [[link('Get Gmail labels')]] },
+    'Insert log row': { main: [[link('Build ops event')]] },
+    'Build ops event': { main: [[link('Log ops event')]] },
+    'Log ops event': { main: [[link('Get Gmail labels')]] },
     'Get Gmail labels': { main: [[link('Pick label IDs')]] },
     'Pick label IDs': { main: [[link('Apply labels')]] },
     'Apply labels': { main: [[link('Collect urgent alerts')]] },

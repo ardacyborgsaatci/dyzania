@@ -7,7 +7,7 @@
 //   obedient  does what an injected email asks (priority urgent, no flag). Used on the injection emails only.
 //   rules     the model is unavailable (the fallback answer).
 // None of this measures how good the real model is. That number comes from running the same emails through
-// the n8n workflow (live mode, node eval/run.js --live URL), which is a later step.
+// the n8n workflow and scoring what comes back with `node eval/score-live.js results.json` (see score-live.js).
 const fs = require('node:fs');
 const path = require('node:path');
 const { loadTriageData } = require('../lib/data');

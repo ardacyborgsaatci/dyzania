@@ -9,3 +9,7 @@ __pycache__/
 *.log
 .DS_Store
 automations/support/eval/results.json
+
+# cutover: real table ids and addresses, never committed
+cutover.local.json
+cutover-out/

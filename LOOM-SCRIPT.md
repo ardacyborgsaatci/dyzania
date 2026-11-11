@@ -1,32 +1,48 @@
-# Loom script: Wrenbook, five automations (about 3 minutes)
+# Loom script: Hollis & Marr LLP, five automations (about 3 minutes)
 
-One video for the whole company. Record at 1080p, browser zoom about 110%. The video says what is working and what is not; keep that, it is the point.
+One video for the whole firm. Record at 1080p, browser zoom about 110%. The video says what works and what is not measured; keep that, it is the point.
+
+**Record after the cutover and the live check have passed** ([CUTOVER.md](CUTOVER.md)). Before that, the forms on the site answer "unavailable" by design, so there is nothing honest to show. If you must record earlier, show only the `/ops` page, the tests and the code, and say "not live yet".
 
 Have ready before you press record:
 
-- The site running (local `web/site` or a deployment) on the home page.
-- n8n open on the invoice workflow, and the Google Sheet "Extraction" tab with the 12 evaluation rows.
-- A terminal in the repo with the tests ready (`node --test web/site/test/`).
-- The README open on the table of automations.
-- Do not show your real inbox. Use the support playground, not Gmail.
+- The deployed site open on the home page (or `vercel dev`, and say "running locally").
+- A second tab on `/ops` ("how it runs").
+- n8n open on the `ops_events` table, with the live check's rows in it.
+- A terminal in the repo with the tests ready.
+- Gmail open on **Drafts** with the invented emails already sent to the `+triage` alias an hour before, so the drafts and labels are there.
+- One of the 12 invented notice PNGs from `automations/notices/eval/samples/` ready to upload.
+- Do not show your real inbox, real addresses or any real person's data. Everything on screen is invented. The firm is fictional.
+- Write the live numbers on a sticky note first (the table at the end). Never say a number you have not measured.
 
 | Time | On screen | Say |
 |---|---|---|
-| 0:00 | Home page | "Wrenbook is a made-up invoicing app for small businesses. I built five automations for its team, and this is them in one place. Everything you will see is invented data." |
-| 0:15 | `/ops` page, the five cards | "Each card says honestly what runs and what does not. Two run today, two are tested but small, and booking is not finished." |
-| 0:30 | Home page, sales form | "Sales. This form is real. It goes to an n8n workflow that scores the lead from budget, size, timeline and email type, logs it, and alerts on hot leads. The scoring rules have tests, including one that checks my helper matches the n8n node on 180 inputs." |
-| 0:50 | Support playground: **Prompt injection attempt**, Run | "Support. This email tries to instruct the model. It is treated as untrusted, flagged and sent to a person, and no draft is written. Replies are only ever drafts; nothing is sent to a customer." |
-| 1:10 | Dashboard results | "On 54 invented emails it gets 98 percent of categories right and flags every email that needs a person. I tuned on that set, so it is a development result, and a clean re-run is still owed." |
-| 1:25 | `/call` page | "Front desk. A voice assistant that answers from the same knowledge base and points callers who want a demo to the sales form. I tested the text path on 15 questions. I have not tested the microphone or the voice yet." |
-| 1:45 | n8n invoice workflow, then the sheet | "Finance. A bill image goes to a vision model, and code decides whether to approve it: amounts must add up and the model must be confident, otherwise Needs review. I ran 12 invented bills at once." |
-| 2:05 | Sheet rows, point at I08 (Tallgrass) | "It sent every flawed bill to review and got the readable ones right. But this heavily blurred bill was approved with wrong values, because the wrong numbers still added up and the model sounded sure. I wrote that down as the main gap." |
-| 2:25 | README, handoffs list | "Four handoffs connect these: support to sales, sales to booking, voice to sales, and finance to a shared ops alert. They are written and tested, and go live at one planned cutover." |
-| 2:40 | Terminal: run the site tests | "Everything is tested where it can be, and the limits are written down." |
-| 2:50 | Home page | "Links to the code are below. Thanks for watching." |
+| 0:00 | Home page | "Hollis & Marr is a made-up law firm. I built five automations for its team and this is them in one place. Everything you will see is invented, and nothing here gives legal advice or sends a message to a client on its own." |
+| 0:15 | `/ops` page, the five cards | "Each card says what it does, the evidence, and what is not measured. I wrote the labels and the code myself, so these are regression checks, not independent proof." |
+| 0:30 | Contact form: fill in the invented visitor, send | "Intake. A visitor describes a matter. Rules, not a model, match it to a practice area, screen the other side against an invented conflict list, flag a court date or other urgent wording, and score it. The visitor is never told about the conflict screen." |
+| 0:55 | Booking page: pick a time, book | "Booking. The same rules offer free times and choose the attorney. They enforce notice, a buffer, one booking per person and the conflict check. A separate brute-force check agrees with them on 72 scenarios, including both daylight-saving changes." |
+| 1:15 | n8n `ops_events` table | "Every run writes one short log row with no names, addresses or message text. These two rows are the intake and the booking, linked by the lead reference. A script checks that chain and that nothing private is in any row." |
+| 1:35 | Gmail Drafts, then the injection email | "Inbox triage. A model sorts email and a reply is saved as a draft, never sent. Courts, other lawyers, spam and instruction-like text get no draft at all. This email tries to give the model orders: it is flagged and sent to a person." |
+| 1:55 | Upload a notice PNG, then the row and the alert email | "Court notices. A vision model copies a scanned paper into fields and rules set the priority. Every result says Needs attorney confirmation and nothing can change that. It never works out a deadline; a date is repeated as printed. One alert goes to the attorney on duty, with no party names." |
+| 2:15 | `/call` page, ask one question, then book by voice | "The voice line answers from the same knowledge base and books through the same service as the website. A check blocks advice, a stated deadline or an invented fee." |
+| 2:35 | Terminal: run the tests | "Everything is tested where it can be: 357 Node tests and 124 Python tests, and the generated n8n workflows are checked against the libraries." |
+| 2:45 | `/ops` page, "not measured" lines | "What I have not done: [say the limits you still have, from the table below]. Links to the code are below. Thanks for watching." |
+
+## Numbers to read off after the live runs
+
+Say only what the run produced. If a run was not done, say "not measured yet".
+
+| Run | Command | Say |
+|---|---|---|
+| Intake to booking chain | `node scripts/live-check.mjs verify ...` | "The live check passed: the two events chain by the lead reference and hold nothing private." |
+| Triage, 54 emails through the real model | `node automations/triage/eval/score-live.js results.json` | The category and needs-human numbers it prints, and how many guarantees broke (target none). Say it is a development set I wrote. |
+| Court notices, 12 notices | `node automations/notices/eval/score.js rows.json` | Wrong statuses (must be 0), urgent notices missed, fields right. |
+| Voice questions | `python run_questions.py` in `voice/` | How many of the 54 it got right, and that a real call was or was not made. |
 
 ## Tips
 
-- Booking is left out on purpose because it is not finished. If asked, say so in one sentence.
-- Run the playground presets at least an hour before recording; the demo allows 3 runs per visitor per hour.
-- If the site is not deployed, record against the local server and say "running locally".
-- Keep it under three minutes. Cut the voice page first if you need to trim.
+- Run the triage emails and the live check an hour before recording so the drafts, labels and rows are already there.
+- Delete the booking the live check made (and any test rows) afterwards.
+- Cut the voice page first if you need to trim; keep the `ops_events` rows and the notices alert, they are the proof.
+- If asked what is missing, say it in one sentence: no calendar mirror, no cancel endpoint, and a new-matter email still needs a person to enter it.
+- Keep it under three minutes.

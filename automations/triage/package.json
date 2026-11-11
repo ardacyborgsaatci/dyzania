@@ -5,6 +5,7 @@
   "scripts": {
     "test": "node --test test/",
     "eval": "node eval/run.js",
+    "score-live": "node eval/score-live.js",
     "build": "node ../../scripts/build-triage-workflow.mjs",
     "check": "node ../../scripts/build-triage-workflow.mjs --check"
   }

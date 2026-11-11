@@ -101,16 +101,16 @@ Run `node eval/run.js` or `npm test` in this folder. **No model has read these i
 - A label of mine for N09 said the scan was "poor" although I could read it on screen. Poor legibility is now covered by property tests, and the label says "partial".
 - Before any code existed I listed `date_unverified` as a reason for N08. It is a flag, not a reason for the priority, so the labels were split into expected reasons and expected flags first.
 
-## How to run it for real (Phase 7)
+## How to run it for real
 
-1. Import `workflow.json`, create the `court_notices` table from `columns.json`, attach the OpenRouter and basic-auth credentials, and set the two `REPLACE_WITH_` values.
+1. Follow [CUTOVER.md](../../CUTOVER.md): the `court_notices` table already exists in n8n with the right columns, `node scripts/prepare-import.mjs` fills the table ids and the attorney-on-duty address, then import `notices.json`, attach the OpenRouter and basic-auth credentials and set the error workflow.
 2. Upload the 12 PNGs from `eval/samples` once, in one go.
 3. Export the 12 rows and run `node eval/score.js rows.json`. The numbers to look at: **wrong status** (must be 0), **urgent notices missed** (target 0), wrong earliest date, over-cautious count, fields right and event dates right. Nothing here is a promise before that run.
 
 ## Limits (read these)
 
 - **Same-author evidence, and no real model yet.** The 12 notices, their labels and the rules were written by the same author. The images are clean, drawn pages plus one degraded copy; real scans (skew, stamps, handwriting, fax noise, several pages in one file) are not represented. How well a real model reads dates and names is unmeasured until the live run above.
-- **A model that reads nothing leads to no alert.** If a model, fooled or broken, says every page is "not a court document" with no dates, the rules see nothing urgent: the stand-in test shows 8 of 8 urgent notices missed that way. The row is still saved as "Needs attorney confirmation", but nobody is emailed. What guards against it: a failed or unparseable answer is urgent, an inconsistent "not a court document" is not believed, and the planned daily digest (Phase 7, not built) will list every unconfirmed notice. No rule can read the page itself.
+- **A model that reads nothing leads to no alert.** If a model, fooled or broken, says every page is "not a court document" with no dates, the rules see nothing urgent: the stand-in test shows 8 of 8 urgent notices missed that way. The row is still saved as "Needs attorney confirmation", but nobody is emailed. What guards against it: a failed or unparseable answer is urgent, an inconsistent "not a court document" is not believed, and the daily digest lists every notice still waiting (built and tested in Node, not run in n8n). No rule can read the page itself.
 - **Images go to a third-party model.** The demo model is a free OpenRouter route, which may log prompts. Only invented documents belong in this demo. Before any real client paper is uploaded the owner has to choose a route with no retention, and decide whether the firm's duty of confidentiality allows it at all. The upload form is protected by basic auth, but that credential is not created yet.
 - **Days are calendar days.** They are counted from the day the notice was read to the date as printed. They do not count court days, holidays, service rules or time zones of the court. They only decide who looks first and must never be read as a deadline.
 - **Dates it can cross-check:** English month names, `11/18/2026` (month first) and `2026-11-18`. Other languages and day-first dates cannot be checked (flagged `date_unverified`, the model's ISO date is used). A date printed without a year is given the nearest year by the shared reader and flagged `year_inferred`.
@@ -119,7 +119,7 @@ Run `node eval/run.js` or `npm test` in this folder. **No model has read these i
 - **No confirmation screen.** A person confirms by editing the `status`, `confirmedBy` and `confirmedAt` cells in the data table. Nothing reads those cells yet.
 - **Not run in n8n.** The workflow is generated and the Code nodes are tested through stubs. The form trigger's basic auth and multiple files, `binaryMode: separate`, a null in the number column on insert, `itemMatching` after an HTTP call that failed, and the alert node reading `$('Read and check').all()` are as documented by n8n but unverified until the cutover import.
 - **One alert, no retry.** If the email fails there is no second try. The rows are in the table.
-- **Handoff 4 is not wired yet.** The metadata-only ops event is produced (`event` in each result, with no names or page text) but not sent anywhere, and the daily digest line is Phase 7.
+- **Handoff 4 is built and has not run in n8n.** Each upload writes one `needs_human` row (source `upload`, no names or page text) to `ops_events`, and the daily digest counts the notices waiting and the urgent ones. Both are tested in Node against the real rules; neither has run in n8n.
 - **Time zone is a default.** "Today" is the date in `America/Chicago`, chosen by the builder; the owner confirms it.
 
 ## Files

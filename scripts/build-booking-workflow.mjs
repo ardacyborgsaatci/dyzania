@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { opsBuildNode, opsLogNode } from './lib/ops-nodes.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rel = (...p) => path.join(root, ...p);
@@ -69,6 +70,21 @@ const sent = !res.error && !!res.id;
 return [{ json: { ref: dec.row.bookingRef, confirmation: sent ? 'sent' : 'failed', public: bookConfirmedPublic(dec.public, sent, DATA) } }];
 `
 };
+
+// The ops event for one booking request, built from whichever way the run ended: booked, lost the slot, held, or refused.
+// Invalid input and spam are not logged (the adapter returns nothing), so the chain simply ends. The booking row's leadRef
+// makes this the receiving end of the intake -> booking handoff. Nothing here reads a name, an address or a phone number.
+const OPS_GLUE = `
+const dec = $('Decide booking').first().json;
+let result = dec;
+try { const v = $('Verify winner').first().json; if (v && v.won === false && v.lost) result = v.lost; } catch (e) { /* the slot was never inserted in this run */ }
+const ref = (dec.row && dec.row.bookingRef) || '';
+const leadRef = (result.row && result.row.leadRef) || (dec.row && dec.row.leadRef) || '';
+const built = bookingEvent(result, { now: NOW, ref, leadRef });
+if (!built) return [];
+const ev = orFallback(built, { automation: 'booking', source: 'web', runId: leadRef || ref || 'unknown', summary: 'The ops event for a booking could not be built' }, NOW);
+return [{ json: { row: toRow(ev.event) }, pairedItem: { item: 0 } }];
+`;
 
 export function dataObject() { return loadBookingData(); }
 export function bundleCode(step) {
@@ -158,10 +174,13 @@ export function buildWorkflow() {
     insertRow(20, 'Insert held row', [1120, 400], '$(\'Decide booking\').first().json'),
     reply(21, 'Reply held', [1344, 400], "={{ $('Decide booking').first().json.public }}"),
     reply(22, 'Reply no booking', [1120, 560], '={{ $json.public }}'),
+    // ---- ops event: written after the visitor has their answer, whichever way the run ended ----
+    opsBuildNode({ id: ID(24), name: 'Build ops event', position: [2688, 320], generator: 'build-booking-workflow.mjs', glue: OPS_GLUE }),
+    opsLogNode({ id: ID(25), name: 'Log ops event', position: [2912, 320] }),
     {
       id: ID(23), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -200],
       parameters: {
-        content: 'Booking for Hollis & Marr LLP (fictional). POST booking/slots returns free times for an area. POST booking/book books one. Both need the header-auth credential; the website (or the voice line) calls them, never a browser directly.\nThe Code nodes are generated from the tested library. A booking is inserted, the table is read again and the row that came first (lowest row id) keeps the slot, so two people choosing the same time almost never both get it; see the README for the narrow case this does not cover. A person on a conflict hold gets a held row with no time and the same words as anyone else the system cannot book; they are never told why.\nThe only email is the fixed confirmation to the booked address. Execution data is not saved (names and emails). Not yet wired: the ops event and the Google Calendar mirror.',
+        content: 'Booking for Hollis & Marr LLP (fictional). POST booking/slots returns free times for an area. POST booking/book books one. Both need the header-auth credential; the website (or the voice line) calls them, never a browser directly.\nThe Code nodes are generated from the tested library. A booking is inserted, the table is read again and the row that came first (lowest row id) keeps the slot, so two people choosing the same time almost never both get it; see the README for the narrow case this does not cover. A person on a conflict hold gets a held row with no time and the same words as anyone else the system cannot book; they are never told why.\nThe only email is the fixed confirmation to the booked address. Execution data is not saved (names and emails). After the reply, one metadata-only ops event is logged (no name, address or phone). Not yet wired: the Google Calendar mirror.',
         width: 900, height: 230
       }
     }
@@ -182,6 +201,11 @@ export function buildWorkflow() {
     'Confirmation outcome': { main: [[link('Record confirmation status')]] },
     'Record confirmation status': { main: [[link('Reply booked')]] },
     'Cancel losing row': { main: [[link('Reply lost slot')]] },
+    'Reply booked': { main: [[link('Build ops event')]] },
+    'Reply lost slot': { main: [[link('Build ops event')]] },
+    'Reply held': { main: [[link('Build ops event')]] },
+    'Reply no booking': { main: [[link('Build ops event')]] },
+    'Build ops event': { main: [[link('Log ops event')]] },
     'Held for review?': { main: [[link('Insert held row')], [link('Reply no booking')]] },
     'Insert held row': { main: [[link('Reply held')]] }
   };

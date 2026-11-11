@@ -2,10 +2,10 @@
   "table": "ops_events",
   "columns": [
     { "name": "ts", "type": "date" },
-    { "name": "automation", "type": "string", "enum": ["leads", "booking", "support", "voice", "invoices", "ops"] },
-    { "name": "team", "type": "string", "enum": ["sales", "support", "front-desk", "finance", "ops"] },
+    { "name": "automation", "type": "string", "enum": ["intake", "triage", "booking", "notices", "voice", "ops"] },
+    { "name": "team", "type": "string", "enum": ["intake", "front-office", "paralegals", "front-desk", "ops"] },
     { "name": "runId", "type": "string" },
-    { "name": "source", "type": "string", "enum": ["gmail", "web", "voice", "seed", "eval", "schedule", "handoff"] },
+    { "name": "source", "type": "string", "enum": ["web", "gmail", "voice", "upload", "seed", "eval", "schedule", "handoff"] },
     { "name": "status", "type": "string", "enum": ["ok", "needs_human", "blocked", "error"] },
     { "name": "summary", "type": "string", "maxLength": 140 },
     { "name": "latencyMs", "type": "number", "optional": true },

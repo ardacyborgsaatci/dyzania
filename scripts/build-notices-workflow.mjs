@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { opsBuildNode, opsLogNode } from './lib/ops-nodes.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const rel = (...p) => path.join(root, ...p);
@@ -94,6 +95,22 @@ return [{ json: { subject: a.subject, text: a.text, count: a.count } }];
 `
 };
 
+// The ops event for each notice: a needs_human row with the reference, type, priority and reason codes (no party names, no
+// court, no case number, no dates). A notice whose table row could not be saved is logged as an error instead, because
+// nobody can find it in the table. Runs beside the alert path, which reads the saved rows itself.
+const OPS_GLUE = `
+const saved = $input.all();
+const read = $('Read and check').all();
+return read.map((x, i) => {
+  const s = saved[i] && saved[i].json;
+  const ref = String((x.json.row && x.json.row.ref) || 'unknown');
+  const fallback = { automation: 'notices', source: 'upload', runId: ref, summary: 'Court notice ' + ref + ' was read but its ops event could not be built' };
+  let ev = orFallback(noticeEvent(x.json.result, { now: NOW }), fallback, NOW);
+  if (!(s && !s.error && s.id)) ev = orFallback(null, { automation: 'notices', source: 'upload', runId: ref, summary: 'Court notice ' + ref + ' was read but its table row could not be saved' }, NOW);
+  return { json: { row: toRow(ev.event) }, pairedItem: { item: i } };
+});
+`;
+
 export function dataObject() { return loadNoticeData(); }
 export function bundleCode(step) {
   return HEADER + '\nconst DATA = ' + JSON.stringify(dataObject()) + ';\n\n' + libText() + '\n// ---- n8n glue: the only part written for n8n. Everything above is the tested library. ----\n' + GLUE[step];
@@ -141,6 +158,9 @@ export function buildWorkflow() {
       }
     },
     codeAll(6, 'Collect urgent alert', [1120, 0], bundleCode('alert')),
+    // ---- ops event: beside the alert path. Both nodes continue on failure, so neither can stop the alert. ----
+    opsBuildNode({ id: ID(9), name: 'Build ops event', position: [1120, 220], generator: 'build-notices-workflow.mjs', glue: OPS_GLUE }),
+    opsLogNode({ id: ID(10), name: 'Log ops event', position: [1344, 220] }),
     {
       id: ID(7), name: 'Send urgent alert', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [1344, 0], onError: 'continueRegularOutput',
       parameters: {
@@ -151,7 +171,7 @@ export function buildWorkflow() {
     {
       id: ID(8), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -260],
       parameters: {
-        content: 'Court-notice reading for Hollis & Marr LLP (fictional). Upload scans or photos; a vision model copies what is printed into JSON; the tested rules (the Code nodes, generated from the library) decide the priority. Every row is saved with the status "Needs attorney confirmation": nothing here, and nothing a document says, can approve a notice. Only a person changes that cell.\nThe code never works out a deadline. It repeats a date as printed and counts days only to decide who looks first. A time limit counted from another event is copied as printed.\nUrgent (a summons or subpoena, a date within 7 days or already passed, a poor scan, a date that could not be read, or a failed read) sends ONE email per upload to the attorney on duty. The email has no party names. If the table row cannot be saved the email says so.\nThe upload form needs a basic-auth credential: notices are privileged. Execution data is not saved. Images go to a third-party model (see the README before using real papers). Not yet wired: the ops event and the daily digest line (Phase 7).',
+        content: 'Court-notice reading for Hollis & Marr LLP (fictional). Upload scans or photos; a vision model copies what is printed into JSON; the tested rules (the Code nodes, generated from the library) decide the priority. Every row is saved with the status "Needs attorney confirmation": nothing here, and nothing a document says, can approve a notice. Only a person changes that cell.\nThe code never works out a deadline. It repeats a date as printed and counts days only to decide who looks first. A time limit counted from another event is copied as printed.\nUrgent (a summons or subpoena, a date within 7 days or already passed, a poor scan, a date that could not be read, or a failed read) sends ONE email per upload to the attorney on duty. The email has no party names. If the table row cannot be saved the email says so.\nThe upload form needs a basic-auth credential: notices are privileged. Execution data is not saved. Images go to a third-party model (see the README before using real papers). Each notice also writes one ops event (reference, type, priority and reason codes only), which the daily digest counts; a notice whose row could not be saved is logged as an error.',
         width: 1100, height: 240
       }
     }
@@ -161,7 +181,8 @@ export function buildWorkflow() {
     'Prepare images': { main: [[link('Ask vision model (OpenRouter)')]] },
     'Ask vision model (OpenRouter)': { main: [[link('Read and check')]] },
     'Read and check': { main: [[link('Save to court_notices')]] },
-    'Save to court_notices': { main: [[link('Collect urgent alert')]] },
+    'Save to court_notices': { main: [[link('Collect urgent alert'), link('Build ops event')]] },
+    'Build ops event': { main: [[link('Log ops event')]] },
     'Collect urgent alert': { main: [[link('Send urgent alert')]] }
   };
   return {

@@ -81,8 +81,63 @@ test('every connection points at a real node and every path to a visitor ends in
   assert.strictEqual(type(next('Spam?', 1)[0]), 'n8n-nodes-base.respondToWebhook');
   assert.strictEqual(node('Reply with errors').parameters.options.responseCode, 422);
   // nothing is sent to a person before the visitor has their answer
-  assert.deepStrictEqual(next('Reply to visitor'), ['Send alert?']);
+  // then the ops event is logged, and only after that the alert, so a failing alert mail cannot skip the log
+  assert.deepStrictEqual(next('Reply to visitor'), ['Build ops event']);
+  assert.deepStrictEqual(next('Build ops event'), ['Log ops event']);
+  assert.deepStrictEqual(next('Log ops event'), ['Send alert?']);
   assert.deepStrictEqual(next('Send alert?', 0), ['Alert attorney on duty']);
+});
+
+// ---- the ops event ----
+const ops = require('../../ops/lib/adapters');
+const opsEvent = require('../../ops/lib/event');
+const opsSchema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'ops', 'ops_events.schema.json'), 'utf8'));
+
+function runOpsNode(scored) {
+  const code = node('Build ops event').parameters.jsCode;
+  const fn = new Function('$', 'TEST_NOW', code);
+  return fn((name) => { assert.strictEqual(name, 'Validate and score'); return { first: () => ({ json: scored }) }; }, NOW);
+}
+
+test('the ops event node gives the row the library gives, for every eval case that reaches it', () => {
+  let checked = 0;
+  for (const c of setup.cases) {
+    const body = Object.assign({}, setup.defaults, c.input);
+    const scored = processIntake(body, data, { today: setup.today, ref: 'HM-EVAL-' + c.id, now: NOW });
+    if (!scored.ok || scored.spam) continue;
+    const out = runOpsNode(scored);
+    assert.strictEqual(out.length, 1, c.id);
+    const want = opsEvent.toRow(ops.intakeEvent(scored, { now: new Date(NOW) }).event);
+    assert.deepStrictEqual(out[0].json.row, want, c.id);
+    assert.deepStrictEqual(Object.keys(out[0].json.row), opsSchema.columns.map((x) => x.name));
+    // nothing private: not the name, the address, the other side, the phone or any of the message
+    const text = JSON.stringify(out[0].json.row).toLowerCase();
+    for (const secret of [body.name, body.email, body.phone, body.otherSide, body.description]) if (secret && secret.length >= 5) assert.ok(!text.includes(secret.toLowerCase()), c.id + ' repeats ' + secret);
+    checked++;
+  }
+  assert.ok(checked >= 40, 'checked ' + checked);
+});
+
+test('if the event cannot be built the node still returns one valid error row, and never throws', () => {
+  for (const scored of [{ ok: true, lead: { ref: 'HM-X', nextStep: 'nonsense', tier: 'Hot', areaFinal: 'family', urgencyLevel: 'none' } }, {}, { ok: false }, null]) {
+    const out = runOpsNode(scored);
+    assert.strictEqual(out.length, 1);
+    const row = out[0].json.row;
+    assert.ok(row.summary.length > 0 && !row.summary.includes('@'));
+    assert.ok(['ok', 'needs_human', 'error'].includes(row.status));
+  }
+  assert.strictEqual(runOpsNode({})[0].json.row.status, 'error');
+  assert.strictEqual(runOpsNode({ ok: true, lead: { ref: 'HM-X', nextStep: 'book', tier: 'Hot', areaFinal: 'family', urgencyLevel: 'none' } })[0].json.row.handoffTo, 'booking');
+});
+
+test('the log node writes the table the schema describes, continues on failure and uses a placeholder id', () => {
+  const log = node('Log ops event');
+  assert.strictEqual(log.type, 'n8n-nodes-base.dataTable');
+  assert.strictEqual(log.parameters.operation, 'insert');
+  assert.strictEqual(log.onError, 'continueRegularOutput');
+  assert.strictEqual(log.parameters.dataTableId.value, 'REPLACE_WITH_OPS_EVENTS_TABLE_ID');
+  assert.deepStrictEqual(Object.keys(log.parameters.columns.value), opsSchema.columns.map((x) => x.name));
+  for (const x of opsSchema.columns) assert.strictEqual(log.parameters.columns.value[x.name], '={{ $json.row.' + x.name + ' }}');
 });
 
 test('expressions only refer to nodes and fields that exist', () => {
@@ -115,8 +170,10 @@ test('the export is safe to commit: placeholders for addresses and ids, no secre
   assert.strictEqual(node('Alert attorney on duty').parameters.options.appendAttribution, false);
 });
 
-test('the Code node has no network, file or module access', () => {
-  const code = node('Validate and score').parameters.jsCode;
-  assert.doesNotMatch(code, /\brequire\(|\bimport\s|\bfetch\(|XMLHttpRequest|\bprocess\.|child_process|\beval\(|new Function/);
-  assert.match(code, /^\/\/ GENERATED/);
+test('the Code nodes have no network, file or module access', () => {
+  for (const name of ['Validate and score', 'Build ops event']) {
+    const code = node(name).parameters.jsCode;
+    assert.doesNotMatch(code, /\brequire\(|\bimport\s|\bfetch\(|XMLHttpRequest|\bprocess\.|child_process|\beval\(|new Function/, name);
+    assert.match(code, /^\/\/ GENERATED/, name);
+  }
 });
