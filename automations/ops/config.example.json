@@ -1,0 +1,8 @@
+{
+  "brand": "Wrenbook",
+  "domain": "wrenbook.example",
+  "owner_address": "SET_AT_IMPORT",
+  "timezone": "SET_BY_OWNER",
+  "support_hours": "Mon-Fri 09:00-17:00 UTC",
+  "demo_enabled": "true"
+}
