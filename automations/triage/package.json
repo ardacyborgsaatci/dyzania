@@ -1,0 +1,11 @@
+{
+  "name": "hollis-marr-triage",
+  "private": true,
+  "description": "Email triage for Hollis & Marr LLP (fictional): rule screen, classifier prompt, draft prompt, offline evaluation.",
+  "scripts": {
+    "test": "node --test test/",
+    "eval": "node eval/run.js",
+    "build": "node ../../scripts/build-triage-workflow.mjs",
+    "check": "node ../../scripts/build-triage-workflow.mjs --check"
+  }
+}

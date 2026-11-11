@@ -1,0 +1,33 @@
+{
+  "note": "Rule data for email triage at Hollis & Marr LLP (fictional). Edit the data here, not the code. The courts and law firms named are invented.",
+  "promptVersion": "hm-triage-v1",
+  "knownCourtDomains": ["harlowcountycourt.example"],
+  "knownCourtNote": "Mail from these domains is treated as a court notice: priority high or more, never answered, handed to extraction. The sender address is NOT authenticated here (no SPF/DKIM check), so a forged address can only make a message more careful, never less.",
+  "autoReply": {
+    "subjectPatterns": ["^automatic reply\\b", "^auto[- ]?reply\\b", "^out of office\\s*(?::|-|$)", "^undeliverable\\b", "^delivery status notification\\b", "^mail delivery (?:subsystem|failed)\\b"],
+    "senderContains": ["mailer-daemon", "postmaster"],
+    "note": "An automatic reply is ignored completely (priority low, no draft, no queue), so these patterns are narrow on purpose: a client writing 'Delivery status of my documents' must not match. no-reply addresses are NOT treated as automatic replies, because courts often send notices from them."
+  },
+  "counselCues": [
+    "our client",
+    "your client",
+    "opposing counsel",
+    "attorney at law",
+    "counsel for",
+    "i now represent",
+    "i act for",
+    "we represent",
+    "esq"
+  ],
+  "counselGreeting": "A line that starts with 'Counsel,' also counts. These cues are things a client or a first-time visitor would not normally write. A hit sends the message to the matter attorney and no reply is drafted.",
+  "queues": {
+    "urgent": "the attorney on duty (urgent@hollismarr.example)",
+    "records": "records: court notices",
+    "matter_attorney": "the attorney on the matter",
+    "case_team": "the case team",
+    "intake": "the intake coordinator",
+    "billing": "billing",
+    "front_desk": "the front desk",
+    "none": "nobody: nothing to do"
+  }
+}

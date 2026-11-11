@@ -13,7 +13,7 @@ URL: https://hollismarr.example/help/practice-areas
 - Personal injury: car and truck accidents, slip and fall, dog bites, medical negligence and wrongful death.
 - Employment law: wrongful termination, discrimination, harassment, retaliation and unpaid wages.
 - Estate planning and probate: wills, trusts, powers of attorney, guardianship for adults, probate and estate administration.
-- The firm does not handle criminal defense, immigration, intellectual property, tax disputes, bankruptcy and debt, or business formation and contracts.
+- The firm does not handle criminal defense, immigration, intellectual property, tax disputes, bankruptcy and debt, business formation and contracts, or landlord-tenant and housing matters.
 
 ## KB-02 Consultation fees
 URL: https://hollismarr.example/help/fees
@@ -80,6 +80,7 @@ URL: https://hollismarr.example/help/billing
 ## KB-10 Location, access and video
 URL: https://hollismarr.example/help/visit
 
+- The firm helps people in Harlow Point and the surrounding area, and can only take matters in the courts where its attorneys are licensed. People elsewhere should contact their local bar association's lawyer referral service.
 - The office is at 220 Canal Street, Suite 4, Harlow Point. The building has step-free access and an elevator. Street parking is available on Canal Street.
 - Video consultations use a link in the confirmation email. Join a few minutes early.
 - Tell the office ahead of time if you need an interpreter or another accommodation.
@@ -87,7 +88,7 @@ URL: https://hollismarr.example/help/visit
 ## KB-11 Matters the firm does not handle
 URL: https://hollismarr.example/help/referrals
 
-- For criminal defense, immigration, intellectual property, tax disputes, bankruptcy and debt, or business formation and contracts, the firm cannot help.
+- For criminal defense, immigration, intellectual property, tax disputes, bankruptcy and debt, business formation and contracts, or landlord-tenant and housing matters, the firm cannot help.
 - The firm does not recommend a specific outside lawyer. It suggests contacting the local bar association's lawyer referral service, or a public defender in a criminal case.
 - If a time limit may be running, contact another lawyer quickly.
 

@@ -1,0 +1,110 @@
+[
+  {
+    "name": "ref",
+    "type": "string"
+  },
+  {
+    "name": "receivedAt",
+    "type": "string"
+  },
+  {
+    "name": "status",
+    "type": "string"
+  },
+  {
+    "name": "name",
+    "type": "string"
+  },
+  {
+    "name": "email",
+    "type": "string"
+  },
+  {
+    "name": "phone",
+    "type": "string"
+  },
+  {
+    "name": "preferredContact",
+    "type": "string"
+  },
+  {
+    "name": "areaSelected",
+    "type": "string"
+  },
+  {
+    "name": "areaFinal",
+    "type": "string"
+  },
+  {
+    "name": "areaBasis",
+    "type": "string"
+  },
+  {
+    "name": "areaNotes",
+    "type": "string"
+  },
+  {
+    "name": "location",
+    "type": "string"
+  },
+  {
+    "name": "hearing",
+    "type": "string"
+  },
+  {
+    "name": "incidentDate",
+    "type": "string"
+  },
+  {
+    "name": "otherSide",
+    "type": "string"
+  },
+  {
+    "name": "howHeard",
+    "type": "string"
+  },
+  {
+    "name": "description",
+    "type": "string"
+  },
+  {
+    "name": "score",
+    "type": "number"
+  },
+  {
+    "name": "scoreParts",
+    "type": "string"
+  },
+  {
+    "name": "tier",
+    "type": "string"
+  },
+  {
+    "name": "priority",
+    "type": "string"
+  },
+  {
+    "name": "nextStep",
+    "type": "string"
+  },
+  {
+    "name": "urgencyLevel",
+    "type": "string"
+  },
+  {
+    "name": "urgencyFlags",
+    "type": "string"
+  },
+  {
+    "name": "conflictStatus",
+    "type": "string"
+  },
+  {
+    "name": "conflictNote",
+    "type": "string"
+  },
+  {
+    "name": "suggestedAttorneys",
+    "type": "string"
+  }
+]

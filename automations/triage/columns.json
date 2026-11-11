@@ -1,0 +1,23 @@
+[
+  { "name": "messageId", "type": "string" },
+  { "name": "receivedAt", "type": "string" },
+  { "name": "fromDomain", "type": "string" },
+  { "name": "category", "type": "string" },
+  { "name": "priority", "type": "string" },
+  { "name": "urgency", "type": "string" },
+  { "name": "flags", "type": "string" },
+  { "name": "needsHuman", "type": "boolean" },
+  { "name": "reasons", "type": "string" },
+  { "name": "injectionSuspected", "type": "boolean" },
+  { "name": "draftMode", "type": "string" },
+  { "name": "draftStatus", "type": "string" },
+  { "name": "queue", "type": "string" },
+  { "name": "handoff", "type": "string" },
+  { "name": "language", "type": "string" },
+  { "name": "sentiment", "type": "string" },
+  { "name": "confidence", "type": "number" },
+  { "name": "classificationStatus", "type": "string" },
+  { "name": "status", "type": "string" },
+  { "name": "latencyMs", "type": "number" },
+  { "name": "promptVersion", "type": "string" }
+]

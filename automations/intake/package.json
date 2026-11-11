@@ -1,0 +1,11 @@
+{
+  "name": "hollis-marr-intake",
+  "private": true,
+  "description": "Lead intake and scoring for Hollis & Marr LLP (fictional).",
+  "scripts": {
+    "test": "node --test test/",
+    "eval": "node eval/run.js",
+    "build": "node ../../scripts/build-intake-workflow.mjs",
+    "check": "node ../../scripts/build-intake-workflow.mjs --check"
+  }
+}
