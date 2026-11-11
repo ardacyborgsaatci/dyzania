@@ -59,3 +59,9 @@ One GitHub repo, two Vercel projects (voice is Python). New n8n copies go in a "
 - Decide whether `/call` stays behind Vercel Authentication.
 - Rotate any chat-pasted keys (Groq, Fish, OpenRouter).
 - Record the Loom.
+
+## Progress log
+
+- 2026-11-11: steps 0, 1, 2 done. Step 3 done at repo level (all text rebranded, shared knowledge with `scripts/sync-knowledge.mjs`).
+- 2026-11-11 decision: **n8n copies are deferred to one cutover.** The old Gmail workflow polls `+support` and the old Demo API owns its webhook paths, so a published copy would double every draft. Old workflows stay live until the cutover (after step 5, with owner OK for each publish and archive).
+- Consequence: steps 4 and 5 (ops layer, handoffs) are written as specs and workflow exports in the repo first, then imported at cutover.
