@@ -41,3 +41,7 @@ The invoice workflow (`r2vlhLodTOdOjXfJ`) is not retired. It is the finance auto
 **Old project folders** next to this repo: `booking-agent`, `lead-intake-automation`, `support-inbox-triage`, `voice-agent`. Their code now lives here; keep them until the cutover has run.
 
 Archive, never hard-delete: archived workflows and paused projects can be restored.
+
+## Progress
+
+- 2026-11-11: step 1 done. Data tables `ops_events` (JN6zuKod5UpooQUV) and `ops_config` (gMKsbxMcmyJtTkfr) created in the n8n personal project. `ops_config` holds brand, domain, support_hours and demo_enabled. `owner_address` and `timezone` are deliberately not set: the owner enters them. Nothing reads these tables yet, so nothing changed for any live workflow.
