@@ -19,4 +19,4 @@ The number that matters most is **bad approvals**: a bill that was approved but 
 
 ## Status
 
-Images and scorer are ready. **The model has not been run on them yet**, so there are no accuracy numbers. The workflow only takes an uploaded file through its form, and the n8n tool this session uses cannot attach an image to a form.
+Images and scorer are ready. **The model has not been run on them yet**, so there are no accuracy numbers. The workflow takes images through its upload form only, and the n8n tool used in this session cannot attach an image to a form. The form now accepts several bills in one upload.
