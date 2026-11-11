@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<meta name="voice-url" content="">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -41,7 +42,17 @@
           <li>If you ask for a demo, it points you to the <a href="/#brief">sales form</a>. It never takes an email address by voice.</li>
           <li>It cannot take payment details, change an account, reset two-factor, or approve a refund.</li>
         </ul>
-        <p class="note">The voice agent runs as its own site because it needs a Python server. It is not linked from here yet: its public page is switched off while the rebrand is finished.</p>
+        <p class="note" id="voice-off">The voice agent runs as its own site because it needs a Python server. Its public page is not switched on yet, so there is nothing to call from here.</p>
+      </div>
+    </div>
+  </section>
+  <section id="voice-try" aria-labelledby="try-h" hidden>
+    <div class="wrap">
+      <div class="card">
+        <h2 id="try-h">Talk to it</h2>
+        <p class="note">Allow the microphone when asked, speak, and wait for the reply. It answers in one or two sentences. Test version: speech is processed by Groq and Fish Audio.</p>
+        <iframe id="voice-frame" title="Wrenbook voice line" allow="microphone" style="width:100%;height:560px;border:0;border-radius:8px;background:#181818"></iframe>
+        <p class="note"><a id="voice-open" href="#" target="_blank" rel="noopener">Open it in its own tab</a> if the microphone does not start here.</p>
       </div>
     </div>
   </section>
@@ -52,5 +63,20 @@
     <p><a href="/privacy">Privacy note</a></p>
   </div>
 </footer>
+<script>
+(function () {
+  var meta = document.querySelector('meta[name="voice-url"]');
+  var local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  var url = local ? 'http://localhost:8000/' : (meta && meta.content) || '';
+  if (!url) return;
+  // Only show the box if the voice server answers.
+  fetch(url, { mode: 'no-cors' }).then(function () {
+    document.getElementById('voice-frame').src = url;
+    document.getElementById('voice-open').href = url;
+    document.getElementById('voice-try').hidden = false;
+    document.getElementById('voice-off').hidden = true;
+  }).catch(function () {});
+})();
+</script>
 </body>
 </html>
