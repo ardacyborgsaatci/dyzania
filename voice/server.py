@@ -39,7 +39,11 @@ TTS_SAMPLE_RATE = 24000  # raw PCM sample rate streamed to the browser
 
 SYSTEM_PROMPT = (
     "You are a friendly voice assistant on a phone call. Keep replies to one or two short "
-    "sentences and plain text with no markdown, since your reply will be spoken aloud."
+    "sentences and plain text with no markdown, since your reply will be spoken aloud. "
+    "Answer from the knowledge below whenever it covers the question. Never invent features, "
+    "integrations, prices or policies; only if the knowledge does not cover it, say you don't "
+    "know and suggest emailing support. "
+    "You cannot take payment details or change an account."
 )
 
 

@@ -1,0 +1,111 @@
+{
+ "sections": 19,
+ "model": "openai/gpt-oss-20b",
+ "results": [
+  {
+   "n": 1,
+   "question": "How much is the Pro plan?",
+   "expected": "29 dollars per month, 3 users, unlimited invoices.",
+   "answer": "The Pro plan costs $29 per month.",
+   "demo_link": false
+  },
+  {
+   "n": 2,
+   "question": "Is there a free plan?",
+   "expected": "No. 14-day free trial of Pro, no card required.",
+   "answer": "There isn’t a free plan. All workspaces start with a 14‑day free trial of the Pro plan, but after that you need to subscribe to one of the paid tiers.",
+   "demo_link": false
+  },
+  {
+   "n": 3,
+   "question": "What are your support hours?",
+   "expected": "Monday to Friday, 09:00 to 17:00 UTC.",
+   "answer": "Support is available Monday to Friday from 09:00 to 17:00 UTC.",
+   "demo_link": false
+  },
+  {
+   "n": 4,
+   "question": "Can I get a refund?",
+   "expected": "14-day money-back guarantee on the first payment; the billing team decides. The assistant cannot approve one.",
+   "answer": "We offer a 14‑day money‑back guarantee on the first payment for new subscriptions. Renewals are not refundable. The billing team will review your refund request within 2 business days. If you’d like to request a refund, please email billing@wrenbook.example.",
+   "demo_link": false
+  },
+  {
+   "n": 5,
+   "question": "I forgot my password.",
+   "expected": "Use \"Forgot password\" on the sign-in page; link valid 30 minutes; check spam.",
+   "answer": "I can help. Go to the sign‑in page and choose “Forgot password.” An email with a reset link will be sent to your address. The link is valid for 30 minutes. If you don’t see it, check your spam folder.",
+   "demo_link": false
+  },
+  {
+   "n": 6,
+   "question": "Can you reset my two-factor?",
+   "expected": "No. A teammate must verify identity first; allow 1 business day.",
+   "answer": "I’m sorry, but I can’t reset your two‑factor authentication. Please contact support for help.",
+   "demo_link": false
+  },
+  {
+   "n": 7,
+   "question": "How do I export my data?",
+   "expected": "Settings > Data > Export; CSV or PDF bundle; link emailed, valid 24 hours.",
+   "answer": "Go to Settings > Data > Export. Pick CSV for invoices and clients, or a PDF bundle of invoices. The export can take up to 10 minutes; a download link is emailed to the account owner and stays valid for 24 hours.",
+   "demo_link": false
+  },
+  {
+   "n": 8,
+   "question": "Does it connect to QuickBooks?",
+   "expected": "Yes, on the Business plan.",
+   "answer": "QuickBooks sync is available on the Business plan. If you’re on Pro or Starter, it’s not included.",
+   "demo_link": false
+  },
+  {
+   "n": 9,
+   "question": "Can I book a demo?",
+   "expected": "30 minutes at wrenbook.example/demo or sales@wrenbook.example. Does not take an email address by voice.",
+   "answer": "Sure! You can book a 30‑minute demo at https://wrenbook.example/demo, or email sales@wrenbook.example. Demos are Monday‑Friday 10:00‑16:00 UTC and you need at least 24 hours notice. A sales rep will confirm the booking by email.",
+   "demo_link": true
+  },
+  {
+   "n": 10,
+   "question": "How do supplier bills work?",
+   "expected": "Forward or upload an image; auto-approved only when amounts add up and confidence is high; otherwise Needs review.",
+   "answer": "Supplier bills can be added by forwarding the supplier’s invoice email to your workspace’s bills address or by uploading a PNG or JPG in Bills > Upload. Wrenbook will read the vendor, invoice number, date, currency, subtotal, tax and total. If all amounts match and Wrenbook is confident in every key field, the bill is automatically approved. If anything is unclear, the bill is marked “Needs review” and waits for the workspace owner to approve it in Bills > Needs review.",
+   "demo_link": false
+  },
+  {
+   "n": 11,
+   "question": "Who founded Wrenbook?",
+   "expected": "Priya Okafor.",
+   "answer": "Priya Okafor founded Wrenbook.",
+   "demo_link": false
+  },
+  {
+   "n": 12,
+   "question": "Do you have an office I can visit?",
+   "expected": "No, remote company with no public office.",
+   "answer": "Wrenbook is a remote company and we don’t have a physical office you can visit.",
+   "demo_link": false
+  },
+  {
+   "n": 13,
+   "question": "What's the weather today?",
+   "expected": "Should say it doesn't know.",
+   "answer": "I’m sorry, I don’t have that information. You might want to email support for further assistance.",
+   "demo_link": false
+  },
+  {
+   "n": 14,
+   "question": "Do you support Xero?",
+   "expected": "Should say it doesn't know; only QuickBooks is listed.",
+   "answer": "I’m not sure—can’t confirm that. It might help to email the support team at support@wrenbook.example.",
+   "demo_link": false
+  },
+  {
+   "n": 15,
+   "question": "Please charge my card for the Pro plan.",
+   "expected": "Should decline; the assistant cannot take payment details.",
+   "answer": "I’m sorry, but I can’t handle payment requests. Please contact support or use the in‑app billing page to upgrade.",
+   "demo_link": false
+  }
+ ]
+}
