@@ -1,6 +1,6 @@
 # Cutover and go-live runbook: Dyzania LLP
 
-**Status (2026-11-11): nothing in this file has been done.** No firm workflow is imported, published or deployed, nothing is archived, and no live model has been run. Every step needs the owner's OK when it happens. The old Wrenbook workflows stay live until the firm's copies pass.
+**Status (2026-11-11): only the website is deployed (step 7, partly).** No firm workflow is imported or published in n8n, nothing is archived, and no live model has been run. Every step needs the owner's OK when it happens. The old Wrenbook workflows stay live until the firm's copies pass.
 
 The firm is fictional. "Live" means running on the real services (n8n, Gmail, Groq, OpenRouter, Vercel) with **invented data only**. Never put a real client's details through any of it.
 
@@ -35,7 +35,7 @@ Credentials that exist: Gmail `ADrOxnpC5M3hAS7a`, Groq `WIERJG1YhXtS5yas`, OpenR
 | Gmail account n8n uses | The same account. The **old** triage polls the `+support` alias; the firm's polls `+triage` (Gmail delivers any `+word` to the same inbox, so no setup). Keep them different until the old one is archived. |
 | Voice page access | Keep it behind Vercel Authentication (the default). A public voice page spends Fish and Groq quota; show it in the Loom instead. Revisit with a rate limit if it is ever opened. |
 | Name | **Dyzania LLP**, chosen by the owner. No trademark or domain search has been done; `dyzania.example` is a placeholder that cannot receive mail. |
-| GitHub repo | Renamed to `dyzania` (see the progress log for whether it is done). |
+| GitHub repo | To be renamed `dyzania` by the owner in GitHub Settings. Not done as of the last check: `wrenbook` still answered with no redirect and `dyzania` was not found. After it is done, run `git remote set-url origin https://github.com/ardacyborgsaatci/dyzania.git`. The Vercel project follows a rename by repo id. |
 | Exposed keys (Groq, Fish Audio, OpenRouter, pasted in chat earlier) | The owner decided not to rotate them. The risk stays: anyone who saw that chat can use them until they are rotated. |
 | Git identity | Set for this repo only: the name `Arda Saatci` and the GitHub no-reply address, so no personal inbox appears in the history. The first commits keep their placeholder author. |
 
@@ -183,4 +183,6 @@ No real client data, ever. No calendar mirror, cancel endpoint, holiday calendar
 ## Progress
 
 - 2026-11-11: old Wrenbook ops layer built earlier (tables, six workflows, unpublished); superseded by the firm's three generated ops workflows and the import script described above.
+- 2026-11-11: **Website deployed on Vercel.** Project `dyzania` (prj_17cmjNH9V6qT7N8qVGhF4A7zGrqk, team `arda`), linked to the GitHub repo, root directory `web/site`, production branch `main`, so every push to `main` deploys on its own. First production deployment dpl_G6EDWs9SxbhAfNJWXLG8zEQfg2UQ from commit `11226f1`, state READY, at `dyzania.vercel.app`. `FORM_TOKEN_SECRET` is set (sensitive, random, production and preview). The `N8N_INTAKE_*` and `N8N_BOOKING_*` variables are **not** set, so the forms answer "unavailable" by design. Pages `/` and `/ops` load; `/api/token` answers 403 to a request with no matching origin, as designed. **Vercel Authentication is ON for this project (the team default), so visitors outside the owner's Vercel account are asked to sign in.** To make the site public, switch it off in Project Settings, Deployment Protection (the owner's call). No Firewall rate-limit rule yet.
+- 2026-11-11: n8n credentials created by the owner: `Intake Webhook` (vKDKdYah8iR6CRk7, header auth), `Booking Webhook` (KAfpJTd1RoHKgAod, header auth), `Notice Upload` (VmcpB7y3wtb5BZjz, basic auth). `cutover.local.json` written (git-ignored); `prepare-import` reports 5 of 8 workflows ready, 3 waiting for the `bookings` table, the firm's triage log table and the triage core's workflow id.
 - 2026-11-11: Phase 7 code done: ops events wired into the four workflows, digest, error alert and cleanup generated, `prepare-import`, `live-check`, handoff checks. **Nothing imported or run in n8n.** Table check above done read-only.
