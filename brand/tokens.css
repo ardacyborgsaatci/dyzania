@@ -1,42 +1,37 @@
+/* Wrenbook tokens: dark, compact, pill-shaped. Built from wrenbookDESIGN.md.md.
+   One accent (wren orange), used only for actions and active states. Everything else is grey. */
 :root {
-  --wb-ink: #12343b;
-  --wb-canvas: #fbf7f0;
-  --wb-surface: #ffffff;
-  --wb-line: #e6dfd2;
-  --wb-body: #3f5a5f;
-  --wb-mute: #6f8386;
+  color-scheme: dark;
+
+  --wb-bg: #121212;
+  --wb-surface: #181818;
+  --wb-surface-2: #1f1f1f;
+  --wb-card: #252525;
+  --wb-line: #2e2e2e;
+  --wb-edge: #7c7c7c;
+
+  --wb-ink: #ffffff;
+  --wb-muted: #b3b3b3;
+
   --wb-wren: #e08a2b;
-  --wb-sage: #6b9080;
-  --wb-ok: #2e7d4f;
-  --wb-warn: #8a5a00;
-  --wb-error: #b3261e;
+  --wb-on-wren: #121212;
 
-  --wb-font-display: "Fraunces", Georgia, serif;
-  --wb-font-body: "Inter", system-ui, -apple-system, sans-serif;
-  --wb-font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --wb-error: #f3727f;
+  --wb-warn: #ffa42b;
+  --wb-info: #539df5;
 
-  --wb-radius-card: 10px;
-  --wb-radius-input: 8px;
-  --wb-radius-pill: 999px;
-  --wb-shadow: 0 1px 2px rgba(18, 52, 59, 0.08), 0 8px 24px -12px rgba(18, 52, 59, 0.18);
-}
+  --wb-font-title: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
+  --wb-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --wb-ink: #f3ede1;
-    --wb-canvas: #0d2227;
-    --wb-surface: #12343b;
-    --wb-line: #24484f;
-    --wb-body: #c3d0d1;
-    --wb-mute: #93a8aa;
-    --wb-ok: #6fcf97;
-    --wb-warn: #e0b24a;
-    --wb-error: #f28b82;
-  }
+  --wb-radius-card: 8px;
+  --wb-radius-input: 4px;
+  --wb-radius-pill: 9999px;
+  --wb-shadow: rgba(0, 0, 0, 0.3) 0 8px 8px;
+  --wb-shadow-lg: rgba(0, 0, 0, 0.5) 0 8px 24px;
 }
 
 body {
-  background: var(--wb-canvas);
+  background: var(--wb-bg);
   color: var(--wb-ink);
   font-family: var(--wb-font-body);
 }

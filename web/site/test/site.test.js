@@ -124,23 +124,24 @@ test('ops status list is well formed and does not overclaim', () => {
 test('stylesheet uses the Wrenbook brand tokens and no gradients', () => {
   const css = read('styles.css');
   const brand = fs.readFileSync(path.join(root, '..', '..', 'brand', 'tokens.css'), 'utf8').toLowerCase();
-  for (const hex of ['#12343b', '#fbf7f0', '#e6dfd2', '#3f5a5f']) {
+  for (const hex of ['#121212', '#181818', '#b3b3b3', '#e08a2b']) {
     assert.ok(css.toLowerCase().includes(hex), `styles.css lacks brand colour ${hex}`);
     assert.ok(brand.includes(hex), `brand tokens lack ${hex}`);
   }
   assert.doesNotMatch(css, /gradient\(/i);
 });
 
-test('light-theme text pairs meet WCAG AA contrast', () => {
+test('text pairs on the dark theme meet WCAG AA contrast', () => {
   const lum = (hex) => {
     const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
   const pairs = [
-    ['ink on canvas', '#12343b', '#fbf7f0'], ['muted on canvas', '#3f5a5f', '#fbf7f0'], ['white on ink button', '#ffffff', '#12343b'],
-    ['ink on white card', '#12343b', '#ffffff'], ['warn on warn-soft', '#8a5a00', '#fcefd5'], ['danger on danger-soft', '#b3261e', '#fbe4e1'],
-    ['info on info-soft', '#2f5f4c', '#e1eee7'], ['ink on wren', '#12343b', '#e08a2b'], ['danger on canvas', '#b3261e', '#fbf7f0'],
+    ['white on bg', '#ffffff', '#121212'], ['muted on bg', '#b3b3b3', '#121212'], ['muted on surface', '#b3b3b3', '#181818'], ['muted on card', '#b3b3b3', '#252525'],
+    ['white on surface-2', '#ffffff', '#1f1f1f'], ['dark on wren button', '#121212', '#e08a2b'], ['wren text on bg', '#e08a2b', '#121212'], ['wren text on card', '#e08a2b', '#252525'],
+    ['warn on warn-soft', '#ffa42b', '#2e2412'], ['danger on danger-soft', '#f3727f', '#33191d'], ['info on info-soft', '#539df5', '#14233a'],
+    ['danger on bg', '#f3727f', '#121212'], ['info on bg', '#539df5', '#121212'], ['bg on white chip', '#121212', '#ffffff'],
   ];
   for (const [name, fg, bg] of pairs) assert.ok(ratio(fg, bg) >= 4.5, `${name}: ${ratio(fg, bg).toFixed(2)}`);
 });
