@@ -45,3 +45,17 @@ Archive, never hard-delete: archived workflows and paused projects can be restor
 ## Progress
 
 - 2026-11-11: step 1 done. Data tables `ops_events` (JN6zuKod5UpooQUV) and `ops_config` (gMKsbxMcmyJtTkfr) created in the n8n personal project. `ops_config` holds brand, domain, support_hours and demo_enabled. `owner_address` and `timezone` are deliberately not set: the owner enters them. Nothing reads these tables yet, so nothing changed for any live workflow.
+- 2026-11-11: step 2 built, **all unpublished**, in the n8n folder "Wrenbook Ops" (personal project):
+
+  | Workflow | Id |
+  |---|---|
+  | Wrenbook Ops - Log Event | j0jzROX4PPhrB47i |
+  | Wrenbook Ops - Get Config | Nk2ERzQVizJhER5g |
+  | Wrenbook Ops - Check Budget | J2pLLUdAFRSaC0Sw |
+  | Wrenbook Ops - Error Alert | 7TLG4ZzUAxgc0IYZ |
+  | Wrenbook Ops - Daily Digest | mAZ91VQuhBpao7zN |
+  | Wrenbook Ops - Cleanup | 6YkApfQkQEW0ckXn |
+
+  Tested with pinned (fake) data so nothing was written or emailed: Log Event (valid event scrubs an email address and passes; invalid automation is stopped before saving), Check Budget (cap reached gives bucket_cap; inbox never blocked), Get Config, Error Alert, Daily Digest. The test found and fixed one bug: the alert filed a support failure under "booking" because "Wrenbook" contains "book". **Cleanup was not run**, because it would delete old rows in the live triage_log and demo_rate_limit tables.
+  Differences from `automations/ops/SPEC.md`: the digest has no model summary (it is counts and short summaries only, which saves tokens); the error alert writes its event row directly instead of calling Log Event; the hourly per-visitor limit stays in each demo API. The workflow definitions live in n8n; they are not exported to this repo yet.
+  Still to do before publishing: the owner puts `owner_address` (and `timezone`) in the `ops_config` table, which neither workflow sends mail without.
