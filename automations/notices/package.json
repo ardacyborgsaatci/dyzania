@@ -1,0 +1,11 @@
+{
+  "name": "hollis-marr-notices",
+  "private": true,
+  "description": "Court-notice reading for Hollis & Marr LLP (fictional): vision-model extraction, rules that set the priority, a fixed 'Needs attorney confirmation' status, one urgent alert, offline evaluation.",
+  "scripts": {
+    "test": "node --test test/",
+    "eval": "node eval/run.js",
+    "build": "node ../../scripts/build-notices-workflow.mjs",
+    "check": "node ../../scripts/build-notices-workflow.mjs --check"
+  }
+}

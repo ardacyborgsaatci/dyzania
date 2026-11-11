@@ -1,0 +1,102 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>notice drawing helper</title>
+<body style="font:14px sans-serif;background:#222;color:#ddd">
+<pre id="log">starting\n</pre>
+<script>
+const W = 850, H = 1100, M = 70, K = 1.5; // logical page size, margin, pixel scale
+const log = (s) => { document.getElementById('log').textContent += s + '\n'; };
+
+function fontFamily(name) { return name === 'Arial' ? 'Arial, Helvetica, sans-serif' : '"Times New Roman", Times, serif'; }
+
+function wrap(ctx, text, maxW) {
+  const words = String(text).split(' '), out = []; let line = '';
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t;
+  }
+  if (line) out.push(line);
+  return out;
+}
+
+function drawPage(spec) {
+  const c = document.createElement('canvas'); c.width = W * K; c.height = H * K;
+  const ctx = c.getContext('2d'); ctx.scale(K, K);
+  ctx.fillStyle = '#fdfcf7'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#1a1a1a'; ctx.textBaseline = 'alphabetic';
+  const fam = fontFamily(spec.font);
+  const F = (size, bold) => (bold ? 'bold ' : '') + size + 'px ' + fam;
+  let y = 90;
+  const lines = spec.lines;
+  for (let i = 0; i < lines.length; i++) {
+    const [kind, a, b] = lines[i];
+    if (kind === 'gap') { y += 16; continue; }
+    if (kind === 'h1') { ctx.font = F(25, true); ctx.textAlign = 'center'; ctx.fillText(a, W / 2, y); y += 32; continue; }
+    if (kind === 'h2') { ctx.font = F(20, true); ctx.textAlign = 'center'; ctx.fillText(a, W / 2, y); y += 28; continue; }
+    ctx.textAlign = 'left';
+    if (kind === 'p') { ctx.font = F(20, false); for (const l of wrap(ctx, a, W - 2 * M)) { ctx.fillText(l, M, y); y += 28; } y += 6; continue; }
+    if (kind === 'small') { ctx.font = F(15, false); for (const l of wrap(ctx, a, W - 2 * M)) { ctx.fillText(l, M, y); y += 21; } continue; }
+    if (kind === 'kv') {
+      // align a run of kv lines on one value column
+      let j = i, labelW = 0;
+      ctx.font = F(20, true);
+      while (j < lines.length && lines[j][0] === 'kv') { labelW = Math.max(labelW, ctx.measureText(lines[j][1]).width); j++; }
+      const vx = M + Math.min(labelW + 14, 300);
+      for (let k = i; k < j; k++) {
+        ctx.font = F(20, true); ctx.fillText(lines[k][1], M, y);
+        ctx.font = F(20, false);
+        const ls = wrap(ctx, lines[k][2], W - M - vx);
+        for (const l of ls) { ctx.fillText(l, vx, y); y += 28; }
+        y += 4;
+      }
+      i = j - 1; continue;
+    }
+    if (kind === 'sign') {
+      y += 22; ctx.font = F(20, false); ctx.textAlign = 'left';
+      const x = W - M - 280;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(W - M, y); ctx.lineWidth = 1; ctx.strokeStyle = '#1a1a1a'; ctx.stroke();
+      ctx.fillText(a, x, y + 24); y += 40; continue;
+    }
+    if (kind === 'caption') {
+      const left = a, right = b, rows = Math.max(left.length, right.length), h = rows * 30 + 14, top = y - 22;
+      ctx.lineWidth = 1.2; ctx.strokeStyle = '#1a1a1a';
+      ctx.beginPath(); ctx.moveTo(M, top + h); ctx.lineTo(W - M, top + h); ctx.moveTo(M + 400, top); ctx.lineTo(M + 400, top + h); ctx.stroke();
+      ctx.font = F(20, false);
+      left.forEach((l, n) => ctx.fillText(l, M + 4, y + n * 30));
+      right.forEach((l, n) => { ctx.font = F(20, /NOTICE|SUMMONS|SUBPOENA|ORDER/.test(l)); ctx.fillText(l, M + 420, y + n * 30); });
+      y = top + h + 34; continue;
+    }
+  }
+  // thin page edge so it looks like a scan
+  ctx.strokeStyle = '#d8d6cc'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, W - 2, H - 2);
+  return c;
+}
+
+function degrade(src, p) {
+  // downscale, then upscale blurred and rotated, on a grey scanner bed
+  const s = p.scale, small = document.createElement('canvas');
+  small.width = Math.round(W * K * s); small.height = Math.round(H * K * s);
+  const sctx = small.getContext('2d'); sctx.imageSmoothingEnabled = true; sctx.imageSmoothingQuality = 'high';
+  sctx.drawImage(src, 0, 0, small.width, small.height);
+  const out = document.createElement('canvas'); out.width = W * K; out.height = H * K;
+  const o = out.getContext('2d'); o.fillStyle = '#9a9a94'; o.fillRect(0, 0, out.width, out.height);
+  o.save(); o.translate(out.width / 2, out.height / 2); o.rotate((p.rotate || 0) * Math.PI / 180);
+  o.filter = 'blur(' + ((p.blur || 0) * K) + 'px)'; o.imageSmoothingEnabled = true;
+  o.drawImage(small, -out.width / 2 * 0.97, -out.height / 2 * 0.97, out.width * 0.97, out.height * 0.97);
+  o.restore();
+  return out;
+}
+
+async function main() {
+  const data = await (await fetch('/notices.json')).json();
+  for (const cs of data.cases) {
+    let c = drawPage(cs.print);
+    if (cs.print.scale) c = degrade(c, cs.print);
+    const b64 = c.toDataURL('image/png').split(',')[1];
+    const r = await fetch('/save/' + cs.file, { method: 'POST', body: b64 });
+    log(cs.id + ' ' + (await r.text()));
+  }
+  log('DONE');
+}
+main().catch((e) => log('ERROR ' + e));
+</script>
