@@ -1,8 +1,8 @@
 {
-  "name": "wrenbook-site",
+  "name": "hollis-marr-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Wrenbook site: home with the sales form, ops hub, support demo and dashboard, voice line page",
+  "description": "Hollis & Marr LLP site (fictional firm): home, practice areas, contact and booking forms, voice line page, how it runs, privacy",
   "scripts": {
     "test": "node --test test/"
   },

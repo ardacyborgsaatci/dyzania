@@ -1,6 +1,8 @@
 {
   "cleanUrls": true,
   "functions": {
-    "api/triage.js": { "maxDuration": 60 }
+    "api/intake.js": { "maxDuration": 30 },
+    "api/slots.js": { "maxDuration": 30 },
+    "api/book.js": { "maxDuration": 30 }
   }
 }

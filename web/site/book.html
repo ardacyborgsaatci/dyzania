@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book a consultation | Hollis &amp; Marr LLP</title>
+<meta name="description" content="Choose a time for a first consultation with Hollis &amp; Marr LLP. Times and rules come from the firm’s booking service. A fictional firm.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#121212">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Hollis &amp; Marr LLP</a>
+    <nav class="nav" aria-label="Main">
+      <a href="/practice-areas">Practice areas</a>
+      <a href="/contact">Contact</a>
+      <a href="/call">Voice line</a>
+      <a href="/ops">How it runs</a>
+    </nav>
+    <a class="btn small header-cta" href="/book">Book a consultation</a>
+  </div>
+</header>
+<main id="main">
+  <div class="wrap page-head">
+    <span class="eyebrow">Book a consultation</span>
+    <h1>Pick a time for your first consultation.</h1>
+    <p class="lede">Three short steps. The times shown are the ones the firm can offer now, with the attorney for your kind of matter.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="callout urgent">
+      <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
+      <div>
+        <p><strong>Court date, hearing or papers served on you?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is. In immediate danger, call 911.</p>
+      </div>
+    </div>
+    <div class="form-card">
+      <p class="notice" style="margin:0 0 22px"><strong>Demonstration.</strong> Hollis &amp; Marr LLP is fictional. Please use made-up details in this booking; nothing you send is read by a real law firm.</p>
+      <noscript><p class="notice"><strong>Booking needs JavaScript.</strong> Without it, please call the office on 555-0142.</p></noscript>
+      <ol class="progress" id="progress" aria-label="Booking steps">
+        <li><span class="n" aria-hidden="true">1</span>Matter</li>
+        <li><span class="n" aria-hidden="true">2</span>Time</li>
+        <li><span class="n" aria-hidden="true">3</span>Details</li>
+      </ol>
+
+      <div id="step-area" role="group" aria-labelledby="step-area-h">
+        <h2 id="step-area-h">What is this about?</h2>
+        <form id="area-form" method="get" action="/book" novalidate>
+          <fieldset>
+            <legend class="visually-hidden">Kind of matter</legend>
+            <div class="area-options">
+            <label class="area-option">
+              <input type="radio" name="area" value="family">
+              <span class="box"><strong>Family law</strong><span class="meta num">45 minutes · $150, credited to your retainer</span></span>
+            </label>
+            <label class="area-option">
+              <input type="radio" name="area" value="injury">
+              <span class="box"><strong>Personal injury</strong><span class="meta num">30 minutes · no charge</span></span>
+            </label>
+            <label class="area-option">
+              <input type="radio" name="area" value="employment">
+              <span class="box"><strong>Employment law</strong><span class="meta num">30 minutes · no charge</span></span>
+            </label>
+            <label class="area-option">
+              <input type="radio" name="area" value="estate">
+              <span class="box"><strong>Estate planning and probate</strong><span class="meta num">45 minutes · $150, credited to your retainer</span></span>
+            </label>
+            </div>
+            <p class="field__error" id="area-error" role="alert" hidden></p>
+          </fieldset>
+          <p class="note">Not sure which one fits? <a href="/contact">Send a message</a> and the firm will tell you whether it handles your matter.</p>
+          <div class="actions"><button type="submit" class="btn">Show available times</button></div>
+        </form>
+      </div>
+
+      <div id="step-time" role="group" aria-labelledby="step-time-h" hidden>
+        <h2 id="step-time-h">Choose a time</h2>
+        <p class="time-head" id="time-head"></p>
+        <div class="callout warn" id="time-notice" role="status" hidden></div>
+        <div id="time-box"></div>
+        <div class="actions">
+          <button type="button" class="btn secondary" id="back-to-area">Back</button>
+          <button type="button" class="btn" id="to-details" disabled hidden>Continue</button>
+        </div>
+      </div>
+
+      <div id="step-details" role="group" aria-labelledby="step-details-h" hidden>
+        <h2 id="step-details-h">Your details</h2>
+        <div class="summary" id="chosen-summary"></div>
+        <div class="error-summary" id="error-summary" role="alert" tabindex="-1" hidden></div>
+        <form id="details-form" method="post" action="/book" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="name">Full name <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="name" name="name" autocomplete="name" required aria-required="true">
+            </div>
+            <div class="field">
+              <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+              <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required aria-required="true" aria-describedby="email-help">
+              <p class="help" id="email-help">The confirmation is sent here.</p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="phone">Phone <span class="optional">(optional)</span></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel">
+          </div>
+          <div class="field">
+            <label for="otherSide">Other person or organization involved <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="otherSide" name="otherSide" autocomplete="off" aria-describedby="otherSide-help">
+            <p class="help" id="otherSide-help">Used only to check for a conflict with someone the firm already represents. For example a spouse, an employer or an insurance company.</p>
+            <div class="choice"><input type="checkbox" id="noOtherSide" name="noOtherSide"><label for="noOtherSide">There is no other side</label></div>
+          </div>
+          <div class="field">
+            <div class="choice">
+              <input type="checkbox" id="consent" name="consent" required aria-required="true">
+              <label for="consent">I agree to be contacted about this booking, and I understand this is general information, not legal advice, and that no attorney-client relationship exists until I sign an engagement letter.</label>
+            </div>
+          </div>
+          <div class="honey" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+          <div class="actions">
+            <button type="button" class="btn secondary" id="back-to-time">Back</button>
+            <button type="submit" class="btn" id="submit">Book this time</button>
+          </div>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div class="result" id="result" hidden></div>
+    </div>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2>Hollis &amp; Marr LLP</h2>
+        <p>220 Canal Street, Suite 4, Harlow Point</p>
+        <p>Phone <a href="tel:5550142">555-0142</a><br>Monday to Friday, 8:30 AM to 5:30 PM</p>
+      </div>
+      <div>
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="/practice-areas">Practice areas</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/book">Book a consultation</a></li>
+          <li><a href="/call">Voice line</a></li>
+          <li><a href="/ops">How it runs</a></li>
+          <li><a href="/privacy">Privacy and disclaimers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Write to us</h2>
+        <ul>
+          <li><a href="mailto:hello@hollismarr.example">hello@hollismarr.example</a></li>
+          <li><a href="mailto:privacy@hollismarr.example">privacy@hollismarr.example</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <p>This is general information, not legal advice. No attorney-client relationship exists until you and the firm sign an engagement letter.</p>
+      <p>Please do not include confidential details such as medical records, account numbers or case documents.</p>
+      <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
+      <p>Hollis &amp; Marr LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented.</p>
+    </div>
+  </div>
+</footer>
+<script src="/form-kit.js" defer></script>
+<script src="/book.js" defer></script>
+</body>
+</html>

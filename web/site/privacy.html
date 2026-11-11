@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Privacy note | Wrenbook</title>
-<meta name="description" content="What the Wrenbook demo forms and playground do with your details.">
+<title>Privacy and disclaimers | Hollis &amp; Marr LLP</title>
+<meta name="description" content="What the Hollis &amp; Marr LLP demo site collects, where it goes, and the limits of what it says. A fictional firm.">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#121212">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,40 +17,107 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="28" height="28">Wrenbook</a>
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Hollis &amp; Marr LLP</a>
     <nav class="nav" aria-label="Main">
-      <a href="/">Home</a>
-      <a href="/ops">How it runs</a>
-      <a href="/playground">Support demo</a>
-      <a href="/dashboard">Support dashboard</a>
+      <a href="/practice-areas">Practice areas</a>
+      <a href="/contact">Contact</a>
       <a href="/call">Voice line</a>
+      <a href="/ops">How it runs</a>
     </nav>
+    <a class="btn small header-cta" href="/book">Book a consultation</a>
   </div>
 </header>
 <main id="main">
   <div class="wrap page-head">
-    <span class="eyebrow">Privacy</span>
-    <h1>Privacy note</h1>
-    <p class="lede">Wrenbook is a fictional company made for a portfolio project. This note describes what the demo does with your details.</p>
+    <span class="eyebrow">Privacy and disclaimers</span>
+    <h1>What this site does with what you type.</h1>
+    <p class="lede">Hollis &amp; Marr LLP is a fictional firm made for a portfolio project. Please use made-up details everywhere on this site. This page explains what happens to them anyway.</p>
   </div>
-  <section aria-labelledby="p-h">
+
+  <section aria-labelledby="disc-h" style="padding-top:12px">
     <div class="wrap">
-      <h2 id="p-h" style="font-size:1.4rem">What the sales form collects</h2>
-      <p>Your name, email address, company, company size, budget, timeline and an optional message, plus the time you sent it. They are used to reply and to score the enquiry. The form sends them to a Vercel function, which passes them to an n8n workflow that saves a row in a Google Sheet and, for high scores, emails the owner.</p>
-      <h2 style="font-size:1.4rem">What the support demo collects</h2>
-      <p>Text you type into the playground is processed by a Groq-hosted model through n8n, answered, and not stored. Only a hashed, salted form of your IP address is kept for an hour to enforce the rate limit. Please do not enter real personal data.</p>
-      <h2 style="font-size:1.4rem">Cookies and tracking</h2>
-      <p>This site sets no cookies and runs no analytics or ad trackers. Pages load fonts from Google Fonts, so Google receives your IP address when a page opens.</p>
-      <h2 style="font-size:1.4rem">Deleting your details</h2>
-      <p>Send a message through the sales form asking for deletion and give the email address you used.</p>
+      <h2 id="disc-h">Disclaimers</h2>
+      <ul class="rules">
+        <li><strong>Not legal advice</strong>This is general information, not legal advice. No attorney-client relationship exists until you and the firm sign an engagement letter.</li>
+        <li><strong>Please keep it brief</strong>Please do not include confidential details such as medical records, account numbers or case documents.</li>
+        <li><strong>Emergencies</strong>If you or someone else is in immediate danger, call 911 or your local emergency number.</li>
+        <li><strong>Automated assistant</strong>You are talking to an automated assistant, not a lawyer.</li>
+        <li><strong>Fictional firm</strong>Hollis &amp; Marr LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented.</li>
+        <li><strong>No outcomes, no deadlines</strong>Nothing on this site says whether anyone has a case, what a deadline is, or what will happen. Only an attorney who has read your papers can say anything about deadlines.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="collect-h">
+    <div class="wrap">
+      <h2 id="collect-h">What the forms collect</h2>
+      <div class="two-col">
+        <div class="card">
+          <h3>The contact form</h3>
+          <p>Your name, email, optional phone, how you want to be reached, the kind of matter, your description, where you are, whether a court date is coming, an optional date, an optional other side, and how you heard of the firm. The workflow checks it with fixed rules and saves it as a lead with a reference number. It replies with a fixed message.</p>
+        </div>
+        <div class="card">
+          <h3>The booking form</h3>
+          <p>Your name, email, optional phone, the kind of matter, the other side (or that there is none), the time you chose, and the contact-form reference if you came from there. The booking is saved in the firm's booking table, and one confirmation email goes to the address you gave.</p>
+        </div>
+        <div class="card">
+          <h3>The voice line</h3>
+          <p>Your speech is sent to Groq to be turned into text, the answer is written by a Groq chat model, and Fish Audio turns it back into speech. Details you say while booking stay out of the chat model's history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="else-h">
+    <div class="wrap">
+      <h2 id="else-h">Everything else</h2>
+      <ul class="list">
+        <li><strong>Logs.</strong> The workflows log references and categories, not names, email addresses or message text.</li>
+        <li><strong>Cookies.</strong> This site sets none and does not use browser storage.</li>
+        <li><strong>Fonts.</strong> The Inter typeface is loaded from Google Fonts, so Google sees your IP address when a page loads.</li>
+        <li><strong>Hosting.</strong> The site runs on Vercel, which keeps its own request logs.</li>
+        <li><strong>Abuse protection.</strong> To slow down scripts, the server keeps a short in-memory count of requests per IP address and checks a signed token that holds no personal data. A hidden field catches simple bots. The count is not stored.</li>
+        <li><strong>How long data is kept.</strong> The activity log and the inbox log are set to be deleted after 90 days by a nightly job. Leads, bookings and court notices have no automatic deletion yet, and removal is done by hand. This is a demo.</li>
+        <li><strong>Asking for removal.</strong> Write to <a href="mailto:privacy@hollismarr.example">privacy@hollismarr.example</a>. The domain is a placeholder and the firm is fictional, so nobody reads that address.</li>
+      </ul>
     </div>
   </section>
 </main>
 <footer class="site-footer">
   <div class="wrap">
-    <p>Wrenbook is a fictional company made for a portfolio project. All people, companies and emails shown are invented. Nothing is ever sent to a customer automatically.</p>
-    <p><a href="/privacy">Privacy note</a></p>
+    <div class="footer-grid">
+      <div>
+        <h2>Hollis &amp; Marr LLP</h2>
+        <p>220 Canal Street, Suite 4, Harlow Point</p>
+        <p>Phone <a href="tel:5550142">555-0142</a><br>Monday to Friday, 8:30 AM to 5:30 PM</p>
+      </div>
+      <div>
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="/practice-areas">Practice areas</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/book">Book a consultation</a></li>
+          <li><a href="/call">Voice line</a></li>
+          <li><a href="/ops">How it runs</a></li>
+          <li><a href="/privacy">Privacy and disclaimers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Write to us</h2>
+        <ul>
+          <li><a href="mailto:hello@hollismarr.example">hello@hollismarr.example</a></li>
+          <li><a href="mailto:privacy@hollismarr.example">privacy@hollismarr.example</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <p>This is general information, not legal advice. No attorney-client relationship exists until you and the firm sign an engagement letter.</p>
+      <p>Please do not include confidential details such as medical records, account numbers or case documents.</p>
+      <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
+      <p>Hollis &amp; Marr LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented.</p>
+    </div>
   </div>
 </footer>
+
 </body>
 </html>

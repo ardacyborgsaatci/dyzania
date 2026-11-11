@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How Wrenbook runs | Wrenbook</title>
-<meta name="description" content="The five automations behind Wrenbook, how they hand work to each other, what is running today and what is not.">
+<title>How it runs | Hollis &amp; Marr LLP</title>
+<meta name="description" content="The five automations behind Hollis &amp; Marr LLP: what each does, how it was checked, what has not been measured and what is still to do.">
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#121212">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,61 +17,86 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="28" height="28">Wrenbook</a>
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Hollis &amp; Marr LLP</a>
     <nav class="nav" aria-label="Main">
-      <a href="/">Home</a>
-      <a href="/ops" aria-current="page">How it runs</a>
-      <a href="/playground">Support demo</a>
-      <a href="/dashboard">Support dashboard</a>
+      <a href="/practice-areas">Practice areas</a>
+      <a href="/contact">Contact</a>
       <a href="/call">Voice line</a>
+      <a href="/ops" aria-current="page">How it runs</a>
     </nav>
+    <a class="btn small header-cta" href="/book">Book a consultation</a>
   </div>
 </header>
 <main id="main">
   <div class="wrap page-head">
-    <span class="eyebrow">Under the hood</span>
-    <h1>How Wrenbook runs</h1>
-    <p class="lede">Five automations, one team each, one shared set of rules. This page says what is running today and what is not.</p>
+    <span class="eyebrow">Behind the scenes</span>
+    <h1>How the firm runs.</h1>
+    <p class="lede">Five automations do the routine work. Each card says what it does, how it was checked, what that check does not prove, and what is left to do. Nothing here is switched on for real clients, because the firm is fictional.</p>
+    <p class="note" id="verified" aria-live="polite"></p>
   </div>
 
-  <section id="automations" aria-labelledby="automations-h">
+  <section aria-labelledby="autos-h" style="padding-top:12px">
     <div class="wrap">
-      <div class="section-head"><h2 id="automations-h">The five automations</h2><span class="note" id="verified">Loading…</span></div>
-      <ul class="autos" id="autos" aria-live="polite"></ul>
-      <p class="callout" id="autos-error" hidden></p>
+      <h2 class="visually-hidden" id="autos-h">The five automations</h2>
+      <p class="notice" id="autos-error" role="alert" hidden></p>
+      <ul class="autos" id="autos" aria-busy="true"></ul>
+      <noscript><p class="notice">The list of automations needs JavaScript. It is also in the project notes on GitHub.</p></noscript>
     </div>
   </section>
 
-  <section id="handoffs" aria-labelledby="handoffs-h">
-    <div class="wrap">
-      <h2 id="handoffs-h">How they hand work over</h2>
-      <ol class="handoffs">
-        <li><div><strong>Support to sales.</strong> A support email asking about pricing or a demo becomes an unscored lead. No reply is sent to the sender.</div></li>
-        <li><div><strong>Sales to booking.</strong> A hot lead gets a draft inviting them to book. A person reads and sends it.</div></li>
-        <li><div><strong>Voice to sales.</strong> A caller who asks for a demo is shown the sales form. The voice line never takes an email address.</div></li>
-        <li><div><strong>Finance to ops.</strong> A bill that needs review is logged, listed in the daily digest, and above a set amount alerts the owner.</div></li>
-      </ol>
-      <p class="note">The handoff code is written and tested in the repository. It goes live together with the rebuilt n8n workflows, in one cutover.</p>
+  <section aria-labelledby="links-h">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="links-h">How they connect today</h2>
+        <ul class="list" id="links-today"></ul>
+      </div>
+      <div>
+        <h2>Not connected yet</h2>
+        <ul class="list" id="links-later"></ul>
+      </div>
     </div>
   </section>
 
-  <section id="rules" aria-labelledby="rules-h">
+  <section aria-labelledby="rules-h">
     <div class="wrap">
-      <h2 id="rules-h">Rules every automation follows</h2>
-      <ul class="rules">
-        <li><strong>Drafts only.</strong> No workflow sends mail to a customer. The only send nodes email the owner.</li>
-        <li><strong>Email is data.</strong> Text from outside is wrapped and never treated as an instruction. Suspected injections get no draft and go to a person.</li>
-        <li><strong>Code decides, models suggest.</strong> Model output is checked against a schema and re-validated. The booking agent can only pick from slots that code already checked.</li>
-        <li><strong>Metadata only in logs.</strong> The shared event log holds short summaries with no email addresses.</li>
-        <li><strong>One budget.</strong> All public demos share a daily limit so they cannot use up what the real inbox needs.</li>
-      </ul>
+      <h2 id="rules-h">Rules every part follows</h2>
+      <ul class="rules" id="rules"></ul>
     </div>
   </section>
 </main>
 <footer class="site-footer">
   <div class="wrap">
-    <p>Wrenbook is a fictional company made for a portfolio project. All people, companies and emails shown are invented. Nothing is ever sent to a customer automatically.</p>
-    <p><a href="/privacy">Privacy note</a></p>
+    <div class="footer-grid">
+      <div>
+        <h2>Hollis &amp; Marr LLP</h2>
+        <p>220 Canal Street, Suite 4, Harlow Point</p>
+        <p>Phone <a href="tel:5550142">555-0142</a><br>Monday to Friday, 8:30 AM to 5:30 PM</p>
+      </div>
+      <div>
+        <h2>Pages</h2>
+        <ul>
+          <li><a href="/practice-areas">Practice areas</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/book">Book a consultation</a></li>
+          <li><a href="/call">Voice line</a></li>
+          <li><a href="/ops">How it runs</a></li>
+          <li><a href="/privacy">Privacy and disclaimers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Write to us</h2>
+        <ul>
+          <li><a href="mailto:hello@hollismarr.example">hello@hollismarr.example</a></li>
+          <li><a href="mailto:privacy@hollismarr.example">privacy@hollismarr.example</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <p>This is general information, not legal advice. No attorney-client relationship exists until you and the firm sign an engagement letter.</p>
+      <p>Please do not include confidential details such as medical records, account numbers or case documents.</p>
+      <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
+      <p>Hollis &amp; Marr LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented.</p>
+    </div>
   </div>
 </footer>
 <script src="/ops.js" defer></script>

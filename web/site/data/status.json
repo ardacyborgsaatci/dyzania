@@ -2,70 +2,80 @@
   "verified": "2026-11-11",
   "automations": [
     {
-      "id": "leads",
-      "team": "Sales",
+      "id": "intake",
+      "team": "Intake",
       "name": "Lead intake and scoring",
-      "state": "running",
-      "stateLabel": "Running",
-      "what": "Scores each form lead from budget, company size, timeline and email type, logs it to a sheet and emails the owner about hot leads.",
-      "evidence": "Scoring rules are covered by tests, including a check that the helper matches the n8n node on 180 inputs.",
-      "next": "Rebuilt as a Wrenbook copy at the cutover."
+      "state": "built",
+      "stateLabel": "Built, not live yet",
+      "what": "Checks each website form, matches it to one of the four practice areas, checks the other side against the firm's conflict list, flags court dates and other time-sensitive wording, scores the lead from 0 to 100 and decides the next step. No AI model: every decision is a rule you can read.",
+      "evidence": "48 invented leads, 48 of 48 match their labels on area, next step, tier, urgency, conflict result and score. The labels were written before the code and the set never failed, so it did not tune anything.",
+      "limit": "Written and checked by the same person, so it is a regression set, not an independent test. The conflict check is a screen against a demo list of 22 invented names.",
+      "next": "Import into n8n, run once with pinned data, then publish at the cutover.",
+      "links": [["Try the form", "/contact"]]
+    },
+    {
+      "id": "triage",
+      "team": "Front office",
+      "name": "Inbox triage",
+      "state": "built",
+      "stateLabel": "Built, not live yet",
+      "what": "Sorts incoming email, marks anything time-sensitive and saves a reply as a Gmail draft that is never sent. Courts, other lawyers, spam and instruction-like text get no draft.",
+      "evidence": "54 invented emails scored offline with stand-in models. A perfect model scores 54 of 54, and a failing or hostile model still passes the 49 guarantees the rules can check.",
+      "limit": "No real model has been run yet, so how well it sorts real email is not measured. Five gaps are listed in the project notes.",
+      "next": "A live run through n8n with the Groq model, then publish."
     },
     {
       "id": "booking",
-      "team": "Sales",
-      "name": "Demo booking agent",
-      "state": "building",
-      "stateLabel": "In progress",
-      "what": "Offers real free slots by email and books the one a person picks. The model can only choose from slots that code already checked.",
-      "evidence": "Booking Core and the three tools work on a fixture calendar. The 40-email evaluation has not been run.",
-      "next": "Gmail trigger and drafts, a Google Calendar connection, then the evaluation. There is no public demo yet."
+      "team": "Intake",
+      "name": "Consultation booking",
+      "state": "built",
+      "stateLabel": "Built, not live yet",
+      "what": "Offers free first-consultation times for a practice area and books the one a person picks, on the website or by voice. Rules choose the attorney and enforce notice, buffer, one booking per person and the conflict check. No AI model.",
+      "evidence": "86 invented cases, 86 of 86. A separate brute-force check agrees on 72 scenarios across both daylight-saving changes (20,677 free times compared). 46 deliberate breakages of the rules were all caught.",
+      "limit": "Same-author labels. The double-booking check has been simulated but not tried on a real n8n table. No email verification, holiday calendar or calendar mirror yet.",
+      "next": "Import, create the bookings table, send two requests for the same time at once, then publish.",
+      "links": [["Book a time", "/book"]]
     },
     {
-      "id": "support",
-      "team": "Support",
-      "name": "Support inbox triage",
-      "state": "running",
-      "stateLabel": "Running",
-      "what": "Classifies, prioritises and labels support email, flags anything a person must handle, and saves a reply as a Gmail draft that is never sent.",
-      "evidence": "On 54 labelled emails (a development set): 98.1% category accuracy, 100% needs-human recall, 5 of 5 injection attempts flagged, 0 unsafe drafts.",
-      "next": "A clean full re-run of the evaluation is still owed.",
-      "links": [
-        [
-          "Try it",
-          "/playground"
-        ],
-        [
-          "Dashboard",
-          "/dashboard"
-        ]
-      ]
+      "id": "notices",
+      "team": "Paralegals",
+      "name": "Court-notice extraction",
+      "state": "built",
+      "stateLabel": "Built, not live yet",
+      "what": "A vision model copies a scanned court paper into fields and tested rules set the priority. Every result is saved as Needs attorney confirmation and nothing can approve one. Dates are repeated as printed and no deadline is ever worked out.",
+      "evidence": "12 invented notices. A perfect reader reproduces 12 of 12 labels, 800 random readings agree with a separately written restatement of the rules, and 53 deliberate breakages of the rules were all caught.",
+      "limit": "No model has read the images yet. A model that calls every page not a court document would leave urgent notices without an alert (8 of 8 in the stand-in test). The images go to a third-party model, so only invented papers belong in the demo.",
+      "next": "Upload the 12 notices through the live form and score the saved rows."
     },
     {
       "id": "voice",
       "team": "Front desk",
       "name": "Voice line",
-      "state": "running",
-      "stateLabel": "Running (not public)",
-      "what": "A hands-free voice assistant that answers from the knowledge base and points callers who want a demo to the sales form.",
-      "evidence": "15 test questions run as text on 2026-11-11: 15 of 15 right on facts and refusals in the third run, after two prompt changes made while looking at those same questions. Speech and the voice are untested, and 3 answers are longer than the 1 to 3 sentences a call needs.",
-      "next": "Shorten long answers, test with a real microphone, deploy as its own site and decide whether to turn off login protection.",
-      "links": [
-        [
-          "About it",
-          "/call"
-        ]
-      ]
-    },
-    {
-      "id": "invoices",
-      "team": "Finance",
-      "name": "Invoice extraction",
-      "state": "building",
-      "stateLabel": "In progress",
-      "what": "Reads a bill image, extracts vendor, dates, currency and amounts, and approves it only when the amounts add up and confidence is high. Everything else is marked Needs review.",
-      "evidence": "On 12 invented sample bills (one run): the 4 flawed bills were all sent to Needs review and 7 of 8 readable bills were approved with every field right. 1 bill, a heavily blurred one, was approved with wrong values because its amounts added up and the model sounded sure.",
-      "next": "Add a date-plausibility check and test it on new bills, add a Needs-review alert, and run again on real phone photos."
+      "state": "built",
+      "stateLabel": "Built, runs locally",
+      "what": "Answers questions about the firm by voice and books a first consultation through the same booking service as the website. Urgent wording, advice requests and changes get fixed replies, and a check blocks any answer that gives advice, states a deadline or invents a fee.",
+      "evidence": "124 offline tests, including the booking dialog run against the real booking rules. 54 invented questions: the right knowledge reaches the model for all 43 that need it, and the 11 that must not go to the model do not.",
+      "limit": "The chat model's answers have not been measured, and nobody has tried it with a real microphone yet.",
+      "next": "Run the live question set, make one real call, then connect it to the live booking service.",
+      "links": [["About the voice line", "/call"]]
     }
+  ],
+  "linksToday": [
+    "The intake reply offers the booking page when the matter looks like one the firm handles.",
+    "The booking service accepts the intake reference, so a booking can be tied to the form that led to it.",
+    "The website form and the voice line book through the same two endpoints and the same rules.",
+    "A scanned court notice sends one alert to the attorney on duty, with no party names.",
+    "Intake, triage, booking and notices each write one short event per run to one shared log, with no names, addresses or message text. A daily digest and an error alert read it, and a nightly job deletes old log rows after 90 days. Written and tested, not yet running in n8n; a voice booking is logged by the booking workflow."
+  ],
+  "linksLater": [
+    "A new-matter email from the triage inbox becoming an intake lead (today it is only labelled for the intake coordinator).",
+    "A court notice that arrives by email going straight to the notices workflow."
+  ],
+  "rules": [
+    ["Drafts only", "No workflow sends a message to a client or a visitor on its own judgment. The one automatic email is the fixed booking confirmation, sent only to the address that booked."],
+    ["Rules decide, models suggest", "A model can only add care. Time-sensitive wording, conflicts and the choice of attorney are decided by tested rules."],
+    ["No legal advice", "Nothing here says whether anyone has a case, what a deadline is, or what will happen. Replies carry that in plain words."],
+    ["Court notices are never approved by a machine", "A person confirms every notice."],
+    ["Metadata only in logs", "Logs and alerts hold references and categories, not names, email addresses or message text."]
   ]
 }
