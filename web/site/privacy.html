@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy note | Wrenbook</title>
+<meta name="description" content="What the Wrenbook demo forms and playground do with your details.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="28" height="28">Wrenbook</a>
+    <nav class="nav" aria-label="Main">
+      <a href="/">Home</a>
+      <a href="/ops">How it runs</a>
+      <a href="/playground">Support demo</a>
+      <a href="/dashboard">Support dashboard</a>
+      <a href="/call">Voice line</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <div class="wrap page-head">
+    <span class="eyebrow">Privacy</span>
+    <h1>Privacy note</h1>
+    <p class="lede">Wrenbook is a fictional company made for a portfolio project. This note describes what the demo does with your details.</p>
+  </div>
+  <section aria-labelledby="p-h">
+    <div class="wrap">
+      <h2 id="p-h" style="font-size:1.4rem">What the sales form collects</h2>
+      <p>Your name, email address, company, company size, budget, timeline and an optional message, plus the time you sent it. They are used to reply and to score the enquiry. The form sends them to a Vercel function, which passes them to an n8n workflow that saves a row in a Google Sheet and, for high scores, emails the owner.</p>
+      <h2 style="font-size:1.4rem">What the support demo collects</h2>
+      <p>Text you type into the playground is processed by a Groq-hosted model through n8n, answered, and not stored. Only a hashed, salted form of your IP address is kept for an hour to enforce the rate limit. Please do not enter real personal data.</p>
+      <h2 style="font-size:1.4rem">Cookies and tracking</h2>
+      <p>This site sets no cookies and runs no analytics or ad trackers. Pages load fonts from Google Fonts, so Google receives your IP address when a page opens.</p>
+      <h2 style="font-size:1.4rem">Deleting your details</h2>
+      <p>Send a message through the sales form asking for deletion and give the email address you used.</p>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Wrenbook is a fictional company made for a portfolio project. All people, companies and emails shown are invented. Nothing is ever sent to a customer automatically.</p>
+    <p><a href="/privacy">Privacy note</a></p>
+  </div>
+</footer>
+</body>
+</html>

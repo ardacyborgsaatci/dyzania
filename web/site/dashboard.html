@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support dashboard | Wrenbook</title>
+<meta name="description" content="Live triage statistics from the running automation, plus the measured accuracy of the classifier against 54 labelled emails.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="28" height="28">Wrenbook</a>
+    <nav class="nav" aria-label="Main">
+      <a href="/">Home</a>
+      <a href="/ops">How it runs</a>
+      <a href="/playground">Support demo</a>
+      <a href="/dashboard" aria-current="page">Support dashboard</a>
+      <a href="/call">Voice line</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <div class="wrap page-head">
+    <span class="eyebrow">Under the hood</span>
+    <h1>Dashboard</h1>
+    <p class="lede">What the automation has handled lately, and how well the classifier does on a labelled test set.</p>
+  </div>
+
+  <section id="feed" aria-labelledby="feed-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="feed-title">Live feed</h2>
+        <span class="note" id="feed-note">Loading…</span>
+      </div>
+      <div class="grid cols-4" id="feed-metrics" hidden>
+        <div class="card metric"><span class="value" id="m-total">–</span><span class="label">Emails triaged</span><span class="hint">last 30 days</span></div>
+        <div class="card metric"><span class="value" id="m-human">–</span><span class="label">Sent to a person</span><span class="hint">flagged needs human</span></div>
+        <div class="card metric"><span class="value" id="m-injection">–</span><span class="label">Injection attempts</span><span class="hint">caught and not drafted</span></div>
+        <div class="card metric"><span class="value" id="m-latency">–</span><span class="label">Median time</span><span class="hint">per email</span></div>
+      </div>
+      <div class="grid cols-2" id="feed-charts" style="margin-top:16px" hidden>
+        <div class="card"><h3>By category</h3><ul class="bars" id="bars-category"></ul></div>
+        <div class="card"><h3>By priority</h3><ul class="bars" id="bars-priority"></ul></div>
+      </div>
+      <div class="card" style="margin-top:16px" id="feed-recent-card" hidden>
+        <h3>Recent playground activity</h3>
+        <p class="tabs-note">Sample emails show their subject and summary. Anything a visitor typed shows only its category and priority. Gmail mail is counted above and never listed.</p>
+        <ul class="feed" id="feed-recent"></ul>
+      </div>
+      <p class="callout" id="feed-error" hidden></p>
+    </div>
+  </section>
+
+  <section id="eval" aria-labelledby="eval-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="eval-title">Evaluation</h2>
+        <span class="note" id="eval-note">Loading…</span>
+      </div>
+      <p class="lede" style="margin-bottom:18px">54 invented emails with known answers: every category, four languages, prompt-injection attempts, out-of-office replies, near-empty mail and angry customers. The prompts were tuned against this same set, so treat the scores as development results.</p>
+      <div class="grid cols-4" id="eval-metrics"></div>
+      <div class="grid cols-2" style="margin-top:16px">
+        <div class="card"><h3>Accuracy by category</h3><ul class="bars" id="bars-eval"></ul></div>
+        <div class="card"><h3>Confusion matrix</h3><p class="tabs-note">Rows are the right answer, columns are what the model said. Green is correct, red is a miss.</p><div class="table-scroll"><table class="matrix" id="matrix"></table></div></div>
+      </div>
+      <p class="callout" id="eval-error" hidden></p>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Wrenbook is a fictional company made for a portfolio project. All people, companies and emails shown are invented. Nothing is ever sent to a customer automatically.</p>
+    <p><a href="/privacy">Privacy note</a></p>
+  </div>
+</footer>
+<script src="/labels.js"></script>
+<script src="/dashboard.js" defer></script>
+</body>
+</html>

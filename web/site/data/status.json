@@ -1,0 +1,37 @@
+{
+  "verified": "2026-11-11",
+  "automations": [
+    {
+      "id": "leads", "team": "Sales", "name": "Lead intake and scoring", "state": "running", "stateLabel": "Running",
+      "what": "Scores each form lead from budget, company size, timeline and email type, logs it to a sheet and emails the owner about hot leads.",
+      "evidence": "Scoring rules are covered by tests, including a check that the helper matches the n8n node on 180 inputs.",
+      "next": "Rebuilt as a Wrenbook copy at the cutover."
+    },
+    {
+      "id": "booking", "team": "Sales", "name": "Demo booking agent", "state": "building", "stateLabel": "In progress",
+      "what": "Offers real free slots by email and books the one a person picks. The model can only choose from slots that code already checked.",
+      "evidence": "Booking Core and the three tools work on a fixture calendar. The 40-email evaluation has not been run.",
+      "next": "Gmail trigger and drafts, a Google Calendar connection, then the evaluation. There is no public demo yet."
+    },
+    {
+      "id": "support", "team": "Support", "name": "Support inbox triage", "state": "running", "stateLabel": "Running",
+      "what": "Classifies, prioritises and labels support email, flags anything a person must handle, and saves a reply as a Gmail draft that is never sent.",
+      "evidence": "On 54 labelled emails (a development set): 98.1% category accuracy, 100% needs-human recall, 5 of 5 injection attempts flagged, 0 unsafe drafts.",
+      "next": "A clean full re-run of the evaluation is still owed.",
+      "links": [["Try it", "/playground"], ["Dashboard", "/dashboard"]]
+    },
+    {
+      "id": "voice", "team": "Front desk", "name": "Voice line", "state": "running", "stateLabel": "Running (not public)",
+      "what": "A hands-free voice assistant that answers from the knowledge base and points callers who want a demo to the sales form.",
+      "evidence": "15 test questions are written. They have not been run against the Wrenbook knowledge yet.",
+      "next": "Deploy as its own site and decide whether to turn off login protection.",
+      "links": [["About it", "/call"]]
+    },
+    {
+      "id": "invoices", "team": "Finance", "name": "Invoice extraction", "state": "building", "stateLabel": "In progress",
+      "what": "Reads a bill image, extracts vendor, dates, currency and amounts, and approves it only when the amounts add up and confidence is high. Everything else is marked Needs review.",
+      "evidence": "The workflow is built in n8n and switched off. No evaluation has been run.",
+      "next": "Evaluation on 10 to 15 sample bills, then a Needs-review alert."
+    }
+  ]
+}

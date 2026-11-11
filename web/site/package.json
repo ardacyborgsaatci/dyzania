@@ -1,0 +1,12 @@
+{
+  "name": "wrenbook-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wrenbook site: home with the sales form, ops hub, support demo and dashboard, voice line page",
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

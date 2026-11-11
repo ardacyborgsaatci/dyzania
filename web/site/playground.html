@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support demo | Wrenbook</title>
+<meta name="description" content="Paste a support email or pick a sample and watch a language model classify it, score its priority, decide whether a human is needed, and draft a reply that is never sent.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/favicon.svg" alt="" width="28" height="28">Wrenbook</a>
+    <nav class="nav" aria-label="Main">
+      <a href="/">Home</a>
+      <a href="/ops">How it runs</a>
+      <a href="/playground" aria-current="page">Support demo</a>
+      <a href="/dashboard">Support dashboard</a>
+      <a href="/call">Voice line</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <div class="wrap page-head">
+    <span class="eyebrow">Live demo</span>
+    <h1>Triage an email</h1>
+    <p class="lede">Pick a sample or write your own. You get the same output the Gmail inbox gets, minus the Gmail part. Nothing is ever sent to anyone.</p>
+  </div>
+  <div class="wrap" style="padding-bottom:48px">
+    <div class="playground">
+      <form class="card" id="triage-form" novalidate>
+        <h2 style="font-size:1.2rem">1. Choose an email</h2>
+        <ul class="presets" id="presets" aria-label="Sample emails"></ul>
+        <label for="name">Sender name <span class="note">(optional)</span></label>
+        <input type="text" id="name" name="name" maxlength="60" autocomplete="off">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" maxlength="200" autocomplete="off">
+        <label for="body">Email text</label>
+        <textarea id="body" name="body" maxlength="4000" required aria-describedby="counter"></textarea>
+        <div class="counter" id="counter">0 / 4000</div>
+        <div class="honey" aria-hidden="true"><label for="website">Leave this empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+        <div class="form-foot">
+          <button class="btn" type="submit" id="submit">Triage this email</button>
+          <span class="status" id="status" role="status" aria-live="polite"></span>
+        </div>
+        <p class="note" style="margin:14px 0 0">Please do not enter real personal data. Free-text submissions are processed by a Groq-hosted model through n8n, answered, and not stored. The demo is limited to 3 requests per hour.</p>
+      </form>
+
+      <section class="card result" id="result" aria-labelledby="result-title" aria-live="polite">
+        <h2 id="result-title">2. Result</h2>
+        <div class="empty" id="result-empty">Choose a sample and press the button. The classification and draft appear here.</div>
+      </section>
+    </div>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Wrenbook is a fictional company made for a portfolio project. All people, companies and emails shown are invented. Nothing is ever sent to a customer automatically.</p>
+    <p><a href="/privacy">Privacy note</a></p>
+  </div>
+</footer>
+<script src="/labels.js"></script>
+<script src="/playground.js" defer></script>
+</body>
+</html>

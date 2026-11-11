@@ -1,9 +1,0 @@
-{
-  "cleanUrls": true,
-  "redirects": [
-    { "source": "/services", "destination": "/#features", "permanent": false },
-    { "source": "/work", "destination": "/#features", "permanent": false },
-    { "source": "/about", "destination": "/#process", "permanent": false },
-    { "source": "/contact", "destination": "/#brief", "permanent": false }
-  ]
-}

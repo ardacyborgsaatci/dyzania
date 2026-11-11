@@ -2,7 +2,7 @@
 
 Fictional invoicing and bills app for small businesses. Its team runs on five automations built with n8n, Groq models and Vercel. See [PLAN.md](PLAN.md) for the merge plan and [brand/BRAND.md](brand/BRAND.md) for the brand.
 
-Status: step 5 of 8 (handoffs written and tested; n8n copies wait for the cutover). Knowledge copies are generated: run `node scripts/sync-knowledge.mjs` after editing `knowledge/`.
+Status: step 6 of 8 (combined site built; not deployed). Knowledge copies are generated: run `node scripts/sync-knowledge.mjs` after editing `knowledge/`.
 
 ```
 brand/                 palette, tokens, logo
@@ -15,7 +15,6 @@ automations/
   ops/                 shared ops layer spec, event helper and tests
   handoffs/            the four links between automations, helpers and tests
 web/
-  lead-intake/         interim site, Vercel root dir (merged into one site in step 6)
-  support-triage/      interim site, Vercel root dir
+  site/                one Vercel site: home + sales form, /ops, support demo and dashboard, voice page
 voice/                 FastAPI voice agent (was Marlow & Pine)
 ```

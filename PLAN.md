@@ -67,3 +67,4 @@ One GitHub repo, two Vercel projects (voice is Python). New n8n copies go in a "
 - Consequence: steps 4 and 5 (ops layer, handoffs) are written as specs and workflow exports in the repo first, then imported at cutover.
 - 2026-11-11: step 4 done as a spec: `automations/ops/SPEC.md`, event schema, config defaults, and a tested event/budget helper (8 tests).
 - 2026-11-11: step 5 done in the repo: `automations/handoffs/` (support->leads, leads->booking draft, invoices->ops, linked events), voice->leads wired in the voice page and the lead form. 16 new tests. Not yet deployed or imported into n8n.
+- 2026-11-11: step 6 built: `web/site` merges the lead-intake and support sites, adds /ops, /call, a Wrenbook home page and brand CSS (65 tests). The two interim sites were removed from this repo (history keeps them). Not deployed; Vercel root dir will be `web/site` at the cutover.

@@ -20,7 +20,7 @@ Voice: plain, calm, a little dry. Short sentences. Sentence-case headings. No ex
 | `--wb-warn` | `#8A5A00` | Warning text |
 | `--wb-error` | `#B3261E` | Error text |
 
-Contrast: ink on canvas is about 11:1; white on ink about 12:1; ink on wren about 5:1. Run the real checker when the site is built (step 6).
+Contrast: the site tests compute WCAG ratios for the main text pairs (all at least 4.5:1).
 
 ## Type
 
