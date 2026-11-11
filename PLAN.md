@@ -66,3 +66,4 @@ One GitHub repo, two Vercel projects (voice is Python). New n8n copies go in a "
 - 2026-11-11 decision: **n8n copies are deferred to one cutover.** The old Gmail workflow polls `+support` and the old Demo API owns its webhook paths, so a published copy would double every draft. Old workflows stay live until the cutover (after step 5, with owner OK for each publish and archive).
 - Consequence: steps 4 and 5 (ops layer, handoffs) are written as specs and workflow exports in the repo first, then imported at cutover.
 - 2026-11-11: step 4 done as a spec: `automations/ops/SPEC.md`, event schema, config defaults, and a tested event/budget helper (8 tests).
+- 2026-11-11: step 5 done in the repo: `automations/handoffs/` (support->leads, leads->booking draft, invoices->ops, linked events), voice->leads wired in the voice page and the lead form. 16 new tests. Not yet deployed or imported into n8n.

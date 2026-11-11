@@ -80,7 +80,7 @@ All three send only to `owner_address`. There is still no node anywhere that sen
 
 ## 6. Handoff contract (used in step 5)
 
-A handoff is two events: the sender writes `handoffTo` + a new `handoffRef`; the receiver writes its own row with `source=handoff` and the same `runId`. The digest can then show a chain such as support -> leads -> booking.
+A handoff is two events: the sender writes `handoffTo` + a new `handoffRef`; the receiver writes its own row with `source=handoff` whose `runId` equals the sender's `handoffRef`. The digest can then show a chain such as support -> leads -> booking.
 
 | From | To | Trigger | Result |
 |---|---|---|---|

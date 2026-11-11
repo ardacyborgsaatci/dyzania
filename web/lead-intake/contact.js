@@ -36,6 +36,15 @@ if (form) {
     return ok;
   }
 
+  // Arriving from the voice line: only the fixed marker topic=demo is read, never personal data.
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const note = document.getElementById('message');
+    if (params.get('topic') === 'demo' && note && !note.value) {
+      note.value = "I'd like to book a demo.";
+    }
+  } catch (_) {}
+
   const required = [...form.elements].filter((el) => el.required);
 
   required.forEach((field) => {

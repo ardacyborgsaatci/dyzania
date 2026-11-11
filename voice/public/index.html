@@ -477,12 +477,28 @@ async function playStream(reader) {
       messages.push({ role: "user", content: info.user_text }, { role: "assistant", content: info.reply });
       addLine("You", info.user_text);
       addLine("Agent", info.reply);
+      if (info.sales_url && /^https:\/\//.test(info.sales_url)) addSalesLink(info.sales_url);
       beginSpeaking(info.sample_rate);
     }
     if (bytes.length) queuePcm(bytes);
   }
   streamDone = true;
   maybeFinishSpeaking();
+}
+
+// Shown when the caller asked for a demo: a plain link to the sales form (nothing personal is sent).
+function addSalesLink(url) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.textContent = "Open the sales form to book a demo";
+  a.className = "sales-link";
+  const row = document.createElement("div");
+  row.className = "line agent";
+  row.append(a);
+  logEl.append(row);
+  logEl.scrollTop = logEl.scrollHeight;
 }
 
 function beginSpeaking(rate) {

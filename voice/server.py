@@ -22,6 +22,8 @@ from fastapi.responses import Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from openai import OpenAI
 
+from demo_intent import SALES_URL, wants_demo
+
 load_dotenv()
 
 FISH_API_KEY = os.environ["FISH_API_KEY"]
@@ -233,6 +235,8 @@ def turn(audio: UploadFile = File(...), history: str = Form("[]")):
 
     # Response body = one JSON line (texts + sample rate), then raw PCM audio as it is generated.
     header = {"user_text": user_text, "reply": reply, "sample_rate": TTS_SAMPLE_RATE}
+    if wants_demo(user_text):  # the page shows a link to the sales form; no personal data is taken by voice
+        header["sales_url"] = SALES_URL
     return StreamingResponse(
         audio_stream(header, tts),
         media_type="application/octet-stream",
