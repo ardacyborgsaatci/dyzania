@@ -10,19 +10,15 @@
 //
 // The Code nodes hold the SAME functions the tests run (automations/ops/lib/event.js and digest.js). Every mail goes to
 // the owner address only (a placeholder here, filled in at import by scripts/prepare-import.mjs). None goes to a client.
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { opsBuildNode, opsLogNode, OPS_JOB_FILES, OPS_TABLE_PLACEHOLDER } from './lib/ops-nodes.mjs';
+import { readJson, nodeIds, isMain, writeOrCheck } from './lib/workflow-kit.mjs';
 
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const rel = (...p) => path.join(root, ...p);
-const firm = JSON.parse(fs.readFileSync(rel('firm', 'firm.json'), 'utf8'));
+const firm = readJson('firm/firm.json');
 
 export const OWNER_PLACEHOLDER = 'REPLACE_WITH_YOUR_EMAIL';
 export const TRIAGE_LOG_PLACEHOLDER = 'REPLACE_WITH_TRIAGE_LOG_TABLE_ID';
 
-const ID = (n) => '00000000-0000-4000-8000-0000000005' + String(n).padStart(2, '0');
+const ID = nodeIds('05');
 const link = (to) => ({ node: to, type: 'main', index: 0 });
 const table = (value) => ({ __rl: true, mode: 'id', value });
 const SETTINGS = {
@@ -142,22 +138,4 @@ export const TARGETS = [
   ['automations/ops/workflows/cleanup.json', buildCleanupWorkflow]
 ];
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  let stale = false;
-  for (const [file, build] of TARGETS) {
-    const text = JSON.stringify(build(), null, 2) + '\n';
-    const target = rel(file);
-    if (process.argv.includes('--check')) {
-      const current = fs.existsSync(target) ? fs.readFileSync(target, 'utf8').replace(/\r\n/g, '\n') : '';
-      if (current !== text) { console.error(file + ' is out of date. Run: node scripts/build-ops-workflows.mjs'); stale = true; }
-    } else {
-      fs.mkdirSync(path.dirname(target), { recursive: true });
-      fs.writeFileSync(target, text);
-      console.log('wrote ' + file + ' (' + build().nodes.length + ' nodes, ' + text.length + ' characters)');
-    }
-  }
-  if (process.argv.includes('--check')) {
-    if (stale) process.exit(1);
-    console.log('ops workflow files are up to date');
-  }
-}
+if (isMain(import.meta.url)) writeOrCheck(TARGETS, 'build-ops-workflows.mjs');

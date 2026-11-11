@@ -81,7 +81,7 @@ The only automatic email the firm sends. It is a fixed template (`bookConfirmati
 
 ## Data
 
-`columns.json` lists the 18 columns of the `bookings` data table (`bookingRef`, `status` = `booked` / `held` / `cancelled` / `cancelled_race`, `area`, `attorney`, `startUtc`, `endUtc`, `localDate`, `localTime`, `minutes`, `name`, `email`, `phone`, `channel`, `leadRef`, `confirmation`, `note`, `createdAt`, `rulesVersion`). The table **is** the calendar: it holds names and emails because the confirmation needs them. The ops event for each decision (`event` in the result) has no name, email, phone or other-side text; it is not wired to the ops log yet (Phase 7). Execution data is switched off in the workflow because it would hold names and emails.
+`columns.json` lists the 18 columns of the `bookings` data table (`bookingRef`, `status` = `booked` / `held` / `cancelled` / `cancelled_race`, `area`, `attorney`, `startUtc`, `endUtc`, `localDate`, `localTime`, `minutes`, `name`, `email`, `phone`, `channel`, `leadRef`, `confirmation`, `note`, `bookedAt`, `rulesVersion`). The table **is** the calendar: it holds names and emails because the confirmation needs them. The ops event for each decision (`event` in the result) has no name, email, phone or other-side text; it is not wired to the ops log yet (Phase 7). Execution data is switched off in the workflow because it would hold names and emails.
 
 ## Evaluation (offline, no model)
 

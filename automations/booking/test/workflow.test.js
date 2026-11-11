@@ -23,7 +23,6 @@ function runNode(name, input, refs, nowIso, ref) {
   return fn({ all: () => items, first: () => items[0] }, $, nowIso, ref);
 }
 const plain = (x) => JSON.parse(JSON.stringify(x));
-const nowIsoOf = (c) => new Date(E.brute(c.now || E.SET.defaults.now)).toISOString();
 
 test('the generated booking Code nodes give the same answer as the library for every labelled booking case', () => {
   let n = 0;

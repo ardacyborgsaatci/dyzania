@@ -279,7 +279,7 @@ function bookDecide(body, rowsIn, nowMs, data, ctx) {
   if (!v.ok) return finish({ ok: false, code: 'invalid', errors: v.errors });
   const c = v.clean, area = bookArea(data, c.area);
   const base = { area: area.id, channel: c.channel };
-  const rowBase = { bookingRef: c0.ref || '', createdAt: c0.now || bookIso(nowMs), area: area.id, name: c.name, email: c.email, phone: c.phone, channel: c.channel, leadRef: c.leadRef, confirmation: '', rulesVersion: BOOK_RULES_VERSION };
+  const rowBase = { bookingRef: c0.ref || '', bookedAt: c0.now || bookIso(nowMs), area: area.id, name: c.name, email: c.email, phone: c.phone, channel: c.channel, leadRef: c.leadRef, confirmation: '', rulesVersion: BOOK_RULES_VERSION };
 
   // 1. conflict check. Held people get a row with no time so a person can follow up; they are never told why.
   const conflict = checkConflicts({ prospect: c.name, otherSide: c.otherSide, description: '' }, data.conflicts.entries);

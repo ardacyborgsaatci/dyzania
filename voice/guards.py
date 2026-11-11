@@ -16,7 +16,6 @@ from firmdata import FIRM
 PHONE = FIRM["phone"]
 HOURS = firmdata.office_hours_text()
 EMERGENCY = FIRM["language"]["emergency"]
-NOT_ADVICE = FIRM["language"]["notLegalAdvice"]
 
 
 def _norm(text) -> str:

@@ -1,0 +1,2 @@
+# Tests run from the repo, not on the public site. Without this, /test/*.js is served as a static file.
+test/

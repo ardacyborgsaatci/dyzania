@@ -13,10 +13,6 @@ _DIGIT_WORDS = {
 _LETTER_NAMES = {"double": 2, "triple": 3}
 
 
-def _words(text) -> list[str]:
-    return re.findall(r"[a-z0-9]+(?:['’][a-z]+)?", str(text or "").lower())
-
-
 # ---------------------------------------------------------------- yes / no / stop / repeat
 
 _YES = re.compile(

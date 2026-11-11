@@ -1,6 +1,6 @@
 [
   { "name": "bookingRef", "type": "string" },
-  { "name": "createdAt", "type": "string" },
+  { "name": "bookedAt", "type": "string" },
   { "name": "status", "type": "string" },
   { "name": "area", "type": "string" },
   { "name": "attorney", "type": "string" },

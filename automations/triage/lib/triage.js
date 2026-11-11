@@ -39,7 +39,6 @@ const TRIAGE_REASON_TEXT = {
 function triageRank(p) { return TRIAGE_PRIORITIES.indexOf(p); }
 function triageMax(a, b) { return triageRank(a) >= triageRank(b) ? a : b; }
 function triageUnique(list) { return Array.from(new Set(list)); }
-function triageOneLine(s, n) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n); }
 
 // A model answer may be an object, a JSON string, a chat-node item ({ output } or { text }), or an error.
 function triageParseJson(j) {

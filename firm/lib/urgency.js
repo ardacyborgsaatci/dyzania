@@ -1,5 +1,5 @@
 'use strict';
-const { lowerText, findPhrase, maskSpan, stripHarmlessPhrases } = require('./text');
+const { findPhrase, maskSpan, stripHarmlessPhrases } = require('./text');
 // Flag messages that look time-sensitive: court dates, served papers, deadlines, safety, arrest, lockout.
 // data is firm/urgency.json. today is 'YYYY-MM-DD' in the firm's timezone.
 // Rules this code follows (see firm/urgency.json "neverDo"):

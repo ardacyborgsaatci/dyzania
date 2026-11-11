@@ -13,7 +13,7 @@ const NO = require(path.join(root, 'notices', 'eval', 'run.js'));
 const BO = require(path.join(root, 'booking', 'eval', 'run.js'));
 const A = require('../lib/adapters.js');
 const D = require('../lib/digest.js');
-const { buildEvent, toRow, AUTOMATIONS } = require('../lib/event.js');
+const { toRow, AUTOMATIONS } = require('../lib/event.js');
 
 const NOW = new Date('2026-11-12T08:00:00Z');
 const hoursAgo = (h) => new Date(NOW.getTime() - h * 3600 * 1000);

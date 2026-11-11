@@ -7,27 +7,11 @@
 // The n8n Code node holds the SAME functions the tests run: firm/lib/*.js and automations/intake/lib/intake.js,
 // concatenated, with the firm data inlined as a DATA constant. Nothing in the node is hand-written
 // except the short glue at the end, so a change to the rules is made in lib/ and rebuilt here.
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { opsBuildNode, opsLogNode } from './lib/ops-nodes.mjs';
-
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const rel = (...p) => path.join(root, ...p);
-const readText = (...p) => fs.readFileSync(rel(...p), 'utf8').replace(/\r\n/g, '\n');
-const readJson = (...p) => JSON.parse(readText(...p));
+import { readJson, libText, nodeIds, isMain, writeOrCheck } from './lib/workflow-kit.mjs';
 
 // Order matters: a file may only use names from the files above it.
 const LIB_FILES = ['firm/lib/text.js', 'firm/lib/areas.js', 'firm/lib/conflicts.js', 'firm/lib/urgency.js', 'automations/intake/lib/intake.js'];
-
-function stripModuleSyntax(src, file) {
-  const out = src
-    .replace(/^'use strict';\n/m, '')
-    .replace(/^const \{[^}]*\} = require\('[^']+'\);\n/gm, '')
-    .replace(/^module\.exports = \{[^}]*\};\n?$/gm, '');
-  if (/\brequire\(|module\.exports|\bexports\./.test(out)) throw new Error(file + ' still has module syntax after stripping');
-  return out.trim() + '\n';
-}
 
 function firmData() {
   const firm = readJson('firm/firm.json');
@@ -73,11 +57,10 @@ export function bundleCode() {
     'const DATA = ' + JSON.stringify(firmData()) + ';',
     ''
   ].join('\n');
-  const body = LIB_FILES.map((f) => '// ---- ' + f + ' ----\n' + stripModuleSyntax(readText(f), f)).join('\n');
-  return header + '\n' + body + GLUE;
+  return header + '\n' + libText(LIB_FILES) + GLUE;
 }
 
-const ID = (n) => '00000000-0000-4000-8000-0000000000' + String(n).padStart(2, '0');
+const ID = nodeIds('00');
 const COLUMNS = readJson('automations/intake/columns.json');
 const REF = (name) => "={{ $('Validate and score').first().json." + name + ' }}';
 const bool = (expr) => ({
@@ -183,20 +166,4 @@ export function buildWorkflow() {
   };
 }
 
-const target = rel('automations/intake/workflow.json');
-
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const text = JSON.stringify(buildWorkflow(), null, 2) + '\n';
-  if (process.argv.includes('--check')) {
-    const current = fs.existsSync(target) ? fs.readFileSync(target, 'utf8').replace(/\r\n/g, '\n') : '';
-    if (current !== text) {
-      console.error('automations/intake/workflow.json is out of date. Run: node scripts/build-intake-workflow.mjs');
-      process.exit(1);
-    }
-    console.log('intake workflow.json is up to date');
-  } else {
-    fs.writeFileSync(target, text);
-    const code = bundleCode();
-    console.log('wrote automations/intake/workflow.json (' + buildWorkflow().nodes.length + ' nodes, Code node ' + code.length + ' characters)');
-  }
-}
+if (isMain(import.meta.url)) writeOrCheck([['automations/intake/workflow.json', buildWorkflow]], 'build-intake-workflow.mjs');

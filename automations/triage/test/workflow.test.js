@@ -158,6 +158,9 @@ test('model nodes: retries on, errors continue, temperatures as documented, no c
   ['Classify email', 'Draft reply'].forEach((n) => {
     const x = node(core, n);
     assert.deepStrictEqual([x.retryOnFail, x.maxTries, x.onError], [true, 3, 'continueRegularOutput']);
+    // paced one call at a time, so a batch of emails does not burst past the free-tier per-minute limits
+    assert.equal(x.parameters.batching.batchSize, 1, n);
+    assert.ok(x.parameters.batching.delayBetweenBatches >= 10000, n);
   });
   assert.deepStrictEqual(node(core, 'Classifier model').parameters, { model: 'openai/gpt-oss-20b', options: { maxTokensToSample: 1500, temperature: 0 } });
   assert.deepStrictEqual(node(core, 'Drafting model').parameters, { model: 'openai/gpt-oss-120b', options: { maxTokensToSample: 2500, temperature: 0.3 } });

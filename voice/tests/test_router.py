@@ -2,7 +2,6 @@ import unittest
 
 import support
 from support import ScriptedApi, slot, slots_answer
-import booking_flow
 import firmdata
 import guards
 import router

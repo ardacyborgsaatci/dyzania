@@ -4,7 +4,7 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
 const { loadFirmData } = require('../../../firm/lib/data');
-const { validateIntake, scoreIntake, decideIntake, visitorMessage, processIntake, INTAKE_POINTS } = require('../lib/intake');
+const { validateIntake, processIntake, INTAKE_POINTS } = require('../lib/intake');
 const { evaluate } = require('../eval/run');
 
 const data = loadFirmData();

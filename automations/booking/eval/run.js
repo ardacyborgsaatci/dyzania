@@ -58,7 +58,7 @@ function fixtureRow(f) {
   const r = Object.assign({}, d, f);
   const area = areaOf(r.area);
   const row = {
-    id: r.id, bookingRef: 'DY-FIX-' + r.id, createdAt: '2026-11-01T12:00:00Z', status: r.status, area: r.area, attorney: r.attorney || '',
+    id: r.id, bookingRef: 'DY-FIX-' + r.id, bookedAt: '2026-11-01T12:00:00Z', status: r.status, area: r.area, attorney: r.attorney || '',
     startUtc: '', endUtc: '', localDate: '', localTime: '', minutes: 0, name: 'Fixture Person', email: r.email, phone: r.phone, channel: 'form', leadRef: '', confirmation: 'sent', note: '', rulesVersion: B.BOOK_RULES_VERSION
   };
   if (r.startLocal) {
