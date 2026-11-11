@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "note": "12 invented supplier bills. Every vendor, number and amount is made up. 'print' is exactly what is drawn on the image; 'truth' is what a correct extraction returns. expect.status: approve = should be auto-approved with correct values, review = must be marked Needs review, either = blurry; Needs review is fine, but if approved the values must be right.",
+  "cases": [
+    {
+      "id": "I01", "file": "I01.png", "group": "clean", "expect": { "status": "approve" },
+      "truth": { "vendor": "Northgate Print Co.", "invoiceNumber": "INV-1042", "invoiceDate": "2026-10-03", "currency": "USD", "subtotal": 400.00, "tax": 32.00, "total": 432.00 },
+      "print": { "font": "Arial", "accent": "#12343B", "vendor": "Northgate Print Co.", "address": "14 Dock Road, Portland", "title": "INVOICE", "numberLabel": "Invoice No.", "number": "INV-1042", "dateLabel": "Date", "date": "2026-10-03", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Business cards (500)", "1", "$120.00", "$120.00"], ["Flyers A5", "2", "$140.00", "$280.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$400.00", "taxLabel": "Tax (8%)", "tax": "$32.00", "totalLabel": "TOTAL DUE", "total": "$432.00" }
+    },
+    {
+      "id": "I02", "file": "I02.png", "group": "format", "expect": { "status": "approve" },
+      "truth": { "vendor": "Alder Studio GmbH", "invoiceNumber": "RE-2026-0187", "invoiceDate": "2026-10-14", "currency": "EUR", "subtotal": 1100.00, "tax": 209.00, "total": 1309.00 },
+      "print": { "font": "Georgia", "accent": "#2F5F4C", "vendor": "Alder Studio GmbH", "address": "Lindenstrasse 8, 10969 Berlin", "title": "Rechnung", "numberLabel": "Rechnung Nr.", "number": "RE-2026-0187", "dateLabel": "Datum", "date": "14. Oktober 2026", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Webdesign Paket", "1", "1.000,00 €", "1.000,00 €"], ["Hosting", "1", "100,00 €", "100,00 €"]],
+        "subtotalLabel": "Zwischensumme", "subtotal": "1.100,00 €", "taxLabel": "MwSt. 19%", "tax": "209,00 €", "totalLabel": "Gesamtbetrag", "total": "1.309,00 €" }
+    },
+    {
+      "id": "I03", "file": "I03.png", "group": "format", "expect": { "status": "approve" },
+      "truth": { "vendor": "Fenwick & Dyer Ltd", "invoiceNumber": "FD-5521", "invoiceDate": "2026-10-21", "currency": "GBP", "subtotal": 550.00, "tax": 110.00, "total": 660.00 },
+      "print": { "font": "Verdana", "accent": "#7A3E00", "vendor": "Fenwick & Dyer Ltd", "address": "9 Mill Lane, Leeds LS1 4AB", "title": "TAX INVOICE", "numberLabel": "Ref", "number": "FD-5521", "dateLabel": "Issued", "date": "21/10/2026", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Consulting (hours)", "6", "£85.00", "£510.00"], ["Travel", "1", "£40.00", "£40.00"]],
+        "subtotalLabel": "Net", "subtotal": "£550.00", "taxLabel": "VAT 20%", "tax": "£110.00", "totalLabel": "Total payable", "total": "£660.00" }
+    },
+    {
+      "id": "I04", "file": "I04.png", "group": "clean", "expect": { "status": "approve" },
+      "truth": { "vendor": "Quill & Sparrow Books", "invoiceNumber": "QS-2209", "invoiceDate": "2026-10-09", "currency": "USD", "subtotal": 70.00, "tax": 0.00, "total": 70.00 },
+      "print": { "font": "Calibri", "accent": "#12343B", "vendor": "Quill & Sparrow Books", "address": "2 Elm Court, Austin", "title": "INVOICE", "numberLabel": "Invoice #", "number": "QS-2209", "dateLabel": "Date", "date": "2026-10-09", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Notebooks", "10", "$4.50", "$45.00"], ["Pens", "20", "$1.25", "$25.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$70.00", "taxLabel": "Tax", "tax": "$0.00", "totalLabel": "Total", "total": "$70.00" }
+    },
+    {
+      "id": "I05", "file": "I05.png", "group": "clean", "expect": { "status": "approve" },
+      "truth": { "vendor": "Harbourline Freight Inc.", "invoiceNumber": "HF-77310", "invoiceDate": "2026-10-05", "currency": "USD", "subtotal": 11750.00, "tax": 730.50, "total": 12480.50 },
+      "print": { "font": "Arial", "accent": "#1F3A5F", "vendor": "Harbourline Freight Inc.", "address": "500 Pier Ave, Seattle", "title": "INVOICE", "numberLabel": "Invoice No.", "number": "HF-77310", "dateLabel": "Invoice date", "date": "October 5, 2026", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Freight, container 40ft", "1", "$11,500.00", "$11,500.00"], ["Handling", "1", "$250.00", "$250.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$11,750.00", "taxLabel": "Tax", "tax": "$730.50", "totalLabel": "Amount due", "total": "$12,480.50" }
+    },
+    {
+      "id": "I06", "file": "I06.png", "group": "format", "expect": { "status": "approve" },
+      "truth": { "vendor": "Maple Ridge Supplies", "invoiceNumber": "MR-3120", "invoiceDate": "2026-10-09", "currency": "CAD", "subtotal": 360.00, "tax": 18.00, "total": 378.00 },
+      "print": { "font": "Verdana", "accent": "#8A1C1C", "vendor": "Maple Ridge Supplies", "address": "77 Birch St, Calgary AB", "title": "INVOICE", "numberLabel": "No.", "number": "MR-3120", "dateLabel": "Date", "date": "09 Oct 2026", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Gloves", "40", "C$6.25", "C$250.00"], ["Masks", "100", "C$1.10", "C$110.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "C$360.00", "taxLabel": "GST 5%", "tax": "C$18.00", "totalLabel": "Total (CAD)", "total": "C$378.00" }
+    },
+    {
+      "id": "I07", "file": "I07.png", "group": "hard", "expect": { "status": "either" },
+      "truth": { "vendor": "Brightwater Cafe Supply", "invoiceNumber": "BW-9004", "invoiceDate": "2026-10-12", "currency": "USD", "subtotal": 120.00, "tax": 9.60, "total": 129.60 },
+      "print": { "font": "Arial", "accent": "#12343B", "vendor": "Brightwater Cafe Supply", "address": "31 Quay St, Boston", "title": "INVOICE", "numberLabel": "Invoice No.", "number": "BW-9004", "dateLabel": "Date", "date": "2026-10-12", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Coffee beans (kg)", "5", "$18.00", "$90.00"], ["Filters (box)", "4", "$7.50", "$30.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$120.00", "taxLabel": "Tax (8%)", "tax": "$9.60", "totalLabel": "TOTAL", "total": "$129.60", "rotate": 2.5, "scale": 0.5 }
+    },
+    {
+      "id": "I08", "file": "I08.png", "group": "hard", "expect": { "status": "either" },
+      "truth": { "vendor": "Tallgrass Landscaping", "invoiceNumber": "TG-0412", "invoiceDate": "2026-10-15", "currency": "USD", "subtotal": 300.00, "tax": 24.00, "total": 324.00 },
+      "print": { "font": "Georgia", "accent": "#2F5F4C", "vendor": "Tallgrass Landscaping", "address": "8 Orchard Rd, Denver", "title": "INVOICE", "numberLabel": "Invoice No.", "number": "TG-0412", "dateLabel": "Date", "date": "2026-10-15", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Lawn service, Oct", "1", "$300.00", "$300.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$300.00", "taxLabel": "Tax (8%)", "tax": "$24.00", "totalLabel": "TOTAL", "total": "$324.00", "scale": 0.32 }
+    },
+    {
+      "id": "I09", "file": "I09.png", "group": "flawed", "expect": { "status": "review" },
+      "truth": { "vendor": "Copper Kettle Catering", "invoiceNumber": "CK-118", "invoiceDate": "2026-10-11", "currency": "USD", "subtotal": 250.00, "tax": 20.00, "total": null },
+      "print": { "font": "Calibri", "accent": "#7A3E00", "vendor": "Copper Kettle Catering", "address": "4 Harvest Way, Tulsa", "title": "INVOICE", "numberLabel": "Invoice #", "number": "CK-118", "dateLabel": "Date", "date": "2026-10-11", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Team lunch, 10 people", "1", "$250.00", "$250.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$250.00", "taxLabel": "Tax", "tax": "$20.00", "totalLabel": "", "total": "" }
+    },
+    {
+      "id": "I10", "file": "I10.png", "group": "flawed", "expect": { "status": "review" },
+      "truth": { "vendor": "Redfern Plumbing", "invoiceNumber": "RP-6601", "invoiceDate": "2026-10-13", "currency": "USD", "subtotal": 200.00, "tax": 16.00, "total": 260.00 },
+      "print": { "font": "Arial", "accent": "#1F3A5F", "vendor": "Redfern Plumbing", "address": "60 Cross St, Omaha", "title": "INVOICE", "numberLabel": "Invoice No.", "number": "RP-6601", "dateLabel": "Date", "date": "2026-10-13", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Pipe repair", "1", "$200.00", "$200.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$200.00", "taxLabel": "Tax", "tax": "$16.00", "totalLabel": "TOTAL DUE", "total": "$260.00" }
+    },
+    {
+      "id": "I11", "file": "I11.png", "group": "flawed", "expect": { "status": "review" },
+      "truth": { "vendor": null, "invoiceNumber": "INV-0099", "invoiceDate": "2026-10-14", "currency": "USD", "subtotal": 100.00, "tax": 8.00, "total": 108.00 },
+      "print": { "font": "Verdana", "accent": "#8A1C1C", "vendor": "", "address": "", "title": "INVOICE", "numberLabel": "Invoice No.", "number": "INV-0099", "dateLabel": "Date", "date": "2026-10-14", "billTo": "Wrenbook Demo Ltd",
+        "items": [["Services rendered", "1", "$100.00", "$100.00"]],
+        "subtotalLabel": "Subtotal", "subtotal": "$100.00", "taxLabel": "Tax", "tax": "$8.00", "totalLabel": "TOTAL", "total": "$108.00" }
+    },
+    {
+      "id": "I12", "file": "I12.png", "group": "flawed", "expect": { "status": "review" },
+      "truth": null,
+      "print": { "font": "Georgia", "accent": "#2F5F4C", "kind": "menu", "vendor": "The Blue Heron Bistro", "title": "Lunch menu",
+        "items": [["Tomato soup", "", "", "$6.00"], ["Grilled cheese", "", "", "$9.00"], ["House salad", "", "", "$8.00"]] }
+    }
+  ]
+}

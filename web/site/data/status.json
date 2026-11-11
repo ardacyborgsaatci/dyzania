@@ -64,8 +64,8 @@
       "state": "building",
       "stateLabel": "In progress",
       "what": "Reads a bill image, extracts vendor, dates, currency and amounts, and approves it only when the amounts add up and confidence is high. Everything else is marked Needs review.",
-      "evidence": "The workflow is built in n8n and switched off. No evaluation has been run.",
-      "next": "Evaluation on 10 to 15 sample bills, then a Needs-review alert."
+      "evidence": "The workflow is built in n8n and switched off. 12 invented sample bills and a scorer are ready, but the model has not been run on them, so there are no accuracy numbers.",
+      "next": "Run the 12 bills through the form, score them, then add a Needs-review alert."
     }
   ]
 }
