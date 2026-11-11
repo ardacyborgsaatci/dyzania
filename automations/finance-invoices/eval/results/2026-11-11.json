@@ -1,0 +1,134 @@
+{
+  "I01": {
+    "vendor": "Northgate Print Co.",
+    "invoiceNumber": "INV-1042",
+    "invoiceDate": "2026-10-03",
+    "currency": "USD",
+    "subtotal": 400,
+    "tax": 32,
+    "total": 432,
+    "confidence": 0.99,
+    "status": "Auto-approved"
+  },
+  "I02": {
+    "vendor": "Alder Studio GmbH",
+    "invoiceNumber": "RE-2026-0187",
+    "invoiceDate": "2026-10-14",
+    "currency": "EUR",
+    "subtotal": 1100,
+    "tax": 209,
+    "total": 1309,
+    "confidence": 0.99,
+    "status": "Auto-approved"
+  },
+  "I03": {
+    "vendor": "Fenwick & Dyer Ltd",
+    "invoiceNumber": "FD-5521",
+    "invoiceDate": "2026-10-21",
+    "currency": "GBP",
+    "subtotal": 550,
+    "tax": 110,
+    "total": 660,
+    "confidence": 1,
+    "status": "Auto-approved"
+  },
+  "I04": {
+    "vendor": "Quill & Sparrow Books",
+    "invoiceNumber": "QS-2209",
+    "invoiceDate": "2026-10-09",
+    "currency": "USD",
+    "subtotal": 70,
+    "tax": 0,
+    "total": 70,
+    "confidence": 1,
+    "status": "Auto-approved"
+  },
+  "I05": {
+    "vendor": "Harbourline Freight Inc.",
+    "invoiceNumber": "HF-77310",
+    "invoiceDate": "2026-10-05",
+    "currency": "USD",
+    "subtotal": 11750,
+    "tax": 730.5,
+    "total": 12480.5,
+    "confidence": 0.99,
+    "status": "Auto-approved"
+  },
+  "I06": {
+    "vendor": "Maple Ridge Supplies",
+    "invoiceNumber": "MR-3120",
+    "invoiceDate": "2026-10-09",
+    "currency": "CAD",
+    "subtotal": 360,
+    "tax": 18,
+    "total": 378,
+    "confidence": 1,
+    "status": "Auto-approved"
+  },
+  "I07": {
+    "vendor": "Brightwater Cafe Supply",
+    "invoiceNumber": "BW-9004",
+    "invoiceDate": "2026-10-12",
+    "currency": "USD",
+    "subtotal": 120,
+    "tax": 9.6,
+    "total": 129.6,
+    "confidence": 1,
+    "status": "Auto-approved"
+  },
+  "I08": {
+    "vendor": "Tallgrass Landscaping",
+    "invoiceNumber": "TG-0042",
+    "invoiceDate": "2020-10-05",
+    "currency": "USD",
+    "subtotal": 800,
+    "tax": 64,
+    "total": 864,
+    "confidence": 0.95,
+    "status": "Auto-approved"
+  },
+  "I09": {
+    "vendor": "Copper Kettle Catering",
+    "invoiceNumber": "CK-118",
+    "invoiceDate": "2026-10-11",
+    "currency": "USD",
+    "subtotal": 250,
+    "tax": 20,
+    "total": null,
+    "confidence": 0.95,
+    "status": "Needs review"
+  },
+  "I10": {
+    "vendor": "Redfern Plumbing",
+    "invoiceNumber": "RP-6601",
+    "invoiceDate": "2026-10-13",
+    "currency": "USD",
+    "subtotal": 200,
+    "tax": 16,
+    "total": 260,
+    "confidence": 1,
+    "status": "Needs review"
+  },
+  "I11": {
+    "vendor": null,
+    "invoiceNumber": "INV-0099",
+    "invoiceDate": "2026-10-14",
+    "currency": "USD",
+    "subtotal": 100,
+    "tax": 8,
+    "total": 108,
+    "confidence": 0.98,
+    "status": "Needs review"
+  },
+  "I12": {
+    "vendor": "The Blue Heron Bistro",
+    "invoiceNumber": null,
+    "invoiceDate": null,
+    "currency": "USD",
+    "subtotal": null,
+    "tax": null,
+    "total": null,
+    "confidence": 0.2,
+    "status": "Needs review"
+  }
+}

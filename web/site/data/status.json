@@ -64,8 +64,8 @@
       "state": "building",
       "stateLabel": "In progress",
       "what": "Reads a bill image, extracts vendor, dates, currency and amounts, and approves it only when the amounts add up and confidence is high. Everything else is marked Needs review.",
-      "evidence": "The workflow is built in n8n and switched off. 12 invented sample bills and a scorer are ready, but the model has not been run on them, so there are no accuracy numbers.",
-      "next": "Run the 12 bills through the form, score them, then add a Needs-review alert."
+      "evidence": "On 12 invented sample bills (one run): the 4 flawed bills were all sent to Needs review and 7 of 8 readable bills were approved with every field right. 1 bill, a heavily blurred one, was approved with wrong values because its amounts added up and the model sounded sure.",
+      "next": "Add a date-plausibility check and test it on new bills, add a Needs-review alert, and run again on real phone photos."
     }
   ]
 }
