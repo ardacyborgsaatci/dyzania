@@ -1,5 +1,8 @@
 {
   "cleanUrls": true,
+  "routes": [
+    { "src": "/lib/(.*)", "status": 404 }
+  ],
   "functions": {
     "api/intake.js": { "maxDuration": 30 },
     "api/slots.js": { "maxDuration": 30 },
