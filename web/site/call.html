@@ -6,11 +6,11 @@
 <title>Voice line | Dyzania LLP</title>
 <meta name="description" content="An automated voice assistant for Dyzania LLP that answers questions about the firm and can book a first consultation. A fictional firm.">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#121212">
+<meta name="theme-color" content="#0b0b0c">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -34,40 +34,9 @@
     <p class="lede">An automated assistant you talk to like a phone call. It answers questions about the firm and can book a first consultation by voice, through the same booking service as the website. It is not a lawyer.</p>
   </div>
 
-  <section aria-labelledby="can-h" style="padding-top:12px">
-    <div class="wrap two-col">
-      <div class="card">
-        <h2 id="can-h" style="font-size:1.25rem">What it can do</h2>
-        <ul class="list">
-          <li>Answer questions about practice areas, fees, hours, location and what to bring.</li>
-          <li>Offer three times for a first consultation, read back your details and book the one you choose.</li>
-          <li>Point you to a person at the office when you ask for one.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h2 style="font-size:1.25rem">What it will not do</h2>
-        <ul class="list">
-          <li>Give legal advice, say whether you have a case, or predict an outcome.</li>
-          <li>State a deadline. Anything time-sensitive gets a fixed reply that sends you to the office.</li>
-          <li>Change or cancel a booking. Call the office for that.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <div class="wrap">
-    <div class="callout urgent">
-      <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
-      <div>
-        <p><strong>Court date, hearing, papers served on you, or a safety concern?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is; only an attorney who has read your papers can.</p>
-        <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
-      </div>
-    </div>
-  </div>
-
-  <section aria-labelledby="try-h" style="padding-top:12px">
-    <div class="wrap">
-      <div class="card">
+  <section class="tight" aria-labelledby="try-h">
+    <div class="wrap split">
+      <div class="form-card">
         <h2 id="try-h">Talk to it</h2>
         <p class="note" id="voice-off">The voice assistant runs as its own small server because it needs Python. It is not switched on for this site yet, so there is nothing to call from here. You can <a href="/book">book on the website</a> instead.</p>
         <div id="voice-try" hidden>
@@ -75,6 +44,36 @@
           <iframe class="voice-frame" id="voice-frame" title="Dyzania voice line" allow="microphone"></iframe>
           <p class="note"><a id="voice-open" href="#" target="_blank" rel="noopener">Open it in its own tab</a> if the microphone does not start here.</p>
         </div>
+      </div>
+      <aside aria-label="About the voice line">
+        <div class="callout urgent">
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
+          <div>
+            <p><strong>Court date, hearing, papers served on you, or a safety concern?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is; only an attorney who has read your papers can.</p>
+            <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section aria-labelledby="can-h">
+    <div class="wrap two-col">
+      <div class="card">
+        <h2 id="can-h">What it can do</h2>
+        <ul class="list">
+          <li>Answer questions about practice areas, fees, hours, location and what to bring.</li>
+          <li>Offer three times for a first consultation, read back your details and book the one you choose.</li>
+          <li>Point you to a person at the office when you ask for one.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>What it will not do</h2>
+        <ul class="list">
+          <li>Give legal advice, say whether you have a case, or predict an outcome.</li>
+          <li>State a deadline. Anything time-sensitive gets a fixed reply that sends you to the office.</li>
+          <li>Change or cancel a booking. Call the office for that.</li>
+        </ul>
       </div>
     </div>
   </section>

@@ -47,7 +47,7 @@ Static pages only: serve this folder with any static server and clean URLs. The 
 
 ## Design
 
-Dark with the brass accent and Inter, from `brand/tokens.css` and `wrenbookDESIGN.md.md`. One primary action per screen, visible labels, each error shown beside its field and in a focusable summary that links to the field, 44 px targets, subtle motion that stops under `prefers-reduced-motion`, no gradients. Icons are inline SVG.
+Design system v2, from `brand/tokens.css` and `brand/BRAND.md`: near-black surfaces with hairlines, Instrument Serif for titles over Inter, and the brass accent. One primary action per screen, visible labels, each error shown beside its field and in a focusable summary that links to the field, 44 px targets, subtle motion that stops under `prefers-reduced-motion`, no gradients. Icons are inline SVG.
 
 ## Tests
 

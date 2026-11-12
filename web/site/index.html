@@ -6,11 +6,11 @@
 <title>Dyzania LLP</title>
 <meta name="description" content="Family, injury, employment and estate law for people in Harlow Point. A fictional firm made for a portfolio project.">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#121212">
+<meta name="theme-color" content="#0b0b0c">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -29,43 +29,40 @@
 </header>
 <main id="main">
   <section class="hero" aria-labelledby="hero-h">
-    <div class="wrap hero-grid">
-      <div>
-        <span class="eyebrow">Harlow Point · Since 2014</span>
-        <h1 id="hero-h">Family, injury, employment and estate law for people in Harlow Point.</h1>
-        <p class="lede">Dyzania LLP is a firm of 11 people. Tell us what is happening. We will say whether it is a kind of matter we handle, and offer a time for a first consultation.</p>
-        <div class="actions">
-          <a class="btn" href="/book">Book a consultation</a>
-          <a class="btn secondary" href="/contact">Send a message first</a>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Harlow Point · Since 2014</span>
+          <h1 id="hero-h">Family, injury, employment and estate law for people in Harlow Point.</h1>
+          <p class="lede">Dyzania LLP is a firm of 11 people. Tell us what is happening. We will say whether it is a kind of matter we handle, and offer a time for a first consultation.</p>
+          <div class="actions">
+            <a class="btn" href="/book">Book a consultation</a>
+            <a class="btn secondary" href="/contact">Send a message first</a>
+          </div>
         </div>
-        <p class="note" style="margin-top:14px">Booking is three short steps and works at any hour. Choose a time, give your details, and the confirmation is sent to your email.</p>
+        <aside class="office" aria-labelledby="office-h">
+          <h2 id="office-h">The office</h2>
+          <dl class="facts">
+            <dt>Address</dt><dd>220 Canal Street, Suite 4, Harlow Point</dd>
+            <dt>Phone</dt><dd><a href="tel:5550142">555-0142</a></dd>
+            <dt>Hours</dt><dd>Monday to Friday, 8:30 AM to 5:30 PM</dd>
+            <dt>Email</dt><dd><a href="mailto:hello@dyzania.example">hello@dyzania.example</a></dd>
+          </dl>
+        </aside>
       </div>
-      <aside class="card" aria-labelledby="office-h">
-        <h2 id="office-h" style="font-size:1.125rem">The office</h2>
-        <dl class="facts">
-          <dt>Address</dt><dd>220 Canal Street, Suite 4, Harlow Point</dd>
-          <dt>Phone</dt><dd><a href="tel:5550142">555-0142</a></dd>
-          <dt>Hours</dt><dd>Monday to Friday, 8:30 AM to 5:30 PM</dd>
-          <dt>Email</dt><dd><a href="mailto:hello@dyzania.example">hello@dyzania.example</a></dd>
-        </dl>
-      </aside>
+      <ul class="stats" aria-label="The firm in numbers">
+        <li><strong>11</strong><span>people at the firm</span></li>
+        <li><strong>4</strong><span>kinds of matter</span></li>
+        <li><strong>2014</strong><span>the year it opened</span></li>
+        <li><strong>3</strong><span>short steps to book, at any hour</span></li>
+      </ul>
     </div>
   </section>
-
-  <div class="wrap">
-    <div class="callout urgent">
-      <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
-      <div>
-        <p><strong>Court date, hearing, papers served on you, or a safety concern?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is; only an attorney who has read your papers can.</p>
-        <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
-      </div>
-    </div>
-  </div>
 
   <section aria-labelledby="areas-h">
     <div class="wrap">
       <div class="section-head"><h2 id="areas-h">What we handle</h2><a href="/practice-areas">All practice areas and what to bring</a></div>
-      <div class="grid cols-4">
+      <div class="grid cols-2 areas">
         <article class="card">
           <h3>Family law</h3>
           <p class="meta num">First consultation: 45 minutes · $150, credited to your retainer</p>
@@ -91,12 +88,19 @@
           <a class="more" href="/practice-areas#estate">Estate planning and probate details</a>
         </article>
       </div>
+      <div class="callout urgent" style="margin-top:16px">
+        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
+        <div>
+          <p><strong>Court date, hearing, papers served on you, or a safety concern?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is; only an attorney who has read your papers can.</p>
+          <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
+        </div>
+      </div>
     </div>
   </section>
 
   <section aria-labelledby="how-h">
     <div class="wrap">
-      <h2 id="how-h">How a first consultation works</h2>
+      <div class="section-head"><h2 id="how-h">How a first consultation works</h2></div>
       <ol class="steps-list">
         <li><strong>Tell us</strong>Send a message or book a time. Both work outside office hours.</li>
         <li><strong>We check</strong>The firm checks that it handles this kind of matter, that it has no conflict with the other side, and whether anything is time-sensitive.</li>
@@ -108,43 +112,27 @@
 
   <section aria-labelledby="team-h">
     <div class="wrap">
-      <h2 id="team-h">Who you would meet</h2>
-      <div class="grid cols-4">
-        <article class="card">
-          <span class="person">Dana Hollis</span>
-          <p class="meta">Founding partner</p>
-          <p>Family law and Estate planning and probate.</p>
-        </article>
-        <article class="card">
-          <span class="person">Marcus Marr</span>
-          <p class="meta">Founding partner</p>
-          <p>Personal injury and Employment law.</p>
-        </article>
-        <article class="card">
-          <span class="person">Elena Voss</span>
-          <p class="meta">Associate attorney</p>
-          <p>Family law and Estate planning and probate.</p>
-        </article>
-        <article class="card">
-          <span class="person">Tomas Reyes</span>
-          <p class="meta">Associate attorney</p>
-          <p>Personal injury and Employment law.</p>
-        </article>
-      </div>
-      <p class="note" style="margin-top:14px">The firm also has two paralegals, an intake coordinator, an office manager, billing and bookkeeping, marketing and IT, and a receptionist.</p>
+      <div class="section-head"><h2 id="team-h">Who you would meet</h2></div>
+      <ul class="people">
+        <li><span class="person">Dana Hollis</span><span class="role">Founding partner</span><span class="does">Family law and Estate planning and probate.</span></li>
+        <li><span class="person">Marcus Marr</span><span class="role">Founding partner</span><span class="does">Personal injury and Employment law.</span></li>
+        <li><span class="person">Elena Voss</span><span class="role">Associate attorney</span><span class="does">Family law and Estate planning and probate.</span></li>
+        <li><span class="person">Tomas Reyes</span><span class="role">Associate attorney</span><span class="does">Personal injury and Employment law.</span></li>
+      </ul>
+      <p class="note" style="margin-top:20px">The firm also has two paralegals, an intake coordinator, an office manager, billing and bookkeeping, marketing and IT, and a receptionist.</p>
     </div>
   </section>
 
   <section aria-labelledby="cta-h">
     <div class="wrap">
-      <div class="card">
+      <div class="cta">
         <h2 id="cta-h">Ready to talk?</h2>
         <p>Pick a time now, or send a short description and the firm will reply by email or phone.</p>
         <div class="actions">
           <a class="btn" href="/book">Book a consultation</a>
           <a class="btn secondary" href="/contact">Send a message</a>
         </div>
-        <p class="notice" style="margin-top:18px">Dyzania LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented. The forms on this site are real working parts of a portfolio project, so please use made-up details.</p>
+        <p class="notice">Dyzania LLP is a fictional firm made for a portfolio project. All people, matters and documents shown are invented. The forms on this site are real working parts of a portfolio project, so please use made-up details.</p>
       </div>
     </div>
   </section>

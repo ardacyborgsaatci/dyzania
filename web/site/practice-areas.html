@@ -6,11 +6,11 @@
 <title>Practice areas | Dyzania LLP</title>
 <meta name="description" content="The four kinds of matter Dyzania LLP handles, what a first consultation costs, who you would meet and what to bring. A fictional firm.">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#121212">
+<meta name="theme-color" content="#0b0b0c">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -34,105 +34,131 @@
     <p class="lede">Each first consultation is with an attorney who handles that kind of matter. What you read here is general information about the firm, not legal advice about your situation.</p>
   </div>
 
-  <section aria-labelledby="handled-h" style="padding-top:12px">
+  <section class="tight" aria-labelledby="handled-h">
     <div class="wrap">
       <h2 class="visually-hidden" id="handled-h">Matters the firm handles</h2>
-      <div class="grid cols-2">
-        <article class="card" id="family" aria-labelledby="family-h">
-          <h2 id="family-h">Family law</h2>
-          <p>Divorce, child custody and support, protective orders, adoption and paternity.</p>
+      <ul class="jump" aria-label="Jump to a practice area">
+        <li><a href="#family">Family law</a></li>
+        <li><a href="#injury">Personal injury</a></li>
+        <li><a href="#employment">Employment law</a></li>
+        <li><a href="#estate">Estate planning and probate</a></li>
+      </ul>
+      <article class="card" id="family" aria-labelledby="family-h">
+        <h2 id="family-h">Family law</h2>
+        <p>Divorce, child custody and support, protective orders, adoption and paternity.</p>
+        <div class="area-body">
           <dl class="facts">
             <dt>First consultation</dt><dd class="num">45 minutes</dd>
             <dt>Fee</dt><dd>$150 for this first consultation, credited toward the retainer if you hire the firm.</dd>
             <dt>Attorneys</dt><dd>Dana Hollis, Elena Voss</dd>
           </dl>
-          <h3 style="margin-top:18px">What to bring</h3>
-          <ul class="list">
-            <li>Photo ID</li>
-            <li>Marriage certificate and any prenuptial agreement</li>
-            <li>Recent pay stubs and tax returns</li>
-            <li>A list of shared property and debts</li>
-            <li>Any court papers you have received</li>
-          </ul>
-          <div class="actions"><a class="btn small" href="/book?area=family">Book a family law consultation</a></div>
-        </article>
-        <article class="card" id="injury" aria-labelledby="injury-h">
-          <h2 id="injury-h">Personal injury</h2>
-          <p>Car and truck accidents, slip and fall, dog bites, medical negligence and wrongful death.</p>
+          <div>
+            <h3>What to bring</h3>
+            <ul class="list">
+              <li>Photo ID</li>
+              <li>Marriage certificate and any prenuptial agreement</li>
+              <li>Recent pay stubs and tax returns</li>
+              <li>A list of shared property and debts</li>
+              <li>Any court papers you have received</li>
+            </ul>
+          </div>
+        </div>
+        <div class="actions"><a class="btn small" href="/book?area=family">Book a family law consultation</a></div>
+      </article>
+      <article class="card" id="injury" aria-labelledby="injury-h">
+        <h2 id="injury-h">Personal injury</h2>
+        <p>Car and truck accidents, slip and fall, dog bites, medical negligence and wrongful death.</p>
+        <div class="area-body">
           <dl class="facts">
             <dt>First consultation</dt><dd class="num">30 minutes</dd>
             <dt>Fee</dt><dd>No charge for this first consultation.</dd>
-          <dt>If you hire the firm</dt><dd>Handled on a contingency basis: no attorney fee unless there is a recovery. The percentage and any case costs are written in the engagement letter.</dd>
+            <dt>If you hire the firm</dt><dd>Handled on a contingency basis: no attorney fee unless there is a recovery. The percentage and any case costs are written in the engagement letter.</dd>
             <dt>Attorneys</dt><dd>Marcus Marr, Tomas Reyes</dd>
           </dl>
-          <h3 style="margin-top:18px">What to bring</h3>
-          <ul class="list">
-            <li>Photo ID</li>
-            <li>Police or incident report</li>
-            <li>Photos of the scene and injuries</li>
-            <li>Medical records and bills if you have them</li>
-            <li>Insurance letters, including any settlement offer</li>
-          </ul>
-          <div class="actions"><a class="btn small" href="/book?area=injury">Book a personal injury consultation</a></div>
-        </article>
-        <article class="card" id="employment" aria-labelledby="employment-h">
-          <h2 id="employment-h">Employment law</h2>
-          <p>Wrongful termination, discrimination, harassment, retaliation and unpaid wages.</p>
+          <div>
+            <h3>What to bring</h3>
+            <ul class="list">
+              <li>Photo ID</li>
+              <li>Police or incident report</li>
+              <li>Photos of the scene and injuries</li>
+              <li>Medical records and bills if you have them</li>
+              <li>Insurance letters, including any settlement offer</li>
+            </ul>
+          </div>
+        </div>
+        <div class="actions"><a class="btn small" href="/book?area=injury">Book a personal injury consultation</a></div>
+      </article>
+      <article class="card" id="employment" aria-labelledby="employment-h">
+        <h2 id="employment-h">Employment law</h2>
+        <p>Wrongful termination, discrimination, harassment, retaliation and unpaid wages.</p>
+        <div class="area-body">
           <dl class="facts">
             <dt>First consultation</dt><dd class="num">30 minutes</dd>
             <dt>Fee</dt><dd>No charge for this first consultation.</dd>
-          <dt>If you hire the firm</dt><dd>Handled on a contingency basis: no attorney fee unless there is a recovery. The percentage and any case costs are written in the engagement letter.</dd>
+            <dt>If you hire the firm</dt><dd>Handled on a contingency basis: no attorney fee unless there is a recovery. The percentage and any case costs are written in the engagement letter.</dd>
             <dt>Attorneys</dt><dd>Marcus Marr, Tomas Reyes</dd>
           </dl>
-          <h3 style="margin-top:18px">What to bring</h3>
-          <ul class="list">
-            <li>Photo ID</li>
-            <li>Your offer letter or contract</li>
-            <li>Termination or disciplinary letters</li>
-            <li>Pay stubs</li>
-            <li>A timeline of what happened, with dates</li>
-          </ul>
-          <div class="actions"><a class="btn small" href="/book?area=employment">Book a employment law consultation</a></div>
-        </article>
-        <article class="card" id="estate" aria-labelledby="estate-h">
-          <h2 id="estate-h">Estate planning and probate</h2>
-          <p>Wills, trusts, powers of attorney, guardianship for adults, probate and estate administration.</p>
+          <div>
+            <h3>What to bring</h3>
+            <ul class="list">
+              <li>Photo ID</li>
+              <li>Your offer letter or contract</li>
+              <li>Termination or disciplinary letters</li>
+              <li>Pay stubs</li>
+              <li>A timeline of what happened, with dates</li>
+            </ul>
+          </div>
+        </div>
+        <div class="actions"><a class="btn small" href="/book?area=employment">Book an employment law consultation</a></div>
+      </article>
+      <article class="card" id="estate" aria-labelledby="estate-h">
+        <h2 id="estate-h">Estate planning and probate</h2>
+        <p>Wills, trusts, powers of attorney, guardianship for adults, probate and estate administration.</p>
+        <div class="area-body">
           <dl class="facts">
             <dt>First consultation</dt><dd class="num">45 minutes</dd>
             <dt>Fee</dt><dd>$150 for this first consultation, credited toward the retainer if you hire the firm.</dd>
             <dt>Attorneys</dt><dd>Dana Hollis, Elena Voss</dd>
           </dl>
-          <h3 style="margin-top:18px">What to bring</h3>
-          <ul class="list">
-            <li>Photo ID</li>
-            <li>Any existing will, trust or power of attorney</li>
-            <li>A list of assets and debts</li>
-            <li>Names and contact details of beneficiaries</li>
-            <li>For probate: the death certificate</li>
-          </ul>
-          <div class="actions"><a class="btn small" href="/book?area=estate">Book a estate planning and probate consultation</a></div>
-        </article>
-      </div>
+          <div>
+            <h3>What to bring</h3>
+            <ul class="list">
+              <li>Photo ID</li>
+              <li>Any existing will, trust or power of attorney</li>
+              <li>A list of assets and debts</li>
+              <li>Names and contact details of beneficiaries</li>
+              <li>For probate: the death certificate</li>
+            </ul>
+          </div>
+        </div>
+        <div class="actions"><a class="btn small" href="/book?area=estate">Book an estate planning and probate consultation</a></div>
+      </article>
     </div>
   </section>
 
   <section aria-labelledby="not-h">
     <div class="wrap">
-      <h2 id="not-h">Matters we do not handle</h2>
-      <p>The firm does not take these matters, so a first consultation would not help you:</p>
-      <ul class="list">
-        <li>Criminal defense</li>
-        <li>Immigration</li>
-        <li>Intellectual property</li>
-        <li>Tax disputes</li>
-        <li>Bankruptcy and debt</li>
-        <li>Business formation and contracts</li>
-        <li>Landlord-tenant and housing</li>
-      </ul>
-      <p>Dyzania does not recommend a specific outside lawyer. It points people to their local bar association's referral service.</p>
-      <div class="callout" style="margin-top:18px">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1a7 7 0 100 14A7 7 0 008 1zM7.2 4v1.6h1.6V4zM7.2 7v5h1.6V7z"/></svg>
-        <div><p>Not sure which kind of matter yours is? <a href="/contact">Send a short message</a> and the firm will say whether it handles it.</p></div>
+      <div class="section-head"><h2 id="not-h">Matters we do not handle</h2></div>
+      <div class="two-col">
+        <div>
+          <p>The firm does not take these matters, so a first consultation would not help you:</p>
+          <ul class="list">
+            <li>Criminal defense</li>
+            <li>Immigration</li>
+            <li>Intellectual property</li>
+            <li>Tax disputes</li>
+            <li>Bankruptcy and debt</li>
+            <li>Business formation and contracts</li>
+            <li>Landlord-tenant and housing</li>
+          </ul>
+        </div>
+        <div>
+          <p>Dyzania does not recommend a specific outside lawyer. It points people to their local bar association's referral service.</p>
+          <div class="callout">
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1a7 7 0 100 14A7 7 0 008 1zM7.2 4v1.6h1.6V4zM7.2 7v5h1.6V7z"/></svg>
+            <div><p>Not sure which kind of matter yours is? <a href="/contact">Send a short message</a> and the firm will say whether it handles it.</p></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>

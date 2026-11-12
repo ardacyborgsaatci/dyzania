@@ -297,7 +297,7 @@ test('vercel config keeps clean URLs and gives the three form functions time to 
 test('stylesheet uses the brand tokens, no gradients, and the focus, motion and spacing rules', () => {
   const css = read('styles.css');
   const brand = fs.readFileSync(path.join(repo, 'brand', 'tokens.css'), 'utf8').toLowerCase();
-  for (const hex of ['#121212', '#181818', '#b3b3b3', '#d4a94f']) {
+  for (const hex of ['#0b0b0c', '#121214', '#a8a6a0', '#d4a94f']) {
     assert.ok(css.toLowerCase().includes(hex), `styles.css lacks brand colour ${hex}`);
     assert.ok(brand.includes(hex), `brand tokens lack ${hex}`);
   }

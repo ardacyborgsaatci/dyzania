@@ -1,33 +1,39 @@
-/* Dyzania tokens: dark, compact, pill-shaped. Built from wrenbookDESIGN.md.md (the dark design system).
-   One accent (brass), used only for actions and active states. Everything else is grey. */
+/* Dyzania tokens, design system v2: dark and refined.
+   Near-black layered surfaces, hairline borders instead of heavy shadows, a serif display face over Inter,
+   and one accent (brass) used only for actions, the current choice and key numbers. No gradients.
+   The site stylesheet (web/site/styles.css), the voice page (voice/public/index.html) and the brand email
+   (automations/lib/brand-email.js) copy these values. */
 :root {
   color-scheme: dark;
 
-  --dy-bg: #121212;
-  --dy-surface: #181818;
-  --dy-surface-2: #1f1f1f;
-  --dy-card: #252525;
-  --dy-line: #2e2e2e;
-  --dy-edge: #7c7c7c;
+  --dy-bg: #0b0b0c;
+  --dy-surface: #121214;
+  --dy-surface-2: #18181b;
+  --dy-card: #1f1f23;
+  --dy-line: #26262b;
+  --dy-edge: #7a7a84;
 
-  --dy-ink: #ffffff;
-  --dy-muted: #b3b3b3;
+  --dy-ink: #f5f3ee;
+  --dy-muted: #a8a6a0;
 
   --dy-brass: #d4a94f;
-  --dy-on-brass: #121212;
+  --dy-on-brass: #0b0b0c;
 
   --dy-error: #f3727f;
+  --dy-error-soft: #2a1418;
   --dy-warn: #ffa42b;
+  --dy-warn-soft: #2a2010;
   --dy-info: #539df5;
+  --dy-info-soft: #101c2e;
 
-  --dy-font-title: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
+  --dy-font-title: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --dy-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
 
-  --dy-radius-card: 8px;
-  --dy-radius-input: 4px;
+  --dy-radius-sm: 6px;
+  --dy-radius: 12px;
+  --dy-radius-lg: 20px;
   --dy-radius-pill: 9999px;
-  --dy-shadow: rgba(0, 0, 0, 0.3) 0 8px 8px;
-  --dy-shadow-lg: rgba(0, 0, 0, 0.5) 0 8px 24px;
+  --dy-shadow: rgba(0, 0, 0, 0.45) 0 16px 48px;
 }
 
 body {
