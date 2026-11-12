@@ -208,3 +208,7 @@ No real client data, ever. No cancel endpoint, holiday calendar or email verific
   - The temporary triage harness is archived.
   - The old Support Triage Demo API, Digest and Cleanup are unpublished.
   - **Still published, needing the owner:** the old Dyzania core `IUF8Qx1w9ipITI7Q` and the old `Support Triage - Gmail` (`4W2dNUotp2nDOUmc`). The auto-mode classifier refused to unpublish them, so the old Support Triage Core and Error Alert were left published to keep that pipeline whole.
+- 2026-11-12: **Triage live eval, 54 of 54.**
+  - **How it ran:** through a temporary harness `q5A5Z9kcAZpGQnNs`, one email at a time with a 20 s Wait (executions 607, 626, 645 and 662).
+  - **Result:** no fallbacks, no broken guarantees, needs-human 35 of 35, urgent 13 of 13, category 50 of 54. One injection was missed (`I04`, which only the model can catch); its draft shares nothing. Details are in `automations/triage/README.md`.
+  - **Afterwards:** the harness was archived.
