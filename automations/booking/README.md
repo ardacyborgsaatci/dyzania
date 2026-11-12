@@ -45,6 +45,8 @@ Both are `POST`, behind a header-auth credential. The website (or the voice agen
 
 **`booking/slots`** takes `{ area, limit?, after? }` and returns `{ ok, area, timezone, consultMinutes, fee, slots: [{ start, date, time, label }], more, note }`. `start` is a UTC time such as `2026-11-12T16:00:00Z`; `label` is `Thu, Nov 12, 10:00 AM CST`. It never says who is free or why a time is missing.
 
+**After a booking** (a kept row only): the Google Calendar entry, and the lead's row on the **Intake** tab is updated by reference (`status` = `Booked`, `nextStep` = the time and attorney). A voice booking has no lead reference, so it writes nothing to the sheet. The Intake update is a copy for the team: if it fails, the booking still stands and the visitor still gets the reply. Its Google Sheets connection has to be picked after import, like the intake sheet's.
+
 **`booking/book`** takes `{ name, email, phone?, area, otherSide?, noOtherSide?, consent, channel, start, leadRef?, website? }` and answers with one of these public codes:
 
 | Code | Meaning | What the person is told |

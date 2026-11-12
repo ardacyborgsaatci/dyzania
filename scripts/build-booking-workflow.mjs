@@ -56,6 +56,11 @@ return [{ json }];
 const dec = $('Verify winner').first().json.decision;
 return [{ json: bookCalendarEvent(dec.row, DATA) }];
 `,
+  intake: `
+const dec = $('Verify winner').first().json.decision;
+const update = bookIntakeUpdate(dec.row, DATA);
+return update ? [{ json: update }] : [];
+`,
   confirmed: `
 const res = $input.first().json;
 const dec = $('Verify winner').first().json.decision;
@@ -85,6 +90,9 @@ export function bundleCode(step) {
 }
 
 const ID = nodeIds('01');
+
+// The Intake tab of the Leads spreadsheet, the same one the intake workflow appends to (scripts/build-intake-workflow.mjs).
+const INTAKE_SHEET_ID = '1mZyWngRk9O4JLhpC4ilt-pLv-kHSIHptPmObi6-vsXg';
 const COLUMNS = loadColumns();
 const link = (to) => ({ node: to, type: 'main', index: 0 });
 const { codeAll } = codeNodes(ID);
@@ -153,6 +161,30 @@ export function buildWorkflow() {
     codeAll(14, 'Confirmation outcome', [2016, 100], bundleCode('confirmed')),
     updateRow(15, 'Record confirmation status', [2240, 100], 'confirmation', "={{ $json.confirmation }}", "={{ $json.ref }}"),
     reply(16, 'Reply booked', [2464, 100], "={{ $('Confirmation outcome').first().json.public }}"),
+    // ---- the lead's Intake row: status and next step, matched by reference. A voice booking has no lead, so nothing is written.
+    codeAll(28, 'Intake row values', [2464, 400], bundleCode('intake')),
+    {
+      // The export carries no credentials: after import, pick the Google Sheets connection on this node.
+      id: ID(29), name: 'Update Intake row', type: 'n8n-nodes-base.googleSheets', typeVersion: 4.5, position: [2688, 400], onError: 'continueRegularOutput',
+      parameters: {
+        operation: 'update',
+        documentId: { __rl: true, mode: 'id', value: INTAKE_SHEET_ID },
+        sheetName: { __rl: true, mode: 'name', value: 'Intake' },
+        columns: {
+          mappingMode: 'defineBelow',
+          value: { reference: '={{ $json.reference }}', status: '={{ $json.status }}', nextStep: '={{ $json.nextStep }}' },
+          matchingColumns: ['reference'],
+          schema: [
+            { id: 'reference', displayName: 'reference', required: false, defaultMatch: true, display: true, type: 'string', canBeUsedToMatch: true, readOnly: false, removed: false },
+            { id: 'status', displayName: 'status', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false, readOnly: false, removed: false },
+            { id: 'nextStep', displayName: 'nextStep', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false, readOnly: false, removed: false }
+          ],
+          attemptToConvertTypes: false,
+          convertFieldsToString: false
+        },
+        options: {}
+      }
+    },
     // ---- Google Calendar entry for a kept booking: after the visitor's reply is set, never invites anyone ----
     codeAll(26, 'Calendar entry', [2464, 240], bundleCode('calendar')),
     {
@@ -196,8 +228,9 @@ export function buildWorkflow() {
     'Won the slot?': { main: [[link('Send confirmation')], [link('Cancel losing row')]] },
     'Send confirmation': { main: [[link('Confirmation outcome')]] },
     'Confirmation outcome': { main: [[link('Record confirmation status')]] },
-    'Record confirmation status': { main: [[link('Reply booked'), link('Calendar entry')]] },
+    'Record confirmation status': { main: [[link('Reply booked'), link('Calendar entry'), link('Intake row values')]] },
     'Calendar entry': { main: [[link('Create calendar event')]] },
+    'Intake row values': { main: [[link('Update Intake row')]] },
     'Cancel losing row': { main: [[link('Reply lost slot')]] },
     'Reply booked': { main: [[link('Build ops event')]] },
     'Reply lost slot': { main: [[link('Build ops event')]] },

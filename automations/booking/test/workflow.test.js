@@ -105,7 +105,7 @@ test('the workflow shape: two authenticated endpoints, every path answers, one e
   const out = (name) => ((wf.connections[name] || {}).main || []).reduce((a, b) => a.concat(b), []).map((l) => l.node);
   // every node that ends a path is a reply (or a note)
   // (the ops log is the one exception: it is only ever reached after a reply, checked below)
-  wf.nodes.forEach((n) => { if (!out(n.name).length && n.type !== 'n8n-nodes-base.stickyNote' && n.name !== 'Log ops event' && n.name !== 'Create calendar event') assert.strictEqual(n.type, 'n8n-nodes-base.respondToWebhook', n.name + ' ends a path without a reply'); });
+  wf.nodes.forEach((n) => { if (!out(n.name).length && n.type !== 'n8n-nodes-base.stickyNote' && n.name !== 'Log ops event' && n.name !== 'Create calendar event' && n.name !== 'Update Intake row') assert.strictEqual(n.type, 'n8n-nodes-base.respondToWebhook', n.name + ' ends a path without a reply'); });
   const repliesIn = wf.nodes.filter((n) => n.type === 'n8n-nodes-base.respondToWebhook').map((n) => n.name).filter((name) => name !== 'Reply with slots');
   assert.deepStrictEqual(repliesIn.slice().sort(), ['Reply booked', 'Reply held', 'Reply lost slot', 'Reply no booking'], 'every way a booking run ends has a reply');
   repliesIn.forEach((name) => assert.deepStrictEqual(out(name), ['Build ops event'], name + ' is followed by the ops event, never preceded by it'));
@@ -140,7 +140,7 @@ test('the order inside the booking path: insert, read again, verify, only then e
 test('the Google Calendar entry: only for a kept booking, after the reply is set, with no attendees and no contact details', () => {
   const out = (name) => ((wf.connections[name] || {}).main || []).reduce((a, b) => a.concat(b), []).map((l) => l.node);
   // branches off the same node as the reply: it never delays or replaces the visitor's answer
-  assert.deepStrictEqual(out('Record confirmation status'), ['Reply booked', 'Calendar entry']);
+  assert.deepStrictEqual(out('Record confirmation status'), ['Reply booked', 'Calendar entry', 'Intake row values']);
   assert.deepStrictEqual(out('Calendar entry'), ['Create calendar event']);
   assert.deepStrictEqual(out('Create calendar event'), [], 'the calendar create ends the path');
   // only the kept-booking path reaches it: a lost race is cancelled, a hold is never entered in the calendar
@@ -265,4 +265,18 @@ test('the library has no clock and no randomness of its own; the Code nodes are 
 test('the workflow file on disk is what the builder produces from the library today', async () => {
   const { buildWorkflow } = await import('../../../scripts/build-booking-workflow.mjs');
   assert.strictEqual(JSON.stringify(buildWorkflow(), null, 2) + '\n', fs.readFileSync(path.join(__dirname, '..', 'workflow.json'), 'utf8').replace(/\r\n/g, '\n'));
+});
+
+test('the Intake row update uses the same sheet as the intake workflow and writes only the status and next step', () => {
+  const intakeBuilder = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'scripts', 'build-intake-workflow.mjs'), 'utf8');
+  const sheetId = node('Update Intake row').parameters.documentId.value;
+  assert.ok(intakeBuilder.includes("'" + sheetId + "'"), 'same spreadsheet as the intake workflow');
+  assert.strictEqual(node('Update Intake row').parameters.operation, 'update');
+  assert.deepStrictEqual(node('Update Intake row').parameters.columns.matchingColumns, ['reference']);
+  assert.deepStrictEqual(Object.keys(node('Update Intake row').parameters.columns.value), ['reference', 'status', 'nextStep']);
+  const cols = runNode('Intake row values', [{}], { 'Verify winner': { decision: { row: { bookingRef: 'DY-INT003', area: 'family', attorney: 'dana-hollis', startUtc: '2026-11-16T16:00:00Z', endUtc: '2026-11-16T16:45:00Z', leadRef: 'LD-XYZ999' } } } }, '2026-11-11T20:00:00Z', 'DY-INT003');
+  assert.strictEqual(cols.length, 1);
+  assert.deepStrictEqual(cols[0].json.reference, 'LD-XYZ999');
+  const none = runNode('Intake row values', [{}], { 'Verify winner': { decision: { row: { bookingRef: 'DY-INT004', area: 'family', attorney: 'dana-hollis', startUtc: '2026-11-16T16:00:00Z', endUtc: '2026-11-16T16:45:00Z', leadRef: '' } } } }, '2026-11-11T20:00:00Z', 'DY-INT004');
+  assert.deepStrictEqual(none, [], 'no lead, no sheet write');
 });

@@ -379,7 +379,17 @@ function bookCalendarEvent(row, data) {
   };
 }
 
+// The Intake tab row for the lead this booking came from, matched by reference. A voice booking has no lead, so there is no row: null.
+function bookIntakeUpdate(row, data) {
+  if (!row || !row.leadRef) return null;
+  return {
+    reference: row.leadRef,
+    status: 'Booked',
+    nextStep: 'Booked ' + bookLabel(Date.parse(row.startUtc), data.firm.timezone) + ' with ' + bookAttorneyName(data, row.attorney) + ' (' + row.bookingRef + ')'
+  };
+}
+
 module.exports = {
   BOOK_RULES_VERSION, BOOK_LIMITS, bookLocalParts, bookStamp, bookLocalToUtc, bookLabel, bookParseStart, bookGenerate, bookOffers, bookListSlots,
-  bookValidate, bookConfirmation, bookPublic, bookDecide, bookVerify, bookRaceLost, bookConfirmedPublic, bookCancelDecision, bookCalendarEvent, bookRows, bookIso, bookFeeText
+  bookValidate, bookConfirmation, bookPublic, bookDecide, bookVerify, bookRaceLost, bookConfirmedPublic, bookCancelDecision, bookCalendarEvent, bookIntakeUpdate, bookRows, bookIso, bookFeeText
 };

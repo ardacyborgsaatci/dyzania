@@ -310,3 +310,14 @@ test('when the confirmation email could not be sent the visitor is told, and kee
   assert.ok(bad.message.indexOf(DATA.firm.language.notLegalAdvice) !== -1);
   assert.strictEqual(bad.ref, 'DY-TEST01');
 });
+
+test('the Intake row update: a web booking names its lead and the time; a voice booking has no lead, so nothing is written', () => {
+  const start = utc(2026, 11, 16, 16, 0); // Mon 10:00 CST
+  const webRow = row(1, 'dana-hollis', start, 45, { bookingRef: 'DY-INT001', leadRef: 'LD-ABC123' });
+  const u = B.bookIntakeUpdate(webRow, DATA);
+  assert.strictEqual(u.reference, 'LD-ABC123', 'matched to the Intake row by the lead reference');
+  assert.strictEqual(u.status, 'Booked');
+  assert.match(u.nextStep, /^Booked Mon, Nov 16, 10:00 AM CST with Dana Hollis \(DY-INT001\)$/);
+  assert.strictEqual(B.bookIntakeUpdate(row(2, 'dana-hollis', start, 45, { bookingRef: 'DY-INT002', leadRef: '' }), DATA), null, 'a voice booking has no lead');
+  assert.strictEqual(B.bookIntakeUpdate(null, DATA), null);
+});
