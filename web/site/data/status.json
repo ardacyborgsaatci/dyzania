@@ -1,47 +1,47 @@
 {
-  "verified": "2026-11-11",
+  "verified": "2026-11-12",
   "automations": [
     {
       "id": "intake",
       "team": "Intake",
       "name": "Lead intake and scoring",
-      "state": "built",
-      "stateLabel": "Built, not live yet",
+      "state": "running",
+      "stateLabel": "Live on invented data",
       "what": "Checks each website form, matches it to one of the four practice areas, checks the other side against the firm's conflict list, flags court dates and other time-sensitive wording, scores the lead from 0 to 100 and decides the next step. No AI model: every decision is a rule you can read.",
       "evidence": "48 invented leads, 48 of 48 match their labels on area, next step, tier, urgency, conflict result and score. The labels were written before the code and the set never failed, so it did not tune anything.",
       "limit": "Written and checked by the same person, so it is a regression set, not an independent test. The conflict check is a screen against a demo list of 22 invented names.",
-      "next": "Import into n8n, run once with pinned data, then publish at the cutover.",
+      "next": "Watch the daily digest. Accuracy on new leads is not measured beyond the 48-lead set.",
       "links": [["Try the form", "/contact"]]
     },
     {
       "id": "triage",
       "team": "Front office",
       "name": "Inbox triage",
-      "state": "built",
-      "stateLabel": "Built, not live yet",
+      "state": "running",
+      "stateLabel": "Live on invented data",
       "what": "Sorts incoming email, marks anything time-sensitive and saves a reply as a Gmail draft that is never sent. Courts, other lawyers, spam and instruction-like text get no draft.",
       "evidence": "54 invented emails scored offline with stand-in models. A perfect model scores 54 of 54, and a failing or hostile model still passes the 49 guarantees the rules can check.",
-      "limit": "No real model has been run yet, so how well it sorts real email is not measured. Five gaps are listed in the project notes.",
-      "next": "A live run through n8n with the Groq model, then publish."
+      "limit": "Only 10 invented emails have been through the real model, one at a time, so how well it sorts real email is not measured. Five gaps are listed in the project notes.",
+      "next": "Run the 54 invented emails through the live core for a real accuracy number."
     },
     {
       "id": "booking",
       "team": "Intake",
       "name": "Consultation booking",
-      "state": "built",
-      "stateLabel": "Built, not live yet",
+      "state": "running",
+      "stateLabel": "Live on invented data",
       "what": "Offers free first-consultation times for a practice area and books the one a person picks, on the website or by voice. Rules choose the attorney and enforce notice, buffer, one booking per person and the conflict check. No AI model.",
       "evidence": "86 invented cases, 86 of 86. A separate brute-force check agrees on 72 scenarios across both daylight-saving changes (20,677 free times compared). 46 deliberate breakages of the rules were all caught.",
-      "limit": "Same-author labels. The double-booking check has been simulated but not tried on a real n8n table. No email verification, holiday calendar or calendar mirror yet.",
-      "next": "Import, create the bookings table, send two requests for the same time at once, then publish.",
+      "limit": "Same-author labels. The double-booking check passed one live race of two requests. No email verification, holiday calendar or cancel endpoint yet; a kept booking adds a calendar entry.",
+      "next": "Add a holiday calendar and a way to cancel.",
       "links": [["Book a time", "/book"]]
     },
     {
       "id": "notices",
       "team": "Paralegals",
       "name": "Court-notice extraction",
-      "state": "built",
-      "stateLabel": "Built, not live yet",
+      "state": "running",
+      "stateLabel": "Live on invented data",
       "what": "A vision model copies a scanned court paper into fields and tested rules set the priority. Every result is saved as Needs attorney confirmation and nothing can approve one. Dates are repeated as printed and no deadline is ever worked out.",
       "evidence": "12 invented notices. A perfect reader reproduces 12 of 12 labels, 800 random readings agree with a separately written restatement of the rules, and 53 deliberate breakages of the rules were all caught.",
       "limit": "No model has read the images yet. A model that calls every page not a court document would leave urgent notices without an alert (8 of 8 in the stand-in test). The images go to a third-party model, so only invented papers belong in the demo.",
@@ -51,12 +51,12 @@
       "id": "voice",
       "team": "Front desk",
       "name": "Voice line",
-      "state": "built",
-      "stateLabel": "Built, runs locally",
+      "state": "running",
+      "stateLabel": "Live, behind a login",
       "what": "Answers questions about the firm by voice and books a first consultation through the same booking service as the website. Urgent wording, advice requests and changes get fixed replies, and a check blocks any answer that gives advice, states a deadline or invents a fee.",
       "evidence": "124 offline tests, including the booking dialog run against the real booking rules. 54 invented questions: the right knowledge reaches the model for all 43 that need it, and the 11 that must not go to the model do not.",
       "limit": "The chat model's answers have not been measured, and nobody has tried it with a real microphone yet.",
-      "next": "Run the live question set, make one real call, then connect it to the live booking service.",
+      "next": "Run the live question set and make one real call.",
       "links": [["About the voice line", "/call"]]
     }
   ],
@@ -65,7 +65,7 @@
     "The booking service accepts the intake reference, so a booking can be tied to the form that led to it.",
     "The website form and the voice line book through the same two endpoints and the same rules.",
     "A scanned court notice sends one alert to the attorney on duty, with no party names.",
-    "Intake, triage, booking and notices each write one short event per run to one shared log, with no names, addresses or message text. A daily digest and an error alert read it, and a nightly job deletes old log rows after 90 days. Written and tested, not yet running in n8n; a voice booking is logged by the booking workflow."
+    "Intake, triage, booking and notices each write one short event per run to one shared log, with no names, addresses or message text. A daily digest and an error alert read it, and a nightly job deletes old log rows after 90 days. Running in n8n since 2026-11-12; a voice booking is logged by the booking workflow."
   ],
   "linksLater": [
     "A new-matter email from the triage inbox becoming an intake lead (today it is only labelled for the intake coordinator).",
