@@ -1,39 +1,42 @@
-/* Dyzania tokens, design system v2: dark and refined.
-   Near-black layered surfaces, hairline borders instead of heavy shadows, a serif display face over Inter,
-   and one accent (brass) used only for actions, the current choice and key numbers. No gradients.
-   The site stylesheet (web/site/styles.css), the voice page (voice/public/index.html) and the brand email
-   (automations/lib/brand-email.js) copy these values. */
+/* Dyzania tokens, design system v5: cream, ink, burnt orange. Flat surfaces.
+   Ink carries every action. Burnt orange is the accent (the offset block, the underline, big italic accent words).
+   Small orange text uses the deeper --dy-accent-text. No gradients, no glass except the scrolled header.
+   The site stylesheet (web/site/styles.css) copies these values. The voice page (voice/public/index.html) and the
+   brand email (automations/lib/brand-email.js) still use design system v2 (dark, brass) until their own pass. */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --dy-bg: #0b0b0c;
-  --dy-surface: #121214;
-  --dy-surface-2: #18181b;
-  --dy-card: #1f1f23;
-  --dy-line: #26262b;
-  --dy-edge: #7a7a84;
+  --dy-bg: #f3eee3;
+  --dy-surface: #ffffff;
+  --dy-surface-2: #faf7f1;
+  --dy-card: #ffffff;
+  --dy-line: rgba(17, 17, 17, 0.1);
+  --dy-edge: #8a847b;
 
-  --dy-ink: #f5f3ee;
-  --dy-muted: #a8a6a0;
+  --dy-ink: #111111;
+  --dy-muted: #5c5750;
 
-  --dy-brass: #d4a94f;
-  --dy-on-brass: #0b0b0c;
+  --dy-primary: #111111;
+  --dy-on-primary: #ffffff;
+  --dy-orange: #d9541e;
+  --dy-accent-text: #a63a12;
 
-  --dy-error: #f3727f;
-  --dy-error-soft: #2a1418;
-  --dy-warn: #ffa42b;
-  --dy-warn-soft: #2a2010;
-  --dy-info: #539df5;
-  --dy-info-soft: #101c2e;
+  --dy-error: #b91c1c;
+  --dy-error-soft: #fef2f2;
+  --dy-warn: #92400e;
+  --dy-warn-soft: #fffbeb;
+  --dy-info: #1d4ed8;
+  --dy-info-soft: #eff6ff;
 
-  --dy-font-title: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --dy-font-title: "Inter Tight", "Helvetica Neue", helvetica, arial, sans-serif;
+  --dy-font-accent: "Instrument Serif", Georgia, serif;
   --dy-font-body: "Inter", "Helvetica Neue", helvetica, arial, sans-serif;
 
-  --dy-radius-sm: 6px;
-  --dy-radius: 12px;
-  --dy-radius-lg: 20px;
+  --dy-radius-sm: 10px;
+  --dy-radius: 16px;
+  --dy-radius-lg: 24px;
   --dy-radius-pill: 9999px;
-  --dy-shadow: rgba(0, 0, 0, 0.45) 0 16px 48px;
+  --dy-shadow: 0 1px 2px rgba(17, 17, 17, 0.06), 0 12px 32px rgba(17, 17, 17, 0.08);
 }
 
 body {

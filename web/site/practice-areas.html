@@ -6,25 +6,29 @@
 <title>Practice areas | Dyzania LLP</title>
 <meta name="description" content="The four kinds of matter Dyzania LLP handles, what a first consultation costs, who you would meet and what to bring. A fictional firm.">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="theme-color" content="#f3eee3">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="announce"><p><span class="tag">Demo</span>Dyzania LLP is a fictional firm made for a portfolio project. Please use made-up details.</p></div>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Dyzania LLP</a>
-    <nav class="nav" aria-label="Main">
+    <nav class="nav" id="site-menu" aria-label="Main">
       <a href="/practice-areas" aria-current="page">Practice areas</a>
       <a href="/contact">Contact</a>
       <a href="/call">Voice line</a>
       <a href="/ops">How it runs</a>
+      <a class="nav-book" href="/book">Book a consultation</a>
     </nav>
-    <a class="btn small header-cta" href="/book">Book a consultation</a>
+    <a class="header-call" href="tel:5550142">Call 555-0142</a>
+    <a class="btn small header-cta" href="/book" aria-label="Book a consultation"><span class="cta-long">Book a consultation</span><span class="cta-short" aria-hidden="true">Book</span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="visually-hidden">Menu</span><i aria-hidden="true"></i></button>
   </div>
 </header>
 <main id="main">
@@ -35,14 +39,17 @@
   </div>
 
   <section class="tight" aria-labelledby="handled-h">
-    <div class="wrap">
+    <div class="wrap area-layout">
       <h2 class="visually-hidden" id="handled-h">Matters the firm handles</h2>
-      <ul class="jump" aria-label="Jump to a practice area">
+      <nav class="side-index" aria-label="Jump to a practice area">
+      <ul class="jump">
         <li><a href="#family">Family law</a></li>
         <li><a href="#injury">Personal injury</a></li>
         <li><a href="#employment">Employment law</a></li>
         <li><a href="#estate">Estate planning and probate</a></li>
       </ul>
+      </nav>
+      <div class="area-list">
       <article class="card" id="family" aria-labelledby="family-h">
         <h2 id="family-h">Family law</h2>
         <p>Divorce, child custody and support, protective orders, adoption and paternity.</p>
@@ -133,6 +140,7 @@
         </div>
         <div class="actions"><a class="btn small" href="/book?area=estate">Book an estate planning and probate consultation</a></div>
       </article>
+      </div>
     </div>
   </section>
 
@@ -160,6 +168,18 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+  <section aria-labelledby="team-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="team-h">Who you would meet</h2></div>
+      <ul class="people">
+        <li><span class="person">Dana Hollis</span><span class="role">Founding partner</span><span class="does">Family law and Estate planning and probate.</span></li>
+        <li><span class="person">Marcus Marr</span><span class="role">Founding partner</span><span class="does">Personal injury and Employment law.</span></li>
+        <li><span class="person">Elena Voss</span><span class="role">Associate attorney</span><span class="does">Family law and Estate planning and probate.</span></li>
+        <li><span class="person">Tomas Reyes</span><span class="role">Associate attorney</span><span class="does">Personal injury and Employment law.</span></li>
+      </ul>
+      <p class="note space-top">The firm also has two paralegals, an intake coordinator, an office manager, billing and bookkeeping, marketing and IT, and a receptionist.</p>
     </div>
   </section>
 </main>
@@ -199,5 +219,6 @@
   </div>
 </footer>
 
+<script src="/nav.js" defer></script>
 </body>
 </html>

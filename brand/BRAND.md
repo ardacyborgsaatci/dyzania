@@ -14,42 +14,47 @@ Plain, calm and careful. Short sentences, sentence-case headings. Never:
 
 Always: say it is not legal advice, and that no attorney-client relationship exists until an engagement letter is signed. Exact wording is in `firm/firm.json` under `language`.
 
-## Visual system (design system v2)
+## Visual system (design system v5, cream / ink / burnt orange)
 
-Dark and refined: near-black layered surfaces, 1px hairlines for depth, a serif display face over Inter, one accent. The accent is **brass**. Tokens: `brand/tokens.css`. The site stylesheet (`web/site/styles.css`), the voice page (`voice/public/index.html`) and the brand email (`automations/lib/brand-email.js`) copy those values.
+Taken from the images in `REFERENCE/`. A flat, editorial look: **cream** page, **ink** type and actions, **burnt orange** as the single accent. Tokens: `brand/tokens.css`; the site stylesheet (`web/site/styles.css`) copies them. The voice page and the brand email still use design system v2 (dark, brass) until their own pass.
 
 | Role | Hex | Use |
 |---|---|---|
-| Background | `#0B0B0C` | Page |
-| Surface | `#121214` | Panels, cards, footer |
-| Surface 2 | `#18181B` | Inputs, hover, raised rows |
-| Card | `#1F1F23` | Badges, chips, selected tiles |
-| Line | `#26262B` | Hairline borders and rules |
-| Edge | `#7A7A84` | Input and outline-button border (3:1 against every surface) |
-| Text | `#F5F3EE` | Primary text, a warm white |
-| Muted | `#A8A6A0` | Secondary text, inactive nav |
-| Brass | `#D4A94F` | The only accent: primary buttons, the current choice, key numbers, list markers, the logo bars. Never a large background. |
-| Error | `#F3727F` on `#2A1418` | Errors and urgent |
-| Warning | `#FFA42B` on `#2A2010` | Warnings |
-| Info | `#539DF5` on `#101C2E` | Info |
+| Cream | `#F3EEE3` | Page background |
+| Surface | `#FFFFFF` | Cards, forms |
+| Surface 2 | `#FAF7F1` | Quiet panels, skeletons |
+| Ink | `#111111` | Text, primary buttons, focus ring, selected choice, footer |
+| Muted | `#5C5750` | Secondary text |
+| Edge | `#8A847B` | Input and choice borders (3:1 on every surface) |
+| Burnt orange | `#D9541E` | Offset block, underline, large italic accent words, the large orange button |
+| Accent text | `#A63A12` | Small orange text: eyebrows, numerals, list markers |
+| Error | `#B91C1C` on `#FEF2F2` | Errors and urgent |
+| Warning | `#92400E` on `#FFFBEB` | Warnings |
+| Info | `#1D4ED8` on `#EFF6FF` | Info |
 
-Dark only. The site tests compute WCAG ratios for the main text pairs (all at least 4.5:1).
+White on `#D9541E` is about 4.0:1, so it is only used for large bold text (the 19px hero button). Small buttons are ink.
+
+**Hero:** an announcement bar, then two columns. Left: a heavy tight headline with the place name as an orange italic serif accent word and a hand-drawn underline, a short lede, a button, a quiet link and a facts row (4 attorneys, 11 people, since 2014). Right: a black-and-white drawing of the office (`web/site/hero-office-mono.svg`) on an orange offset block, with two floating white cards (office hours, and an example of a message sent at night). Decorative picture (`alt=""`). Below it a strip names the four kinds of matter in italic serif. There are no stars, client logos or testimonials: a law firm may not show them.
+
+## Layout
+
+1200px container, 8px spacing, generous section gaps. The announcement bar scrolls away; the header is sticky, cream, and frosted once scrolled; below 900px it becomes a Menu button that opens a full-screen overlay (without JavaScript the links wrap in a row). Home: hero, strip, a one-line urgent notice, numbered area rows, four steps, a dark closing call to action. Inner pages open with a compact title block over a hairline. Practice areas has a sticky side index on wide screens. Contact, booking and the voice page use an 8/4 split. The footer is ink with cream text.
 
 ## Type
 
-Two families. **Instrument Serif** (400) for page titles, section titles, names and large numbers: 56 to 76px for the home title, 32 to 44px for section titles, 28px for card titles. **Inter** (400, 500, 600) for everything else: body 16px, small text 13 to 14px, labels 12px uppercase with wide tracking. Numbers that line up use tabular figures. Buttons: 15px, 600, sentence case. Email falls back to Georgia for the serif, because mail clients do not load web fonts.
+**Inter Tight** (700 to 800, tight tracking) for headlines and the wordmark. **Instrument Serif** italic for accent words and the strip. **Inter** (400 to 700) for everything else: body 16px, small text 13 to 14px. Numbers that line up use tabular figures. Email falls back to Georgia for the serif.
 
 ## Shape, depth and motion
 
-Radius 6px for inputs, 12px for cards, 20px for large panels; pills (9999px) only for buttons, chips, time slots and nav links. Depth comes from layered surfaces and inset 1px hairlines, not shadows; one soft shadow is kept for the result panel. No gradients on the site. Motion is 160 to 240ms ease-out on hover, focus and step changes, and stops under `prefers-reduced-motion`. Spacing follows an 8px grid; sections sit 56 to 120px apart.
+Radius 10px inputs, 16px cards, 24px large panels, pills for buttons and chips. Flat white cards with a hairline and one soft shadow. No gradients, no glass (except the header after scroll). Motion is 160 to 640ms ease-out and stops under `prefers-reduced-motion`.
 
 ## Components
 
-Header (translucent, hairline, scrolls sideways on phones), buttons (primary brass, secondary hairline), hero with office panel, key-numbers strip, area cards, numbered steps, people list, callouts (urgent, warning, info), form fields with error summary, choice tiles, booking stepper and time chips, status chips, rules list, footer. Each is defined once in `web/site/styles.css`.
+Announcement bar, sticky header with pill CTA and menu overlay, buttons (ink, and the large orange hero button), numbered area rows, hero with offset picture and floating cards, italic strip, area cards, steps, people list, callouts (urgent, warning, info), form fields with error summary, choice tiles, booking stepper and time chips, status chips, rules list, ink footer. Each is defined once in `web/site/styles.css`.
 
 ## Logo
 
-A rounded dark tile with three warm-white columns between two brass bars: a courthouse front, reduced to bars. `brand/logo.svg`, copied to `web/site/favicon.svg`.
+A rounded ink tile with three cream columns between two orange bars. `brand/logo.svg`, copied to `web/site/favicon.svg`.
 
 ## The five automations (labels used in the UI and ops dashboard)
 

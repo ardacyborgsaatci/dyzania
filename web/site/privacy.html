@@ -6,25 +6,29 @@
 <title>Privacy and disclaimers | Dyzania LLP</title>
 <meta name="description" content="What the Dyzania LLP demo site collects, where it goes, and the limits of what it says. A fictional firm.">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="theme-color" content="#f3eee3">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div class="announce"><p><span class="tag">Demo</span>Dyzania LLP is a fictional firm made for a portfolio project. Please use made-up details.</p></div>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Dyzania LLP</a>
-    <nav class="nav" aria-label="Main">
+    <nav class="nav" id="site-menu" aria-label="Main">
       <a href="/practice-areas">Practice areas</a>
       <a href="/contact">Contact</a>
       <a href="/call">Voice line</a>
       <a href="/ops">How it runs</a>
+      <a class="nav-book" href="/book">Book a consultation</a>
     </nav>
-    <a class="btn small header-cta" href="/book">Book a consultation</a>
+    <a class="header-call" href="tel:5550142">Call 555-0142</a>
+    <a class="btn small header-cta" href="/book" aria-label="Book a consultation"><span class="cta-long">Book a consultation</span><span class="cta-short" aria-hidden="true">Book</span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="visually-hidden">Menu</span><i aria-hidden="true"></i></button>
   </div>
 </header>
 <main id="main">
@@ -74,7 +78,7 @@
       <ul class="rules">
         <li><strong>Logs</strong>The workflows log references and categories, not names, email addresses or message text.</li>
         <li><strong>Cookies</strong>This site sets none and does not use browser storage.</li>
-        <li><strong>Fonts</strong>The Inter and Instrument Serif typefaces are loaded from Google Fonts, so Google sees your IP address when a page loads.</li>
+        <li><strong>Fonts</strong>The Inter Tight, Instrument Serif and Inter typefaces are loaded from Google Fonts, so Google sees your IP address when a page loads.</li>
         <li><strong>Hosting</strong>The site runs on Vercel, which keeps its own request logs.</li>
         <li><strong>Abuse protection</strong>To slow down scripts, the server keeps a short in-memory count of requests per IP address and checks a signed token that holds no personal data. A hidden field catches simple bots. The count is not stored.</li>
         <li><strong>How long data is kept</strong>The activity log and the inbox log are set to be deleted after 90 days by a nightly job. Leads, bookings and court notices have no automatic deletion yet, and removal is done by hand. This is a demo.</li>
@@ -119,5 +123,6 @@
   </div>
 </footer>
 
+<script src="/nav.js" defer></script>
 </body>
 </html>

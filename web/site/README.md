@@ -47,7 +47,7 @@ Static pages only: serve this folder with any static server and clean URLs. The 
 
 ## Design
 
-Design system v2, from `brand/tokens.css` and `brand/BRAND.md`: near-black surfaces with hairlines, Instrument Serif for titles over Inter, and the brass accent. One primary action per screen, visible labels, each error shown beside its field and in a focusable summary that links to the field, 44 px targets, subtle motion that stops under `prefers-reduced-motion`, no gradients. Icons are inline SVG.
+Design system v5 (cream, ink, burnt orange; flat), from `brand/tokens.css` and `brand/BRAND.md`: an editorial hero with a black-and-white office drawing on an orange block, Inter Tight headlines with Instrument Serif accent words, ink for every action. The header menu and the practice-areas side index are in `nav.js`. One primary action per screen, visible labels, each error shown beside its field and in a focusable summary that links to the field, 44 px targets, subtle motion that stops under `prefers-reduced-motion`, no gradients. Icons are inline SVG.
 
 ## Tests
 

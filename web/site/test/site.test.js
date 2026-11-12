@@ -149,14 +149,30 @@ test('practice areas page shows each area\'s facts from firm data, and the pages
   }
 });
 
-test('home page names the four areas, the attorneys and the office facts', () => {
+test('home page names the four areas and the office facts, and the practice areas page names the attorneys', () => {
   const body = text(read('index.html'));
   for (const a of areasFile.areas) assert.ok(body.includes(a.name) && body.includes(a.summary));
-  for (const id of ['dana-hollis', 'marcus-marr', 'elena-voss', 'tomas-reyes']) assert.ok(body.includes(staff[id].name));
   assert.ok(body.includes(firm.address) && body.includes(firm.phone));
   assert.ok(body.includes(firm.tagline));
   assert.ok(body.includes(`firm of ${firm.headcount.total} people`));
   assert.ok(body.includes(firm.language.fictional));
+  const areasPage = text(read('practice-areas.html'));
+  for (const id of ['dana-hollis', 'marcus-marr', 'elena-voss', 'tomas-reyes']) assert.ok(areasPage.includes(staff[id].name), `practice areas page lacks ${id}`);
+});
+
+test('home hero is a decorative image, and every header has a labelled menu button for the menu it controls', () => {
+  const home = read('index.html');
+  assert.match(home, /<img src="\/hero-office-mono.svg" alt=""/);
+  assert.ok(fs.existsSync(path.join(root, 'hero-office-mono.svg')));
+  assert.doesNotMatch(read('hero-office-mono.svg'), /gradient/i);
+  assert.ok(text(home).includes(firm.tagline), 'the h1 keeps the firm tagline');
+  assert.match(home, /<em class="accent-word">Harlow Point\./);
+  for (const page of pages) {
+    const html = read(page);
+    assert.match(html, /<nav class="nav" id="site-menu"/, `${page}: menu id`);
+    assert.match(html, /<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">/, `${page}: menu button`);
+    assert.ok(html.includes('<script src="/nav.js" defer></script>'), `${page}: nav.js`);
+  }
 });
 
 test('the booking page offers exactly the practice areas, with the consultation length and fee the booking rules use', () => {
@@ -196,7 +212,7 @@ test('the booking details form has the fields the booking endpoint reads', () =>
   assert.match(html, /<div class="honey" aria-hidden="true">[\s\S]*?name="website"[^>]*tabindex="-1"/);
 });
 
-const scripts = ['form-kit.js', 'contact.js', 'book.js', 'ops.js', 'call.js'];
+const scripts = ['form-kit.js', 'contact.js', 'book.js', 'ops.js', 'call.js', 'nav.js'];
 
 test('scripts parse and are each used by a page; the form pages load the kit first', () => {
   for (const file of scripts) assert.doesNotThrow(() => new vm.Script(read(file), { filename: file }), `${file} has a syntax error`);
@@ -297,7 +313,7 @@ test('vercel config keeps clean URLs and gives the three form functions time to 
 test('stylesheet uses the brand tokens, no gradients, and the focus, motion and spacing rules', () => {
   const css = read('styles.css');
   const brand = fs.readFileSync(path.join(repo, 'brand', 'tokens.css'), 'utf8').toLowerCase();
-  for (const hex of ['#0b0b0c', '#121214', '#a8a6a0', '#d4a94f']) {
+  for (const hex of ['#f3eee3', '#111111', '#d9541e', '#5c5750', '#a63a12']) {
     assert.ok(css.toLowerCase().includes(hex), `styles.css lacks brand colour ${hex}`);
     assert.ok(brand.includes(hex), `brand tokens lack ${hex}`);
   }
@@ -309,7 +325,7 @@ test('stylesheet uses the brand tokens, no gradients, and the focus, motion and 
   assert.match(css, /\.nav a \{[^}]*min-height: 44px/);
 });
 
-test('text and boundary pairs on the dark theme meet WCAG contrast', () => {
+test('text and boundary pairs on the cream theme meet WCAG contrast', () => {
   const css = read('styles.css');
   const token = (name) => {
     const m = css.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
@@ -322,13 +338,17 @@ test('text and boundary pairs on the dark theme meet WCAG contrast', () => {
   };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
   const text = [
-    ['ink', 'bg'], ['ink', 'surface'], ['ink', 'surface-2'], ['ink', 'card'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'surface-2'], ['muted', 'card'],
-    ['accent-ink', 'accent'], ['accent', 'bg'], ['accent', 'surface'], ['accent', 'card'],
+    ['ink', 'bg'], ['ink', 'surface'], ['ink', 'surface-2'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'surface-2'],
+    ['accent-ink', 'accent'], ['accent-text', 'bg'], ['accent-text', 'surface'], ['accent-text', 'surface-2'],
     ['warn', 'warn-soft'], ['danger', 'danger-soft'], ['info', 'info-soft'], ['ink', 'warn-soft'], ['ink', 'danger-soft'], ['ink', 'info-soft'],
     ['danger', 'bg'], ['danger', 'surface'], ['danger', 'surface-2'], ['info', 'bg'],
   ];
   for (const [fg, bg] of text) assert.ok(ratio(token(fg), token(bg)) >= 4.5, `${fg} on ${bg}: ${ratio(token(fg), token(bg)).toFixed(2)}`);
   // Edges of fields and choices need 3:1 against what they sit on.
   for (const bg of ['bg', 'surface', 'surface-2']) assert.ok(ratio(token('edge'), token(bg)) >= 3, `edge on ${bg}: ${ratio(token('edge'), token(bg)).toFixed(2)}`);
-  assert.ok(ratio('#ffffff', token('bg')) >= 4.5);
+  // Burnt orange carries large type only: the italic accent word (3:1 is the large-text minimum) and the big call to action.
+  assert.ok(ratio(token('orange'), token('bg')) >= 3, `orange on bg: ${ratio(token('orange'), token('bg')).toFixed(2)}`);
+  assert.ok(ratio('#ffffff', token('orange')) >= 3.9, `white on orange: ${ratio('#ffffff', token('orange')).toFixed(2)}`);
+  assert.match(css, /\.btn\.accent \{[^}]*font-size: 1\.1875rem[^}]*font-weight: 700/, 'the orange button must be large bold text');
+  assert.match(css, /\.accent-word \{[^}]*color: var\(--orange\)/);
 });

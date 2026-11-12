@@ -6,95 +6,121 @@
 <title>Dyzania LLP</title>
 <meta name="description" content="Family, injury, employment and estate law for people in Harlow Point. A fictional firm made for a portfolio project.">
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="theme-color" content="#f3eee3">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
+<body class="home">
 <a class="skip" href="#main">Skip to content</a>
+<div class="announce"><p><span class="tag">Demo</span>Dyzania LLP is a fictional firm made for a portfolio project. Please use made-up details.</p></div>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Dyzania LLP</a>
-    <nav class="nav" aria-label="Main">
+    <nav class="nav" id="site-menu" aria-label="Main">
       <a href="/practice-areas">Practice areas</a>
       <a href="/contact">Contact</a>
       <a href="/call">Voice line</a>
       <a href="/ops">How it runs</a>
+      <a class="nav-book" href="/book">Book a consultation</a>
     </nav>
-    <a class="btn small header-cta" href="/book">Book a consultation</a>
+    <a class="header-call" href="tel:5550142">Call 555-0142</a>
+    <a class="btn small header-cta" href="/book" aria-label="Book a consultation"><span class="cta-long">Book a consultation</span><span class="cta-short" aria-hidden="true">Book</span></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="visually-hidden">Menu</span><i aria-hidden="true"></i></button>
   </div>
 </header>
 <main id="main">
   <section class="hero" aria-labelledby="hero-h">
     <div class="wrap">
       <div class="hero-grid">
-        <div>
+        <div class="hero-copy">
           <span class="eyebrow">Harlow Point · Since 2014</span>
-          <h1 id="hero-h">Family, injury, employment and estate law for people in Harlow Point.</h1>
-          <p class="lede">Dyzania LLP is a firm of 11 people. Tell us what is happening. We will say whether it is a kind of matter we handle, and offer a time for a first consultation.</p>
+          <h1 id="hero-h">Family, injury, employment and estate law for people in <em class="accent-word">Harlow Point.<svg class="underline" viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9.5C70 2.5 150 12.5 297 4.5" fill="none" stroke="#d9541e" stroke-width="4" stroke-linecap="round"/></svg></em></h1>
+          <p class="lede">Dyzania LLP is a firm of 11 people. Tell us what is happening, and we will offer a time for a first consultation.</p>
           <div class="actions">
-            <a class="btn" href="/book">Book a consultation</a>
-            <a class="btn secondary" href="/contact">Send a message first</a>
+            <a class="btn accent" href="/book">Book a consultation <span aria-hidden="true">&rarr;</span></a>
+            <a class="ghost-link" href="/contact"><span class="round" aria-hidden="true">&rarr;</span>Send a message first</a>
+          </div>
+          <div class="facts-row">
+            <ul class="initials" aria-hidden="true"><li>DH</li><li>MM</li><li>EV</li><li>TR</li></ul>
+            <p>4 attorneys · 11 people · since 2014</p>
           </div>
         </div>
-        <aside class="office" aria-labelledby="office-h">
-          <h2 id="office-h">The office</h2>
-          <dl class="facts">
-            <dt>Address</dt><dd>220 Canal Street, Suite 4, Harlow Point</dd>
-            <dt>Phone</dt><dd><a href="tel:5550142">555-0142</a></dd>
-            <dt>Hours</dt><dd>Monday to Friday, 8:30 AM to 5:30 PM</dd>
-            <dt>Email</dt><dd><a href="mailto:hello@dyzania.example">hello@dyzania.example</a></dd>
-          </dl>
-        </aside>
+        <div class="hero-art">
+          <div class="art-block" aria-hidden="true"></div>
+          <figure class="art-photo">
+            <img src="/hero-office-mono.svg" alt="" width="1800" height="900" fetchpriority="high">
+            <figcaption class="art-chip">Harlow Point office</figcaption>
+          </figure>
+          <aside class="float-card hours" aria-label="Office hours">
+            <h2>Office hours</h2>
+            <p><strong>Mon to Fri</strong>8:30 AM to 5:30 PM</p>
+            <ul class="bars" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          </aside>
+          <aside class="float-card flow" aria-label="An example of a message sent at night">
+            <h3>A message at night <span class="flow-tag">Example</span></h3>
+            <ol>
+              <li class="done"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.2 8.2l2 2 3.6-4"/></svg>Message received</li>
+              <li class="done"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.2 8.2l2 2 3.6-4"/></svg>Kind of matter checked</li>
+              <li class="wait"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.6V8l2.2 1.4"/></svg>Conflict check queued for the morning</li>
+              <li class="done"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.2 8.2l2 2 3.6-4"/></svg>Time offered for a first consultation</li>
+            </ol>
+          </aside>
+        </div>
       </div>
-      <ul class="stats" aria-label="The firm in numbers">
-        <li><strong>11</strong><span>people at the firm</span></li>
-        <li><strong>4</strong><span>kinds of matter</span></li>
-        <li><strong>2014</strong><span>the year it opened</span></li>
-        <li><strong>3</strong><span>short steps to book, at any hour</span></li>
-      </ul>
+      <div class="strip">
+        <p class="strip-label">Four kinds of matter</p>
+        <ul class="strip-list">
+          <li><a href="/practice-areas#family">Family law</a></li>
+          <li><a href="/practice-areas#injury">Personal injury</a></li>
+          <li><a href="/practice-areas#employment">Employment law</a></li>
+          <li><a href="/practice-areas#estate">Estate planning and probate</a></li>
+        </ul>
+      </div>
     </div>
   </section>
+
+  <div class="urgent-band">
+    <div class="callout urgent">
+      <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
+      <div>
+        <p><strong>Court date, hearing, papers served on you, or a safety concern?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is; only an attorney who has read your papers can.</p>
+        <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
+      </div>
+    </div>
+  </div>
 
   <section aria-labelledby="areas-h">
     <div class="wrap">
       <div class="section-head"><h2 id="areas-h">What we handle</h2><a href="/practice-areas">All practice areas and what to bring</a></div>
-      <div class="grid cols-2 areas">
-        <article class="card">
-          <h3>Family law</h3>
-          <p class="meta num">First consultation: 45 minutes · $150, credited to your retainer</p>
-          <p>Divorce, child custody and support, protective orders, adoption and paternity.</p>
-          <a class="more" href="/practice-areas#family">Family law details</a>
-        </article>
-        <article class="card">
-          <h3>Personal injury</h3>
-          <p class="meta num">First consultation: 30 minutes · no charge</p>
-          <p>Car and truck accidents, slip and fall, dog bites, medical negligence and wrongful death.</p>
-          <a class="more" href="/practice-areas#injury">Personal injury details</a>
-        </article>
-        <article class="card">
-          <h3>Employment law</h3>
-          <p class="meta num">First consultation: 30 minutes · no charge</p>
-          <p>Wrongful termination, discrimination, harassment, retaliation and unpaid wages.</p>
-          <a class="more" href="/practice-areas#employment">Employment law details</a>
-        </article>
-        <article class="card">
-          <h3>Estate planning and probate</h3>
-          <p class="meta num">First consultation: 45 minutes · $150, credited to your retainer</p>
-          <p>Wills, trusts, powers of attorney, guardianship for adults, probate and estate administration.</p>
-          <a class="more" href="/practice-areas#estate">Estate planning and probate details</a>
-        </article>
-      </div>
-      <div class="callout urgent" style="margin-top:16px">
-        <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M8 1l7.5 13h-15zM7.2 6v4h1.6V6zM7.2 11v1.6h1.6V11z"/></svg>
-        <div>
-          <p><strong>Court date, hearing, papers served on you, or a safety concern?</strong> Call the office on <a href="tel:5550142">555-0142</a> now instead of using a form. This site cannot tell you what your deadline is; only an attorney who has read your papers can.</p>
-          <p>If you or someone else is in immediate danger, call 911 or your local emergency number.</p>
-        </div>
-      </div>
+      <ol class="area-rows">
+        <li><a class="area-row" href="/practice-areas#family">
+          <span class="area-no num" aria-hidden="true">01</span>
+          <div class="area-main"><h3>Family law</h3><p>Divorce, child custody and support, protective orders, adoption and paternity.</p></div>
+          <span class="area-meta num">First consultation: 45 minutes · $150, credited to your retainer</span>
+          <span class="area-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="area-row" href="/practice-areas#injury">
+          <span class="area-no num" aria-hidden="true">02</span>
+          <div class="area-main"><h3>Personal injury</h3><p>Car and truck accidents, slip and fall, dog bites, medical negligence and wrongful death.</p></div>
+          <span class="area-meta num">First consultation: 30 minutes · no charge</span>
+          <span class="area-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="area-row" href="/practice-areas#employment">
+          <span class="area-no num" aria-hidden="true">03</span>
+          <div class="area-main"><h3>Employment law</h3><p>Wrongful termination, discrimination, harassment, retaliation and unpaid wages.</p></div>
+          <span class="area-meta num">First consultation: 30 minutes · no charge</span>
+          <span class="area-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+        <li><a class="area-row" href="/practice-areas#estate">
+          <span class="area-no num" aria-hidden="true">04</span>
+          <div class="area-main"><h3>Estate planning and probate</h3><p>Wills, trusts, powers of attorney, guardianship for adults, probate and estate administration.</p></div>
+          <span class="area-meta num">First consultation: 45 minutes · $150, credited to your retainer</span>
+          <span class="area-go" aria-hidden="true">&rarr;</span>
+        </a></li>
+      </ol>
     </div>
   </section>
 
@@ -107,19 +133,6 @@
         <li><strong>Meet an attorney</strong>A 30 or 45 minute first consultation at the office. The page tells you what to bring.</li>
         <li><strong>You decide</strong>If you and the firm agree to work together, you sign an engagement letter. No attorney-client relationship exists until then.</li>
       </ol>
-    </div>
-  </section>
-
-  <section aria-labelledby="team-h">
-    <div class="wrap">
-      <div class="section-head"><h2 id="team-h">Who you would meet</h2></div>
-      <ul class="people">
-        <li><span class="person">Dana Hollis</span><span class="role">Founding partner</span><span class="does">Family law and Estate planning and probate.</span></li>
-        <li><span class="person">Marcus Marr</span><span class="role">Founding partner</span><span class="does">Personal injury and Employment law.</span></li>
-        <li><span class="person">Elena Voss</span><span class="role">Associate attorney</span><span class="does">Family law and Estate planning and probate.</span></li>
-        <li><span class="person">Tomas Reyes</span><span class="role">Associate attorney</span><span class="does">Personal injury and Employment law.</span></li>
-      </ul>
-      <p class="note" style="margin-top:20px">The firm also has two paralegals, an intake coordinator, an office manager, billing and bookkeeping, marketing and IT, and a receptionist.</p>
     </div>
   </section>
 
@@ -173,5 +186,6 @@
   </div>
 </footer>
 
+<script src="/nav.js" defer></script>
 </body>
 </html>

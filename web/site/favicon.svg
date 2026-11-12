@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Dyzania LLP">
-  <rect width="64" height="64" rx="14" fill="#18181B"/>
-  <rect x="13" y="14" width="38" height="5" rx="1.5" fill="#D4A94F"/>
-  <rect x="16" y="24" width="6" height="22" rx="1.5" fill="#F5F3EE"/>
-  <rect x="29" y="24" width="6" height="22" rx="1.5" fill="#F5F3EE"/>
-  <rect x="42" y="24" width="6" height="22" rx="1.5" fill="#F5F3EE"/>
-  <rect x="13" y="49" width="38" height="5" rx="1.5" fill="#D4A94F"/>
+  <rect width="64" height="64" rx="14" fill="#111111"/>
+  <rect x="13" y="14" width="38" height="5" rx="1.5" fill="#D9541E"/>
+  <rect x="16" y="24" width="6" height="22" rx="1.5" fill="#F3EEE3"/>
+  <rect x="29" y="24" width="6" height="22" rx="1.5" fill="#F3EEE3"/>
+  <rect x="42" y="24" width="6" height="22" rx="1.5" fill="#F3EEE3"/>
+  <rect x="13" y="49" width="38" height="5" rx="1.5" fill="#D9541E"/>
 </svg>
