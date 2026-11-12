@@ -37,7 +37,7 @@ test('whatever the model says, the rule guarantees hold on every email the rules
   const n = E.evaluateGuarantees('rules');
   assert.deepStrictEqual(h.violations, []);
   assert.deepStrictEqual(n.violations, []);
-  const limits = ['I04', 'U06', 'X01', 'X02', 'X03'];
+  const limits = ['U06', 'X01', 'X02', 'X03'];
   assert.deepStrictEqual(h.limits.slice().sort(), limits);
   assert.deepStrictEqual(n.limits.slice().sort(), limits);
   assert.strictEqual(h.checked, 54 - limits.length);

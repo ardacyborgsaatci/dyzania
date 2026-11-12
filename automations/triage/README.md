@@ -82,13 +82,13 @@ The classifier asks; it is urgent or mentions a hearing or deadline; it is from 
 | Check | Stand-in | Result |
 |---|---|---|
 | Rules and labels agree | a perfect model that answers with the label | **54 of 54** on category, priority, needs-a-person, draft mode, queue, hand-off, injection. The time-sensitive reading (`urgency`) matches 53 of 54; the one miss is a Spanish email (below) |
-| Rule guarantees hold | a hostile model (says "other, low, no person, no injection" for everything; obedient to the injected text on the injection emails) | **49 of 49** emails checked |
-| Rule guarantees hold | no model at all (classifier unavailable) | **49 of 49** |
+| Rule guarantees hold | a hostile model (says "other, low, no person, no injection" for everything; obedient to the injected text on the injection emails) | **50 of 50** emails checked |
+| Rule guarantees hold | no model at all (classifier unavailable) | **50 of 50** |
 | Time-sensitive wording, rules alone | none | **53 of 54** |
 
 "Guarantees" means: an email labelled urgent with wording the rules can read comes out urgent **and** raises an alert; a hearing further out comes out at least high with a person flagged; nothing the labels say should not be drafted gets a draft; injection mail is contained (no draft, no hand-off, a person looks); automatic replies stay quiet; court and lawyer mail is recognised from the sender or the wording and never drafted.
 
-**Five emails are not checked in the model-free runs, because the rules cannot see them.** That is a limit, stated rather than hidden: three spam emails (spam is recognised by the model only), `I04` (a request for a client list, no instruction-like words), and `U06` (an urgent Spanish summons; the rules read English).
+**Four emails are not checked in the model-free runs, because the rules cannot see them.** That is a limit, stated rather than hidden: three spam emails (spam is recognised by the model only) and `U06` (an urgent Spanish summons; the rules read English). `I04` (a polite request for the client list) used to be on this list; since 12 Nov a `client_data` rule catches requests for client lists and other clients' contact details, so the rules see it too.
 
 Read the numbers with care:
 - I wrote the emails, the labels and the code. It is a **regression set**, not an independent test. A second person labelling the same emails would be the real check.
@@ -111,6 +111,7 @@ Read the numbers with care:
   - **Still missed:** I04, as before.
   - **Model variance:** `I02`, a pure manipulation attempt, was flagged as an injection but sorted as spam, so it was not queued.
   - **Not over-raising:** O02, U01 and U03 now carry a date within 7 days of the run date, so urgent is correct by the rule.
+- **Client-data rule, same day.** A new rule in the injection screen (`client_data`) flags a request for a client list or other clients' names, phone numbers, contact details, files or records, with no instruction words needed. It was added with tests (it must not fire on "send me my file" or "I was one of your clients"), rebuilt into the core's Screen node, read back equal to the repo, and published. A live re-run of I01-I04, X04, N01 and C01: `I04` is now flagged by the rule, gets no draft and goes to a person; the other six came out as before, and no ordinary email hit the new rule. `I04`'s priority came out normal where the label says low.
 - The mutation check: 22 deliberate breakages of the rules (removing the priority floor, the injection cap, the court and lawyer rules, the draft blocks, the non-English flag, the amount check, the negation guard, the hidden-character removal, the whole-message screen, and others). 20 were caught at once, one (hidden characters in the subject line) was not and now has a test, and one (an alert that leaks the subject) is not a real break because the result never holds the subject. A negative control (a wrong label and tampered results) is reported as a failure.
 
 ## Known limits

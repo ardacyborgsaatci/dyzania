@@ -65,6 +65,8 @@ const TRIAGE_INJECTION = [
   { id: 'force_priority', re: /mark (?:this|the|it)(?: message| email)? as (?:urgent|high|low|spam|not spam|priority)/i },
   { id: 'exfiltrate', re: /(?:forward|send) (?:me )?(?:everything|all (?:emails|messages|files|documents))/i },
   { id: 'do_not_escalate', re: /do not (?:escalate|flag|alert)/i },
+  // A request for other people's data needs no instruction words to be social engineering ("a list of all current clients").
+  { id: 'client_data', re: /\b(?:client|customer) (?:list|database|roster|contacts?)\b|\b(?:list|names|phone numbers|contact (?:details|information|info)|addresses|email addresses|files|records) of (?:all |your |the firm's |other |current )*(?:clients|customers)\b/i },
   { id: 'dan', re: /\bDAN\b/ }
 ];
 

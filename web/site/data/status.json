@@ -20,9 +20,9 @@
       "state": "running",
       "stateLabel": "Live on invented data",
       "what": "Sorts incoming email, marks anything time-sensitive and saves a reply as a Gmail draft that is never sent. Courts, other lawyers, spam and instruction-like text get no draft.",
-      "evidence": "54 invented emails scored offline with stand-in models. A perfect model scores 54 of 54, and a failing or hostile model still passes the 49 guarantees the rules can check.",
-      "limit": "Live runs on the same 54 invented emails (12 Nov). The latest: category 50 of 54, priority 47 of 54, every urgent email raised, every email that needed a person flagged, no broken guarantee. One request for the client list was not flagged as manipulation; its draft shared nothing and a person still saw it. Same-author set.",
-      "next": "Catch polite requests for client data as manipulation."
+      "evidence": "54 invented emails scored offline with stand-in models. A perfect model scores 54 of 54, and a failing or hostile model still passes the 50 guarantees the rules can check.",
+      "limit": "Live runs on the same 54 invented emails (12 Nov). The latest: category 50 of 54, priority 47 of 54, every urgent email raised, every email that needed a person flagged, no broken guarantee. A rule added the same day now flags polite requests for client data; the live re-run caught the one the model had missed. Same-author set.",
+      "next": "Have a second person label the 54 emails, to test the rules on wording I did not write."
     },
     {
       "id": "booking",

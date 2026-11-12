@@ -216,3 +216,7 @@ No real client data, ever. No cancel endpoint, holiday calendar or email verific
   - **Change:** the line was added to `prompts/classify.md`, the workflows were rebuilt, and the live core's message was set and read back equal to the repo. The core is republished.
   - **Re-run:** all 54 emails again through harness `Zk8vAmPJU9tB13V8` (executions 665, 684 and 703), which was then archived.
   - **Result:** priority 47 of 54 (was 45), needs-human 53 of 54 (was 51), urgent 13 of 13, recall 35 of 35, no broken guarantee.
+- 2026-11-12: **Triage: rule for requests for client data.**
+  - **Change:** a `client_data` pattern in `automations/triage/lib/triage.js`, with tests; `I04` is no longer a model-only limit. The live core's Screen email node was set from the rebuilt `workflow-core.json`, read back identical, and published. Decide and Finish carry the same library but do not call the screen, so their copies were left as they were.
+  - **Re-run:** I01-I04, X04, N01, C01 through harness `plCNHpKrs0fluMkT` (execution 722), then archived. I04 flagged by the rule, no draft, a person looks; no false hit on the others.
+- 2026-11-12: **`AUTOMATIONS.md`** added: data flow, specs and how to use every automation.
