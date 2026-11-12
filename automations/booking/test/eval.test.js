@@ -89,7 +89,7 @@ test('the guarantees hold for every labelled booking', () => {
 test('control: each number in the firm data is pinned by at least one label', () => {
   const pins = [
     ['availability.booking.bufferMinutes', 30, ['O07', 'B22']],
-    ['availability.booking.bufferMinutes', 0, ['O07', 'B21']],
+    ['availability.booking.bufferMinutes', 0, ['O07', 'O08']],
     ['availability.booking.minNoticeHours', 3, ['O05', 'B14']],
     ['availability.booking.minNoticeHours', 5, ['O05', 'B15']],
     ['availability.booking.horizonDays', 29, ['O02', 'B18']],

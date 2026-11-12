@@ -30,12 +30,12 @@ All numbers come from `firm/availability.json` and `firm/practice-areas.json`. C
 | Start times | On a 15-minute grid from the window start; the consultation must end inside the window | `slotStepMinutes` |
 | Notice | At least 4 hours from now (exactly 4 hours is allowed) | `minNoticeHours` |
 | Horizon | Local dates up to and including today + 30 | `horizonDays` |
-| Buffer | At least 15 minutes between one consultation's end and the next one's start, **counted once**. A gap of exactly 15 is allowed | `bufferMinutes` |
+| Gap | After each consultation, the next one for the same attorney starts no sooner than its length plus `bufferMinutes`: family/estate 45 + 15 = 60 minutes, injury/employment 30 + 15 = 45. **Counted once**, from the earlier consultation's end. A gap of exactly that length is allowed | `bufferMinutes` (15), `consult.minutes` |
 | One booking per person | Same email (any case) or same phone number (7+ digits), future bookings only | `maxActiveBookingsPerPerson` |
 | Conflict check | Must be literally `clear`. The other side's name is required, or a box saying there is none | `requiresConflictClear` |
 | Cancelling on the site | Up to 24 hours before the start | `cancelNoticeHours` |
 
-The previous build documented a 15-minute buffer but applied it to both bookings, so it enforced 30. `lib/booking.js` counts it once, and a test pins the difference (a consultation 10:00 to 10:45 may sit next to one at 11:00).
+The previous build documented a 15-minute buffer but applied it to both bookings, so it enforced 30. The gap is now set per consultation type (length + 15), counted once from the earlier consultation. A test pins this (a 45-minute family consultation at 13:00 leaves 11:15 as the last start before it, and 14:45 as the first start after a 13:00 booking).
 
 The visitor picks a **time**. The rules pick the attorney: the one with the fewest future bookings, then the order in `practice-areas.json`.
 

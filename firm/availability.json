@@ -25,9 +25,10 @@
     "minNoticeHours": 4,
     "slotStepMinutes": 15,
     "bufferMinutes": 15,
+    "bufferAddsConsultLength": true,
     "cancelNoticeHours": 24,
     "maxActiveBookingsPerPerson": 1,
     "requiresConflictClear": true,
-    "bufferNote": "The previous booking build enforced 30 minutes while documenting 15, so the new rules code and its tests must match this number exactly."
+    "bufferNote": "Gap after each consultation = that consultation's length (area consult.minutes) + bufferMinutes. Family/estate 45+15 = 60; injury/employment 30+15 = 45. Counted once, from the earlier consultation's end. The rules code and tests must match this exactly."
   }
 }

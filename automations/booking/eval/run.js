@@ -71,6 +71,11 @@ const nowOf = (c) => brute(c.now || SET.defaults.now);
 
 // ---- 1. the oracle ----
 // Every free start for an area, found by looking at each 15-minute UTC instant. Returns Map(startMs -> sorted attorney ids).
+// Gap after a consultation of `minutes` length: its length plus the buffer. Between two bookings the earlier one's gap applies.
+function gapMs(minutes) { return (minutes + DATA.availability.booking.bufferMinutes) * 60000; }
+function rowMinutes(r) { return (Date.parse(r.endUtc) - Date.parse(r.startUtc)) / 60000; }
+function pairGapMs(x, y) { const first = Date.parse(x.startUtc) <= Date.parse(y.startUtc) ? x : y; return gapMs(rowMinutes(first)); }
+
 function oracleOffers(areaId, nowMs, rows) {
   const area = areaOf(areaId), cfg = DATA.availability.booking, dur = area.consult.minutes;
   const out = new Map();
@@ -78,7 +83,6 @@ function oracleOffers(areaId, nowMs, rows) {
   const grid0 = Math.ceil(nowMs / 900000) * 900000;
   const gridEnd = nowMs + (cfg.horizonDays + 2) * 86400000;
   const booked = rows.filter((r) => r.status === 'booked' && r.startUtc);
-  const occupied = (att, m) => booked.some((r) => r.attorney === att && Date.parse(r.startUtc) <= m && m < Date.parse(r.endUtc));
   for (let t = grid0; t <= gridEnd; t += 900000) {
     if (t < nowMs + cfg.minNoticeHours * 3600000) continue;
     const p = parts(t);
@@ -90,8 +94,9 @@ function oracleOffers(areaId, nowMs, rows) {
         return w.day === p.dow.toLowerCase() && mod >= s && (mod - s) % cfg.slotStepMinutes === 0 && mod + dur <= e;
       });
       if (!ok) return;
-      // the buffer, counted minute by minute: no occupied minute may fall inside [start - buffer, end + buffer)
-      for (let m = t - cfg.bufferMinutes * 60000; m < t + dur * 60000 + cfg.bufferMinutes * 60000; m += 60000) if (occupied(att, m)) return;
+      // the gap, counted from the earlier consultation: a booking that starts before the other one's gap has run out clashes
+      const candEnd = t + dur * 60000, candGap = gapMs(dur);
+      if (booked.some((r) => r.attorney === att && t < Date.parse(r.endUtc) + pairGapMs(r, { startUtc: new Date(t).toISOString(), endUtc: new Date(candEnd).toISOString() }) && Date.parse(r.startUtc) < candEnd + candGap)) return;
       if (!out.has(t)) out.set(t, []);
       out.get(t).push(att);
     });
@@ -169,7 +174,7 @@ function invariantProblems(rows, nowMs) {
       const a = act[i], b = act[j];
       if (a.attorney === b.attorney) {
         const gap = Math.max(Date.parse(b.startUtc) - Date.parse(a.endUtc), Date.parse(a.startUtc) - Date.parse(b.endUtc));
-        if (gap < cfg.bufferMinutes * 60000) problems.push('gap under buffer: ' + a.attorney + ' ' + stampOf(Date.parse(a.startUtc)) + ' / ' + stampOf(Date.parse(b.startUtc)));
+        if (gap < pairGapMs(a, b)) problems.push('gap under buffer: ' + a.attorney + ' ' + stampOf(Date.parse(a.startUtc)) + ' / ' + stampOf(Date.parse(b.startUtc)));
       }
       const pa = String(a.phone).replace(/\D/g, ''), pb = String(b.phone).replace(/\D/g, '');
       if ((a.email && a.email === b.email) || (pa.length >= 7 && pa === pb)) problems.push('same person twice: ' + a.email + ' / ' + b.email);
@@ -240,7 +245,7 @@ function evaluateRace(runs) {
     // nothing accepted may clash, and a rejected row must clash with, or repeat, an earlier accepted row
     rows.filter((x) => all.accepted.indexOf(x.id) === -1).forEach((lo) => {
       const earlier = acceptedRows.filter((a) => a.id < lo.id);
-      const clash = earlier.some((a) => a.attorney === lo.attorney && Math.max(Date.parse(lo.startUtc) - Date.parse(a.endUtc), Date.parse(a.startUtc) - Date.parse(lo.endUtc)) < DATA.availability.booking.bufferMinutes * 60000);
+      const clash = earlier.some((a) => a.attorney === lo.attorney && Math.max(Date.parse(lo.startUtc) - Date.parse(a.endUtc), Date.parse(a.startUtc) - Date.parse(lo.endUtc)) < pairGapMs(lo, a));
       const same = earlier.some((a) => a.email === lo.email);
       if (!clash && !same) problems.push('race ' + k + ': row ' + lo.id + ' lost without a reason');
     });

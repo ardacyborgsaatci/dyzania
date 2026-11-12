@@ -144,7 +144,7 @@ flowchart TD
 flowchart TD
   P[/book page or voice line/] --> SL[POST booking/slots<br>area, limit, after]
   SL --> L1[(bookings: status = booked)]
-  L1 --> FREE[Free times: windows, 15-min grid,<br>4 h notice, 30-day horizon, 15-min buffer]
+  L1 --> FREE[Free times: windows, 15-min grid,<br>4 h notice, 30-day horizon, gap = consult length + 15 min]
   FREE --> P
   P --> BK[POST booking/book]
   BK --> L2[(bookings)]
@@ -167,7 +167,7 @@ flowchart TD
 | Length | 45 min family and estate, 30 min injury and employment |
 | Fee line | $150 credited to the retainer (family, estate); free (injury, employment) |
 | Notice / horizon | At least 4 hours ahead; up to today + 30 days |
-| Buffer | 15 minutes between consultations, counted once |
+| Gap | Consult length + 15 minutes after each consultation (60 min family/estate, 45 min injury/employment), counted once |
 | One booking per person | Same email or same phone, future bookings only |
 | Conflict check | Must be `clear`, otherwise a held row and `contact_office` |
 | Attorney | The rules pick: fewest future bookings, then list order |

@@ -7,8 +7,9 @@ const { checkConflicts } = require('../../../firm/lib/conflicts');
 //   - a slot is a start time on the slot grid inside one attorney's weekly window, long enough for the
 //     consultation (45 minutes family/estate, 30 minutes injury/employment) to end inside the window
 //   - the start is at least minNoticeHours from now and on a local date at most horizonDays ahead (inclusive)
-//   - one attorney's consultations keep at least bufferMinutes between the end of one and the start of the next,
-//     counted ONCE (the previous build counted it twice and so enforced 30 minutes while documenting 15)
+//   - one attorney's consultations keep a gap after each one: the consultation's own length plus bufferMinutes
+//     (family/estate 45 + 15 = 60 minutes, injury/employment 30 + 15 = 45). The gap is counted ONCE, from the earlier
+//     consultation's end to the next one's start, and a gap of exactly that length is allowed
 //   - a person (same email or same phone number) has at most maxActiveBookingsPerPerson future bookings
 //   - the conflict check must be literally "clear"; anything else becomes a held row for a person to review,
 //     and the visitor is never told why
@@ -95,7 +96,9 @@ function bookAttorneyRole(data, id) { const s = data.firm.staff.find((x) => x.id
 function bookRows(items) {
   return (Array.isArray(items) ? items : []).map((i) => (i && i.json && typeof i.json === 'object' ? i.json : i)).filter((r) => r && typeof r === 'object' && r.bookingRef);
 }
-function bookRowSpan(r) { return { s: Date.parse(r.startUtc), e: Date.parse(r.endUtc) }; }
+// A span carries its own gap: the consultation's length plus the buffer, in ms. The gap belongs to the earlier of two spans.
+function bookSpan(s, e, bufferMinutes) { return { s, e, gap: (e - s) + bufferMinutes * 60000 }; }
+function bookRowSpan(r, bufferMinutes) { return bookSpan(Date.parse(r.startUtc), Date.parse(r.endUtc), bufferMinutes || 0); }
 function bookIsBooked(r) { return !!r && r.status === 'booked' && isFinite(Date.parse(r.startUtc)) && isFinite(Date.parse(r.endUtc)); }
 function bookDigits(s) { return String(s == null ? '' : s).replace(/\D/g, ''); }
 function bookSamePerson(a, b) {
@@ -103,10 +106,10 @@ function bookSamePerson(a, b) {
   const pa = bookDigits(a.phone), pb = bookDigits(b.phone);
   return (!!ea && ea === eb) || (pa.length >= 7 && pa === pb);
 }
-// Two spans clash when the gap between them is less than the buffer. A gap of exactly the buffer is allowed.
-function bookClash(a, b, bufferMinutes) { const buf = bufferMinutes * 60000; return a.s < b.e + buf && b.s < a.e + buf; }
+// Two spans clash when one starts before the other's gap has run out. The earlier span's gap decides; a gap of exactly that length is allowed.
+function bookClash(a, b) { return a.s < b.e + b.gap && b.s < a.e + a.gap; }
 function bookFree(attorney, span, rows, bufferMinutes) {
-  return !rows.some((r) => bookIsBooked(r) && r.attorney === attorney && bookClash(span, bookRowSpan(r), bufferMinutes));
+  return !rows.some((r) => bookIsBooked(r) && r.attorney === attorney && bookClash(span, bookRowSpan(r, bufferMinutes)));
 }
 function bookFeeText(area) {
   const c = area.consult;
@@ -146,7 +149,7 @@ function bookOffers(areaId, rows, nowMs, data, opts) {
   const byStart = {};
   bookGenerate(areaId, nowMs, data).forEach((s) => {
     if (o.afterMs != null && s.startMs <= o.afterMs) return;
-    if (!bookFree(s.attorney, { s: s.startMs, e: s.endMs }, rows, buf)) return;
+    if (!bookFree(s.attorney, bookSpan(s.startMs, s.endMs, buf), rows, buf)) return;
     (byStart[s.startMs] = byStart[s.startMs] || { startMs: s.startMs, endMs: s.endMs, attorneys: [] }).attorneys.push(s.attorney);
   });
   const list = Object.keys(byStart).map(Number).sort((a, b) => a - b).map((k) => byStart[k]);
@@ -304,7 +307,7 @@ function bookDecide(body, rowsIn, nowMs, data, ctx) {
   if (bookStamp(startMs, tz).slice(0, 10) > bookAddDays(bookToday(nowMs, tz), cfg.horizonDays)) return finish(Object.assign({ ok: false, code: 'not_offered', reason: 'beyond_horizon', alternatives: alternatives() }, base));
   const ruleSlots = bookGenerate(area.id, nowMs, data).filter((s) => s.startMs === startMs);
   if (!ruleSlots.length) return finish(Object.assign({ ok: false, code: 'not_offered', reason: 'outside_hours', alternatives: alternatives() }, base));
-  const free = ruleSlots.filter((s) => bookFree(s.attorney, { s: startMs, e: endMs }, rows, cfg.bufferMinutes)).map((s) => s.attorney);
+  const free = ruleSlots.filter((s) => bookFree(s.attorney, bookSpan(startMs, endMs, cfg.bufferMinutes), rows, cfg.bufferMinutes)).map((s) => s.attorney);
   if (!free.length) return finish(Object.assign({ ok: false, code: 'slot_taken', reason: 'attorney_busy', alternatives: alternatives() }, base));
 
   // 4. assign the attorney: fewest future bookings, then the order in practice-areas.json
@@ -328,7 +331,7 @@ function bookVerify(rowId, rowsIn, nowMs, data) {
   const accepted = [], lost = {};
   list.forEach((r) => {
     if (accepted.filter((a) => bookSamePerson(a, r)).length >= cfg.maxActiveBookingsPerPerson) { lost[r.id] = 'already_booked'; return; }
-    if (accepted.some((a) => a.attorney === r.attorney && bookClash(bookRowSpan(a), bookRowSpan(r), cfg.bufferMinutes))) { lost[r.id] = 'slot_taken'; return; }
+    if (accepted.some((a) => a.attorney === r.attorney && bookClash(bookRowSpan(a, cfg.bufferMinutes), bookRowSpan(r, cfg.bufferMinutes)))) { lost[r.id] = 'slot_taken'; return; }
     accepted.push(r);
   });
   return { accepted: accepted.map((r) => r.id), lost, won: accepted.some((r) => String(r.id) === String(rowId)) };

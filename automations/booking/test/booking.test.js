@@ -69,22 +69,22 @@ test('slots: no missing or doubled times around a daylight-saving change', () =>
   fall.forEach((s, i) => { if (i) assert.ok(s.startMs > fall[i - 1].startMs); });
 });
 
-test('the buffer is counted once and comes from the data, not from a constant', () => {
-  const booked = utc(2026, 11, 12, 17, 0); // Thu 11:00 local, elena, 45 minutes: busy until 11:45
-  const free = (minutesFromBooking, data) => B.bookOffers('family', [row(1, 'elena-voss', booked, 45)], NOW, data || DATA, {})
-    .some((o) => o.startMs === booked + minutesFromBooking * 60000 && o.attorneys.indexOf('elena-voss') !== -1);
+test('the gap after a consultation is its length plus the buffer, counted once, and comes from the data', () => {
+  const booked = utc(2026, 11, 12, 19, 0); // Thu 13:00 local, 45 minutes: busy until 13:45, then a 60-minute gap (45 + 15)
+  const offered = (att, minutesFromBooking, data) => B.bookOffers('family', [row(1, att, booked, 45)], NOW, data || DATA, {})
+    .some((o) => o.startMs === booked + minutesFromBooking * 60000 && o.attorneys.indexOf(att) !== -1);
   assert.strictEqual(DATA.availability.booking.bufferMinutes, 15);
-  assert.strictEqual(free(-60), true, 'a 45-minute consultation 10:00 to 10:45 leaves exactly the 15-minute gap before an 11:00 booking');
-  assert.strictEqual(free(-45), false, '10:15 to 11:00 leaves no gap');
-  assert.strictEqual(free(45), false, 'starting the minute the booking ends leaves no gap');
-  assert.strictEqual(free(60), true, 'a gap of exactly the buffer is allowed (the old build wanted 30, so this was refused)');
+  assert.strictEqual(offered('elena-voss', -105), true, '11:15 to 12:00 leaves exactly the 60-minute gap before the 13:00 booking');
+  assert.strictEqual(offered('elena-voss', -90), false, '11:30 to 12:15 leaves 45 minutes, not 60');
+  assert.strictEqual(offered('elena-voss', -45), false, 'a 12:15 start overlaps the 13:00 booking');
+  assert.strictEqual(offered('dana-hollis', 105), true, 'after the 13:45 end the gap is 60 minutes: a 14:45 start is allowed');
+  assert.strictEqual(offered('dana-hollis', 90), false, 'a 14:30 start is inside the gap');
   const none = fresh(); none.availability.booking.bufferMinutes = 0;
-  assert.strictEqual(free(-45, none), true);
-  assert.strictEqual(free(45, none), true);
+  assert.strictEqual(offered('elena-voss', -90, none), true, 'with no buffer the gap is the 45-minute length alone: 11:30 to 12:15 ends exactly 45 minutes before 13:00');
+  assert.strictEqual(offered('elena-voss', -75, none), false, '11:45 to 12:30 leaves only 30 minutes');
   const wide = fresh(); wide.availability.booking.bufferMinutes = 30;
-  assert.strictEqual(free(-60, wide), false);
-  assert.strictEqual(free(60, wide), false);
-  assert.strictEqual(free(75, wide), true);
+  assert.strictEqual(offered('elena-voss', -120, wide), true, 'with a 30-minute buffer the gap is 75 minutes');
+  assert.strictEqual(offered('elena-voss', -105, wide), false);
 });
 
 test('minimum notice and horizon come from the data too', () => {
@@ -291,7 +291,7 @@ test('a row that lost the race gets the ordinary "not available" answer with fre
   assert.strictEqual(r.public.code, 'slot_unavailable');
   assert.strictEqual(r.public.alternatives.length, 3);
   assert.ok(r.public.alternatives.every((a) => Date.parse(a.start) > t), 'only later times are offered');
-  assert.strictEqual(r.public.alternatives[0].start, '2026-11-12T17:00:00Z', 'Thu 11:00: the first time that clears the winner plus the buffer');
+  assert.strictEqual(r.public.alternatives[0].start, '2026-11-12T17:45:00Z', 'Thu 11:45: the first time that clears the winner plus its 60-minute gap (45 + 15)');
   assert.strictEqual(r.event.reason, 'race_lost');
   assert.strictEqual(r.event.channel, 'voice');
   assert.doesNotMatch(JSON.stringify(r), /b@mail|a@mail|Fixture/);
