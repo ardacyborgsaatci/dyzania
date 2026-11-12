@@ -156,7 +156,8 @@ test('the workflow shape: one authenticated upload form, one model call, one tab
   assert.strictEqual(sends.length, 1, 'one email node only');
   assert.strictEqual(sends[0].parameters.operation, 'send');
   assert.strictEqual(sends[0].parameters.sendTo, 'REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS', 'the recipient is fixed, never taken from a page');
-  assert.strictEqual(sends[0].parameters.message, '={{ $json.text }}');
+  assert.strictEqual(sends[0].parameters.message, '={{ $json.html }}', 'the alert is brand HTML built from the text');
+  assert.strictEqual(sends[0].parameters.emailType, 'html');
   assert.strictEqual(sends[0].onError, 'continueRegularOutput');
   assert.strictEqual(node('Save to court_notices').onError, 'continueRegularOutput', 'a failed save must not swallow an urgent alert');
 });

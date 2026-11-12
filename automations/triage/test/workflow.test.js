@@ -6,7 +6,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const E = require('../eval/run');
 const T = require('../lib/triage');
-const { loadKnowledge } = require('../lib/data');
+const { loadKnowledge, loadKnowledgeSections } = require('../lib/data');
 
 const root = path.join(__dirname, '..', '..', '..');
 const read = (f) => fs.readFileSync(path.join(__dirname, '..', f), 'utf8').replace(/\r\n/g, '\n');
@@ -104,7 +104,8 @@ test('nothing in either workflow can send mail to a sender', () => {
   const sends = gm.filter((n) => n.parameters.operation === 'send' || n.parameters.operation === 'reply');
   assert.deepStrictEqual(sends.map((n) => n.name), ['Email urgent alert']);
   assert.strictEqual(sends[0].parameters.sendTo, 'REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS', 'the alert goes to the firm, not to a sender');
-  assert.strictEqual(sends[0].parameters.message, '={{ $json.alertText }}');
+  assert.strictEqual(sends[0].parameters.message, '={{ $json.alertHtml }}', 'the alert is brand HTML built from alertText');
+  assert.strictEqual(sends[0].parameters.emailType, 'html');
   assert.deepStrictEqual(gm.filter((n) => n.parameters.resource === 'draft').map((n) => n.parameters.operation), ['create']);
   assert.ok(!core.nodes.some((n) => /gmail|emailSend|httpRequest/i.test(n.type)), 'the core has no mail or HTTP node');
 });
@@ -122,13 +123,16 @@ test('privacy: no execution data is kept, and the log table gets metadata column
   insert.parameters.columns.schema.forEach((s) => assert.strictEqual(s.type, columns.find((c) => c.name === s.id).type));
 });
 
-test('prompts in the workflow are the prompt files, the draft prompt carries the whole knowledge base', () => {
+test('prompts in the workflow are the prompt files; the knowledge for each reply comes in its user message, not the system prompt', () => {
   const strip = (md) => md.replace(/^(?:<!--[\s\S]*?-->\s*\n)+/, '').trim();
   const classify = node(core, 'Classify email').parameters.messages.messageValues[0].message;
   assert.strictEqual(classify, strip(read('prompts/classify.md')));
   const draft = node(core, 'Draft reply').parameters.messages.messageValues[0].message;
-  assert.ok(draft.startsWith(strip(read('prompts/draft.md'))));
-  loadKnowledge().split('\n\n').filter((p) => p.trim()).forEach((p) => assert.ok(draft.includes(p.trim()), 'knowledge paragraph missing: ' + p.slice(0, 40)));
+  assert.strictEqual(draft, strip(read('prompts/draft.md')));
+  const userText = node(core, 'Draft reply').parameters.text;
+  assert.match(userText, /Knowledge base for this reply:\n\{\{ \$json\.knowledge \}\}$/);
+  assert.doesNotMatch(draft, /## Knowledge base|## KB-\d+/);
+  assert.match(node(core, 'Decide').parameters.jsCode, /knowledge: triageKnowledgeFor\(decision\.category, DATA\)/);
   const version = (md) => md.match(/promptVersion: ([\w-]+)/)[1];
   assert.strictEqual(version(read('prompts/classify.md')), E.DATA.rules.promptVersion);
   assert.strictEqual(version(read('prompts/draft.md')), E.DATA.rules.promptVersion);
@@ -158,9 +162,8 @@ test('model nodes: retries on, errors continue, temperatures as documented, no c
   ['Classify email', 'Draft reply'].forEach((n) => {
     const x = node(core, n);
     assert.deepStrictEqual([x.retryOnFail, x.maxTries, x.onError], [true, 3, 'continueRegularOutput']);
-    // paced one call at a time, so a batch of emails does not burst past the free-tier per-minute limits
-    assert.equal(x.parameters.batching.batchSize, 1, n);
-    assert.ok(x.parameters.batching.delayBetweenBatches >= 10000, n);
+    // no in-node pacing: the Gmail workflow paces the emails (see the loop test below)
+    assert.equal(x.parameters.batching, undefined, n);
   });
   assert.deepStrictEqual(node(core, 'Classifier model').parameters, { model: 'openai/gpt-oss-20b', options: { maxTokensToSample: 1500, temperature: 0 } });
   assert.deepStrictEqual(node(core, 'Drafting model').parameters, { model: 'openai/gpt-oss-120b', options: { maxTokensToSample: 2500, temperature: 0.3 } });
@@ -258,10 +261,37 @@ test('Gmail Code nodes give what the library gives', () => {
   assert.throws(() => runCode(node(gmail, 'Pick label IDs'), [{ id: 'L0', name: 'Triage' }], store), /Missing Gmail labels/);
 });
 
+test('the Gmail workflow runs one email at a time, with a Wait between emails and every result collected', () => {
+  const loop = node(gmail, 'One email at a time');
+  assert.strictEqual(loop.type, 'n8n-nodes-base.splitInBatches');
+  assert.strictEqual(loop.parameters.batchSize, 1);
+  const to = (name, out) => ((gmail.connections[name] || { main: [] }).main[out] || []).map((l) => l.node);
+  assert.deepStrictEqual(to('Not seen before?', 0), ['One email at a time']);
+  assert.deepStrictEqual(to('One email at a time', 1), ['Run triage core'], 'loop body');
+  assert.deepStrictEqual(to('One email at a time', 0), ['Combine result'], 'done: every result');
+  assert.deepStrictEqual(to('Run triage core', 0), ['Pace between emails']);
+  assert.deepStrictEqual(to('Pace between emails', 0), ['One email at a time']);
+  const wait = node(gmail, 'Pace between emails');
+  assert.strictEqual(wait.type, 'n8n-nodes-base.wait');
+  assert.ok(wait.parameters.amount >= 10, 'the wait between emails is at least 10 seconds');
+});
+
 test('the Gmail workflow keeps one email, one log row: the log is skipped for mail already seen', () => {
   const seen = node(gmail, 'Not seen before?');
   assert.strictEqual(seen.parameters.operation, 'rowNotExists');
   assert.deepStrictEqual(seen.parameters.filters.conditions, [{ keyName: 'messageId', keyValue: '={{ $json.messageId }}' }]);
   assert.strictEqual(clone(node(gmail, 'New email').parameters.filters.q).includes('-label:Triage-Processed'), true);
   assert.match(node(gmail, 'New email').parameters.filters.q, /\+triage@/);
+});
+
+test('each category is given its own knowledge articles, every id exists, and a reply gets less than the whole base', () => {
+  const sections = loadKnowledgeSections();
+  const map = E.DATA.rules.knowledgeByCategory;
+  Object.values(map).concat([E.DATA.rules.knowledgeFallback]).flat().forEach((id) => assert.ok(sections.articles[id], 'unknown article ' + id));
+  E.DATA.urgency.triageCategories.forEach((cat) => {
+    const text = T.triageKnowledgeFor(cat, E.DATA);
+    assert.ok(text.startsWith(sections.general), cat);
+    (map[cat] || E.DATA.rules.knowledgeFallback).forEach((id) => assert.ok(text.includes(sections.articles[id]), cat + ' ' + id));
+  });
+  assert.ok(T.triageKnowledgeFor('new_inquiry', E.DATA).length < loadKnowledge().length * 0.7, 'the new-inquiry reply carries under 70% of the base');
 });

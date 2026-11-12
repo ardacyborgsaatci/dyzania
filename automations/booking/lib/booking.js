@@ -362,7 +362,21 @@ function bookCancelDecision(row, nowMs, data) {
   return { allowed: true, reason: '' };
 }
 
+// ---- the Google Calendar entry for a kept booking ----
+// Created only for a booking that won the slot. No attendees, so Google sends no invitation to the visitor. No name,
+// email or phone: the title carries the reference so a later cancel can find the entry.
+function bookCalendarEvent(row, data) {
+  const area = bookArea(data, row.area);
+  return {
+    summary: (area ? area.name : row.area) + ' consultation (' + row.bookingRef + ')',
+    description: 'First consultation booked through the website or the voice line.\nAttorney: ' + bookAttorneyName(data, row.attorney) + '\nReference: ' + row.bookingRef + '\nNo contact details are kept in this entry. The bookings table holds them.',
+    start: row.startUtc,
+    end: row.endUtc,
+    ref: row.bookingRef
+  };
+}
+
 module.exports = {
   BOOK_RULES_VERSION, BOOK_LIMITS, bookLocalParts, bookStamp, bookLocalToUtc, bookLabel, bookParseStart, bookGenerate, bookOffers, bookListSlots,
-  bookValidate, bookConfirmation, bookPublic, bookDecide, bookVerify, bookRaceLost, bookConfirmedPublic, bookCancelDecision, bookRows, bookIso, bookFeeText
+  bookValidate, bookConfirmation, bookPublic, bookDecide, bookVerify, bookRaceLost, bookConfirmedPublic, bookCancelDecision, bookCalendarEvent, bookRows, bookIso, bookFeeText
 };

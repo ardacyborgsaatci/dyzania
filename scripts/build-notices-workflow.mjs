@@ -21,7 +21,7 @@ const { loadNoticeData, loadColumns } = require(rel('automations', 'notices', 'l
 export const VISION_MODEL = 'nvidia/nemotron-3.5-super-vl:free';
 
 // Order matters: a file may only use names from the files above it. Every top-level name must be unique across them.
-const LIB_FILES = ['firm/lib/text.js', 'firm/lib/urgency.js', 'automations/notices/lib/notices.js'];
+const LIB_FILES = ['firm/lib/text.js', 'firm/lib/urgency.js', 'automations/notices/lib/notices.js', 'automations/lib/brand-email.js'];
 
 const libText = () => joinLibs(LIB_FILES);
 const HEADER = [
@@ -78,7 +78,7 @@ const results = read.map((x, i) => {
 });
 const a = noticeAlert(results, DATA, read.length ? read[0].json.row.receivedAt : '');
 if (!a) return [];
-return [{ json: { subject: a.subject, text: a.text, count: a.count } }];
+return [{ json: { subject: a.subject, text: a.text, count: a.count, html: brandEmailHtml(a.text, a.subject) } }];
 `
 };
 
@@ -152,7 +152,7 @@ export function buildWorkflow() {
       id: ID(7), name: 'Send urgent alert', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [1344, 0], onError: 'continueRegularOutput',
       parameters: {
         resource: 'message', operation: 'send', sendTo: 'REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS', subject: '={{ $json.subject }}',
-        emailType: 'text', message: '={{ $json.text }}', options: { appendAttribution: false }
+        emailType: 'html', message: '={{ $json.html }}', options: { appendAttribution: false }
       }
     },
     {

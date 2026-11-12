@@ -11,7 +11,7 @@ import { opsBuildNode, opsLogNode } from './lib/ops-nodes.mjs';
 import { readJson, libText, nodeIds, isMain, writeOrCheck } from './lib/workflow-kit.mjs';
 
 // Order matters: a file may only use names from the files above it.
-const LIB_FILES = ['firm/lib/text.js', 'firm/lib/areas.js', 'firm/lib/conflicts.js', 'firm/lib/urgency.js', 'automations/intake/lib/intake.js'];
+const LIB_FILES = ['firm/lib/text.js', 'firm/lib/areas.js', 'firm/lib/conflicts.js', 'firm/lib/urgency.js', 'automations/lib/brand-email.js', 'automations/intake/lib/intake.js'];
 
 function firmData() {
   const firm = readJson('firm/firm.json');
@@ -36,7 +36,10 @@ for (const item of $input.all()) {
   const raw = item.json || {};
   const body = raw.body && typeof raw.body === 'object' ? raw.body : raw;
   const ref = 'DY-' + TODAY.replace(/-/g, '').slice(2) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
-  results.push({ json: processIntake(body, DATA, { today: TODAY, ref, now: NOW.toISOString() }) });
+  const out = processIntake(body, DATA, { today: TODAY, ref, now: NOW.toISOString() });
+  // The attorney alert goes out as the brand HTML; the plain text stays in alert.text for the record.
+  if (out.alert) out.alert.html = brandEmailHtml(out.alert.text, out.alert.subject);
+  results.push({ json: out });
 }
 return results;
 `;
@@ -63,6 +66,18 @@ export function bundleCode() {
 const ID = nodeIds('00');
 const COLUMNS = readJson('automations/intake/columns.json');
 const REF = (name) => "={{ $('Validate and score').first().json." + name + ' }}';
+
+// The Intake tab of the Leads spreadsheet: one row per lead, headers in row 1 (created by hand, in this order).
+// [column header, lead field or null]. A null field is written as a fixed value (consent is required to reach this node).
+const SHEET_ID = '1mZyWngRk9O4JLhpC4ilt-pLv-kHSIHptPmObi6-vsXg';
+const SHEET_TAB = 'Intake';
+const SHEET_COLUMNS = [
+  ['submittedAt', 'receivedAt'], ['reference', 'ref'], ['name', 'name'], ['email', 'email'], ['phone', 'phone'],
+  ['preferredContact', 'preferredContact'], ['practiceArea', 'areaFinal'], ['tier', 'tier'], ['nextStep', 'nextStep'],
+  ['urgency', 'urgencyLevel'], ['description', 'description'], ['location', 'location'], ['incidentDate', 'incidentDate'],
+  ['otherSide', 'otherSide'], ['howHeard', 'howHeard'], ['consent', null], ['status', 'status']
+];
+const sheetValue = (field) => (field === null ? 'yes' : REF('lead.' + field));
 const bool = (expr) => ({
   conditions: {
     options: { caseSensitive: true, leftValue: '', typeValidation: 'strict', version: 1 },
@@ -102,6 +117,25 @@ export function buildWorkflow() {
         options: {}
       }
     },
+    // The sheet is a copy for the team, not the record: if it fails, the lead is still saved and the visitor still gets a reply.
+    {
+      // The export carries no credentials: after import, pick the Google Sheets connection on this node.
+      id: ID(13), name: 'Append to Intake sheet', type: 'n8n-nodes-base.googleSheets', typeVersion: 4.5, position: [960, -260], onError: 'continueRegularOutput',
+      parameters: {
+        operation: 'append',
+        documentId: { __rl: true, mode: 'id', value: SHEET_ID },
+        sheetName: { __rl: true, mode: 'name', value: SHEET_TAB },
+        columns: {
+          mappingMode: 'defineBelow',
+          value: Object.fromEntries(SHEET_COLUMNS.map(([header, field]) => [header, sheetValue(field)])),
+          matchingColumns: [],
+          schema: SHEET_COLUMNS.map(([header]) => ({ id: header, displayName: header, required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false, readOnly: false, removed: false })),
+          attemptToConvertTypes: false,
+          convertFieldsToString: false
+        },
+        options: {}
+      }
+    },
     {
       id: ID(5), name: 'Reply to visitor', type: 'n8n-nodes-base.respondToWebhook', typeVersion: 1.4, position: [960, -100],
       parameters: {
@@ -123,8 +157,8 @@ export function buildWorkflow() {
       parameters: {
         sendTo: 'REPLACE_WITH_ATTORNEY_ON_DUTY_ADDRESS',
         subject: REF('alert.subject'),
-        emailType: 'text',
-        message: REF('alert.text'),
+        emailType: 'html',
+        message: REF('alert.html'),
         options: { appendAttribution: false }
       }
     },
@@ -146,7 +180,8 @@ export function buildWorkflow() {
     'Intake form': { main: [[link('Validate and score')]] },
     'Validate and score': { main: [[link('Valid?')]] },
     'Valid?': { main: [[link('Save lead')], [link('Spam?')]] },
-    'Save lead': { main: [[link('Reply to visitor')]] },
+    'Save lead': { main: [[link('Append to Intake sheet')]] },
+    'Append to Intake sheet': { main: [[link('Reply to visitor')]] },
     'Reply to visitor': { main: [[link('Build ops event')]] },
     'Build ops event': { main: [[link('Log ops event')]] },
     'Log ops event': { main: [[link('Send alert?')]] },

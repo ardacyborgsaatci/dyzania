@@ -6,6 +6,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { loadFirmData } = require('../../../firm/lib/data');
 const { processIntake } = require('../lib/intake');
+const { brandEmailHtml } = require('../../lib/brand-email');
 
 const root = path.join(__dirname, '..', '..', '..');
 const workflow = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'workflow.json'), 'utf8'));
@@ -38,6 +39,7 @@ test('the Code node returns exactly what the tested library returns, for every e
     const got = out[0].json;
     assert.match(got.lead.ref, /^DY-261111-[A-Z0-9]{1,4}$/, c.id + ' ref format');
     const want = processIntake(body, data, { today: setup.today, ref: got.lead.ref, now: new Date(NOW).toISOString() });
+    if (want.alert) want.alert.html = brandEmailHtml(want.alert.text, want.alert.subject);
     assert.deepStrictEqual(got, want, c.id);
   }
 });
@@ -76,7 +78,12 @@ test('every connection points at a real node and every path to a visitor ends in
   const next = (n, i) => ((workflow.connections[n] || { main: [] }).main[i || 0] || []).map((l) => l.node);
   // valid -> save -> reply; invalid -> spam? -> quiet reply or error reply
   assert.deepStrictEqual(next('Valid?', 0), ['Save lead']);
-  assert.strictEqual(type(next('Save lead')[0]), 'n8n-nodes-base.respondToWebhook');
+  // valid -> save -> sheet copy (failure does not stop the reply) -> reply
+  assert.deepStrictEqual(next('Save lead'), ['Append to Intake sheet']);
+  assert.strictEqual(node('Append to Intake sheet').type, 'n8n-nodes-base.googleSheets');
+  assert.strictEqual(node('Append to Intake sheet').onError, 'continueRegularOutput');
+  assert.deepStrictEqual(next('Append to Intake sheet'), ['Reply to visitor']);
+  assert.strictEqual(type(next('Append to Intake sheet')[0]), 'n8n-nodes-base.respondToWebhook');
   assert.strictEqual(type(next('Spam?', 0)[0]), 'n8n-nodes-base.respondToWebhook');
   assert.strictEqual(type(next('Spam?', 1)[0]), 'n8n-nodes-base.respondToWebhook');
   assert.strictEqual(node('Reply with errors').parameters.options.responseCode, 422);

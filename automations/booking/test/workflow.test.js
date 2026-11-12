@@ -105,7 +105,7 @@ test('the workflow shape: two authenticated endpoints, every path answers, one e
   const out = (name) => ((wf.connections[name] || {}).main || []).reduce((a, b) => a.concat(b), []).map((l) => l.node);
   // every node that ends a path is a reply (or a note)
   // (the ops log is the one exception: it is only ever reached after a reply, checked below)
-  wf.nodes.forEach((n) => { if (!out(n.name).length && n.type !== 'n8n-nodes-base.stickyNote' && n.name !== 'Log ops event') assert.strictEqual(n.type, 'n8n-nodes-base.respondToWebhook', n.name + ' ends a path without a reply'); });
+  wf.nodes.forEach((n) => { if (!out(n.name).length && n.type !== 'n8n-nodes-base.stickyNote' && n.name !== 'Log ops event' && n.name !== 'Create calendar event') assert.strictEqual(n.type, 'n8n-nodes-base.respondToWebhook', n.name + ' ends a path without a reply'); });
   const repliesIn = wf.nodes.filter((n) => n.type === 'n8n-nodes-base.respondToWebhook').map((n) => n.name).filter((name) => name !== 'Reply with slots');
   assert.deepStrictEqual(repliesIn.slice().sort(), ['Reply booked', 'Reply held', 'Reply lost slot', 'Reply no booking'], 'every way a booking run ends has a reply');
   repliesIn.forEach((name) => assert.deepStrictEqual(out(name), ['Build ops event'], name + ' is followed by the ops event, never preceded by it'));
@@ -118,7 +118,8 @@ test('the workflow shape: two authenticated endpoints, every path answers, one e
   assert.strictEqual(sends.length, 1, 'one email node only');
   assert.strictEqual(sends[0].parameters.operation, 'send');
   assert.strictEqual(sends[0].parameters.sendTo, '={{ $json.decision.row.email }}', 'only to the booked address');
-  assert.strictEqual(sends[0].parameters.message, '={{ $json.decision.confirmation.text }}', 'only the fixed template');
+  assert.strictEqual(sends[0].parameters.message, '={{ $json.decision.confirmation.html }}', 'only the fixed template, as brand HTML');
+  assert.strictEqual(sends[0].parameters.emailType, 'html');
   assert.strictEqual(sends[0].onError, 'continueRegularOutput', 'a failed email must not lose the booking');
   assert.deepStrictEqual(wf.nodes.filter((n) => /httpRequest|langchain|lmChat/i.test(n.type)), [], 'no outside calls and no model');
   assert.deepStrictEqual(Object.keys(wf.connections).filter((k) => !has(k)), [], 'every connection starts at a real node');
@@ -136,6 +137,38 @@ test('the order inside the booking path: insert, read again, verify, only then e
   ['Load bookings (slots)', 'Load bookings', 'Load bookings (verify)'].forEach((n) => assert.strictEqual(node(n).alwaysOutputData, true, n + ' keeps the chain alive for an empty table'));
 });
 
+test('the Google Calendar entry: only for a kept booking, after the reply is set, with no attendees and no contact details', () => {
+  const out = (name) => ((wf.connections[name] || {}).main || []).reduce((a, b) => a.concat(b), []).map((l) => l.node);
+  // branches off the same node as the reply: it never delays or replaces the visitor's answer
+  assert.deepStrictEqual(out('Record confirmation status'), ['Reply booked', 'Calendar entry']);
+  assert.deepStrictEqual(out('Calendar entry'), ['Create calendar event']);
+  assert.deepStrictEqual(out('Create calendar event'), [], 'the calendar create ends the path');
+  // only the kept-booking path reaches it: a lost race is cancelled, a hold is never entered in the calendar
+  const reachable = (start) => { const seen = new Set(), todo = [start]; while (todo.length) { const x = todo.pop(); if (seen.has(x)) continue; seen.add(x); out(x).forEach((y) => todo.push(y)); } return seen; };
+  assert.ok(!reachable('Cancel losing row').has('Create calendar event'), 'a lost race has no calendar entry');
+  assert.ok(!reachable('Insert held row').has('Create calendar event'), 'a hold has no calendar entry');
+  const cal = node('Create calendar event');
+  assert.strictEqual(cal.type, 'n8n-nodes-base.googleCalendar');
+  assert.strictEqual(cal.onError, 'continueRegularOutput', 'a failed calendar create must not lose the booking');
+  assert.strictEqual(cal.parameters.operation, 'create');
+  assert.strictEqual(cal.parameters.start, '={{ $json.start }}');
+  assert.strictEqual(cal.parameters.end, '={{ $json.end }}');
+  assert.strictEqual(cal.parameters.additionalFields.sendUpdates, 'none', 'no invitation is sent');
+  assert.strictEqual(cal.parameters.additionalFields.attendees, undefined, 'the visitor is not an attendee');
+  assert.strictEqual(cal.credentials.googleCalendarOAuth2Api.id, 'zm0aokBQMyTEcVbe');
+  assert.match(code('Calendar entry'), /bookCalendarEvent\(dec\.row, DATA\)/);
+});
+
+test('the calendar entry runs the library and carries no name, email or phone', () => {
+  const r = runNode('Calendar entry', [{}], { 'Verify winner': { decision: { row: { bookingRef: 'DY-CAL001', area: 'family', attorney: 'dana-hollis', startUtc: '2026-11-17T16:00:00Z', endUtc: '2026-11-17T16:45:00Z', name: 'Priya Nandakumar', email: 'priya.n@mail.example', phone: '555-010-4444' } } } }, '', '');
+  const ev = r[0].json;
+  assert.strictEqual(ev.start, '2026-11-17T16:00:00Z');
+  assert.strictEqual(ev.end, '2026-11-17T16:45:00Z');
+  assert.strictEqual(ev.summary, 'Family law consultation (DY-CAL001)');
+  assert.match(ev.description, /Attorney: Dana Hollis/);
+  assert.doesNotMatch(JSON.stringify(ev), /Priya|priya|555|mail\.example/);
+});
+
 test('table nodes use exactly the declared columns; no credentials or real ids are stored', () => {
   const cols = loadColumns().map((c) => c.name);
   ['Insert booking', 'Insert held row'].forEach((n) => {
@@ -144,7 +177,8 @@ test('table nodes use exactly the declared columns; no credentials or real ids a
     assert.strictEqual(node(n).parameters.columns.schema.find((s) => s.id === 'minutes').type, 'number');
   });
   const text = JSON.stringify(wf);
-  assert.doesNotMatch(text, /"credentials"/);
+  // the only credential reference is the Google Calendar one, by id: no secret values anywhere
+  assert.deepStrictEqual(wf.nodes.filter((n) => n.credentials).map((n) => n.credentials), [{ googleCalendarOAuth2Api: { id: 'zm0aokBQMyTEcVbe', name: 'Google Calendar' } }]);
   assert.deepStrictEqual(Array.from(new Set(text.match(/REPLACE_WITH_[A-Z_]+/g))), ['REPLACE_WITH_BOOKINGS_TABLE_ID', 'REPLACE_WITH_OPS_EVENTS_TABLE_ID']);
   assert.doesNotMatch(text, /sk-|gsk_|AIza|xox[bp]-|Bearer /);
   assert.deepStrictEqual({ a: wf.settings.saveDataSuccessExecution, b: wf.settings.saveDataErrorExecution, c: wf.settings.saveExecutionProgress }, { a: 'none', b: 'none', c: false });

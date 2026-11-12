@@ -388,6 +388,14 @@ function triageFinish(dec, draftRaw, data, ctx) {
   return r;
 }
 
+// The knowledge a draft is given for its category: the help-center block, then that category's articles.
+// Unknown article ids are skipped (the tests check every id in rules.json exists).
+function triageKnowledgeFor(category, data) {
+  const kb = data.kb;
+  const ids = (data.rules.knowledgeByCategory || {})[category] || data.rules.knowledgeFallback || [];
+  return [kb.general].concat(ids.filter((id) => kb.articles[id]).map((id) => kb.articles[id])).join('\n\n');
+}
+
 // The whole pipeline in one call. The n8n nodes run the same functions in the same order.
 // modelFn(email) and draftFn(email, decision) stand in for the two model calls; null means "unavailable".
 function triageRun(raw, modelFn, draftFn, data, ctx) {
@@ -403,5 +411,5 @@ module.exports = {
   TRIAGE_PRIORITIES, TRIAGE_REASON_TEXT, TRIAGE_CATEGORY_LABEL, TRIAGE_QUEUE_BY_CATEGORY, TRIAGE_INJECTION, TRIAGE_DRAFT_RULES,
   triageSanitize, triageGuessLanguage, triageScreen, triageNormalizeModel, triageDecide, triageAckText, triageHoldingText,
   triageCheckDraft, triageFinish, triageRun, triageAlert, triageLabelNames, triageAllLabelNames, triageLogRow,
-  triagePrepareGmail, triageCombine, triagePickLabelIds, triageParseJson, triageInjectionHits
+  triagePrepareGmail, triageCombine, triagePickLabelIds, triageParseJson, triageInjectionHits, triageKnowledgeFor
 };

@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url);
 const { loadBookingData, loadColumns } = require(rel('automations', 'booking', 'lib', 'data.js'));
 
 // Order matters: a file may only use names from the files above it. Every top-level name must be unique across them.
-const LIB_FILES = ['firm/lib/conflicts.js', 'automations/booking/lib/booking.js'];
+const LIB_FILES = ['firm/lib/conflicts.js', 'automations/booking/lib/booking.js', 'automations/lib/brand-email.js'];
 
 const libText = () => joinLibs(LIB_FILES);
 const HEADER = [
@@ -46,9 +46,15 @@ const dec = $('Decide booking').first().json;
 const inserted = $('Insert booking').first().json;
 const rows = bookRows($input.all());
 const v = bookVerify(inserted.id, rows, NOW.getTime(), DATA);
+// The visitor's confirmation goes out as the brand HTML; the plain text stays in confirmation.text.
+if (dec.confirmation) dec.confirmation.html = brandEmailHtml(dec.confirmation.text, dec.confirmation.subject);
 const json = { won: v.won, ref: dec.row.bookingRef, decision: dec };
 if (!v.won) json.lost = bookRaceLost(dec.row, v.lost[inserted.id] || 'slot_taken', rows, NOW.getTime(), DATA);
 return [{ json }];
+`,
+  calendar: `
+const dec = $('Verify winner').first().json.decision;
+return [{ json: bookCalendarEvent(dec.row, DATA) }];
 `,
   confirmed: `
 const res = $input.first().json;
@@ -141,12 +147,24 @@ export function buildWorkflow() {
       id: ID(13), name: 'Send confirmation', type: 'n8n-nodes-base.gmail', typeVersion: 2.2, position: [1792, 100], onError: 'continueRegularOutput',
       parameters: {
         resource: 'message', operation: 'send', sendTo: '={{ $json.decision.row.email }}', subject: '={{ $json.decision.confirmation.subject }}',
-        emailType: 'text', message: '={{ $json.decision.confirmation.text }}', options: { appendAttribution: false }
+        emailType: 'html', message: '={{ $json.decision.confirmation.html }}', options: { appendAttribution: false }
       }
     },
     codeAll(14, 'Confirmation outcome', [2016, 100], bundleCode('confirmed')),
     updateRow(15, 'Record confirmation status', [2240, 100], 'confirmation', "={{ $json.confirmation }}", "={{ $json.ref }}"),
     reply(16, 'Reply booked', [2464, 100], "={{ $('Confirmation outcome').first().json.public }}"),
+    // ---- Google Calendar entry for a kept booking: after the visitor's reply is set, never invites anyone ----
+    codeAll(26, 'Calendar entry', [2464, 240], bundleCode('calendar')),
+    {
+      id: ID(27), name: 'Create calendar event', type: 'n8n-nodes-base.googleCalendar', typeVersion: 1.3, position: [2688, 240], onError: 'continueRegularOutput',
+      parameters: {
+        resource: 'event', operation: 'create',
+        calendar: { __rl: true, mode: 'list', value: 'primary' },
+        start: '={{ $json.start }}', end: '={{ $json.end }}', useDefaultReminders: true,
+        additionalFields: { summary: '={{ $json.summary }}', description: '={{ $json.description }}', sendUpdates: 'none' }
+      },
+      credentials: { googleCalendarOAuth2Api: { id: 'zm0aokBQMyTEcVbe', name: 'Google Calendar' } }
+    },
     updateRow(17, 'Cancel losing row', [1792, 300], 'status', 'cancelled_race', "={{ $json.ref }}"),
     reply(18, 'Reply lost slot', [2016, 300], "={{ $('Verify winner').first().json.lost.public }}"),
     { id: ID(19), name: 'Held for review?', type: 'n8n-nodes-base.if', typeVersion: 2.2, position: [896, 440], parameters: ifTrue("={{ $json.code === 'conflict_hold' }}") },
@@ -159,7 +177,7 @@ export function buildWorkflow() {
     {
       id: ID(23), name: 'Notes', type: 'n8n-nodes-base.stickyNote', typeVersion: 1, position: [0, -200],
       parameters: {
-        content: 'Booking for Dyzania LLP (fictional). POST booking/slots returns free times for an area. POST booking/book books one. Both need the header-auth credential; the website (or the voice line) calls them, never a browser directly.\nThe Code nodes are generated from the tested library. A booking is inserted, the table is read again and the row that came first (lowest row id) keeps the slot, so two people choosing the same time almost never both get it; see the README for the narrow case this does not cover. A person on a conflict hold gets a held row with no time and the same words as anyone else the system cannot book; they are never told why.\nThe only email is the fixed confirmation to the booked address. Execution data is not saved (names and emails). After the reply, one metadata-only ops event is logged (no name, address or phone). Not yet wired: the Google Calendar mirror.',
+        content: 'Booking for Dyzania LLP (fictional). POST booking/slots returns free times for an area. POST booking/book books one. Both need the header-auth credential; the website (or the voice line) calls them, never a browser directly.\nThe Code nodes are generated from the tested library. A booking is inserted, the table is read again and the row that came first (lowest row id) keeps the slot, so two people choosing the same time almost never both get it; see the README for the narrow case this does not cover. A person on a conflict hold gets a held row with no time and the same words as anyone else the system cannot book; they are never told why.\nThe only email is the fixed confirmation to the booked address. Execution data is not saved (names and emails). After the reply, one metadata-only ops event is logged (no name, address or phone). A kept booking also gets one Google Calendar entry on the primary calendar, with no attendees, so no invitation is sent. If that create fails the visitor is still booked; the failure shows only in the n8n execution.',
         width: 900, height: 230
       }
     }
@@ -178,7 +196,8 @@ export function buildWorkflow() {
     'Won the slot?': { main: [[link('Send confirmation')], [link('Cancel losing row')]] },
     'Send confirmation': { main: [[link('Confirmation outcome')]] },
     'Confirmation outcome': { main: [[link('Record confirmation status')]] },
-    'Record confirmation status': { main: [[link('Reply booked')]] },
+    'Record confirmation status': { main: [[link('Reply booked'), link('Calendar entry')]] },
+    'Calendar entry': { main: [[link('Create calendar event')]] },
     'Cancel losing row': { main: [[link('Reply lost slot')]] },
     'Reply booked': { main: [[link('Build ops event')]] },
     'Reply lost slot': { main: [[link('Build ops event')]] },

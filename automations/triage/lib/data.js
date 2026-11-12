@@ -14,6 +14,23 @@ function loadKnowledge() {
     .join('\n\n');
 }
 
+// The knowledge base as sections: the help-center block every draft gets, and one text per article (## KB-NN).
+// A draft is given only its category's articles (rules.json knowledgeByCategory), which keeps each request small.
+function loadKnowledgeSections() {
+  const parts = loadKnowledge().split('\n\n').map((p) => p.trim()).filter((p) => p && p !== '---');
+  const helpAt = parts.findIndex((p) => p.startsWith('# Dyzania LLP Help Center'));
+  const firstArticle = parts.findIndex((p) => /^## KB-\d+/.test(p));
+  if (helpAt < 0 || firstArticle < 0) throw new Error('knowledge base needs a help-center block and KB articles');
+  const general = parts.slice(helpAt, firstArticle).join('\n\n');
+  const articles = {};
+  let current = null;
+  parts.slice(firstArticle).forEach((p) => {
+    const m = p.match(/^## (KB-\d+)/);
+    if (m) { current = m[1]; articles[current] = p; } else if (current) articles[current] += '\n\n' + p;
+  });
+  return { general, articles };
+}
+
 // Dollar amounts that appear in the knowledge base. A draft may only quote these.
 function knowledgeAmounts(kb) {
   return Array.from(new Set((kb.match(/\$\d[\d,]*(?:\.\d+)?/g) || []).map((s) => s.replace(/,/g, ''))));
@@ -29,8 +46,9 @@ function loadTriageData() {
     },
     urgency: readJson('firm', 'urgency.json'),
     rules: readJson('automations', 'triage', 'rules.json'),
+    kb: loadKnowledgeSections(),
     kbAmounts: knowledgeAmounts(kb)
   };
 }
 
-module.exports = { loadTriageData, loadKnowledge, knowledgeAmounts, ROOT };
+module.exports = { loadTriageData, loadKnowledge, loadKnowledgeSections, knowledgeAmounts, ROOT };

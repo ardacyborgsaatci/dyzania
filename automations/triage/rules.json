@@ -20,6 +20,14 @@
     "esq"
   ],
   "counselGreeting": "A line that starts with 'Counsel,' also counts. These cues are things a client or a first-time visitor would not normally write. A hit sends the message to the matter attorney and no reply is drafted.",
+  "knowledgeByCategory": {
+    "new_inquiry": ["KB-01", "KB-02", "KB-03", "KB-08", "KB-11"],
+    "existing_client": ["KB-03", "KB-06", "KB-12"],
+    "scheduling": ["KB-03", "KB-04", "KB-10"],
+    "billing": ["KB-02", "KB-09"],
+    "other": ["KB-01", "KB-13"]
+  },
+  "knowledgeFallback": ["KB-13"],
   "queues": {
     "urgent": "the attorney on duty (urgent@dyzania.example)",
     "records": "records: court notices",
