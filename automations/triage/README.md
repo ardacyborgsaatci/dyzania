@@ -104,6 +104,13 @@ Read the numbers with care:
   - **Drafts:** 21 were made, and a person still has to read them.
   - **Dates:** the set's labels assume 11 Nov and the run was on 12 Nov, so one date-window email (`U03`) can read differently.
   - **Caveat:** this is one run, on a same-author set.
+- **Second live run, same day, after one prompt line.** The classifier prompt now says that asking for an answer "today", being upset, or threatening a complaint is not urgent on its own. All 54 were run again; results are in `eval/live-results-2026-11-12-v2.json` and `eval/live-report-2026-11-12-v2.txt`.
+  - **Fixed:** N03 is back to normal and C04 to high.
+  - **Fields matching the label:** priority 47/54, needs-human 53/54, draft mode 51/54, queue 49/54, handoff 54/54, injection 53/54, category 50/54.
+  - **Still holding:** urgent 13 of 13, needs-human recall 35 of 35, no fallback, and no broken guarantee.
+  - **Still missed:** I04, as before.
+  - **Model variance:** `I02`, a pure manipulation attempt, was flagged as an injection but sorted as spam, so it was not queued.
+  - **Not over-raising:** O02, U01 and U03 now carry a date within 7 days of the run date, so urgent is correct by the rule.
 - The mutation check: 22 deliberate breakages of the rules (removing the priority floor, the injection cap, the court and lawyer rules, the draft blocks, the non-English flag, the amount check, the negation guard, the hidden-character removal, the whole-message screen, and others). 20 were caught at once, one (hidden characters in the subject line) was not and now has a test, and one (an alert that leaks the subject) is not a real break because the result never holds the subject. A negative control (a wrong label and tampered results) is reported as a failure.
 
 ## Known limits
